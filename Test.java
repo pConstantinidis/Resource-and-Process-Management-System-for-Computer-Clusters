@@ -6,5 +6,7 @@ public class Test {
         while (num<10) {
             System.out.println(num);
         }
+
+        System.out.println("It wotks!");
     }
 }
