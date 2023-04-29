@@ -1,9 +1,6 @@
 package src.model;
 
-import java.nio.channels.NetworkChannel;
-
 import lib.utils.Globals;
-import lib.utils.InputOutOfAdminsStandarts;
 import lib.utils.InputOutOfAdminsStandartsException;
 
 /**
@@ -12,7 +9,7 @@ import lib.utils.InputOutOfAdminsStandartsException;
  */
 public abstract class VirtualMachine {
     
-    private final int vmID;
+    protected final int vmID;
     private int cpu;
     private int ram;
     private String os;
@@ -38,7 +35,7 @@ public abstract class VirtualMachine {
      * @param newRam The number of the total RAM (in GBs) after the update
      * @return The RAM of the VM before the update.
      */
-    private int updateRam(int newRam) {
+    private int updateRam(int newRam) throws InputOutOfAdminsStandartsException {
         if (newRam > ClusterAdmin.getAvailableRam() || newRam < 0)
             throw new InputOutOfAdminsStandartsException();
 
@@ -53,7 +50,7 @@ public abstract class VirtualMachine {
      * @param os The OS to be set.
      * @return The OS used before the update.
      */
-    private String updateOs(String newOs) {
+    private String updateOs(String newOs) throws InputOutOfAdminsStandartsException {
         boolean isValid = false;
         for (Globals.OS os:Globals.OS.values()) {
             if (newOs.equals(os.toString())) {
