@@ -8,5 +8,9 @@ package lib.utils;
  */
 public final class Globals {
     
-    
+    public static enum OS {
+        WINDOWS,
+        UBUNTU,
+        FEDORA
+    }
 }
