@@ -1,5 +1,7 @@
 package lib.utils;
 
+import src.model.ClusterAdmin;
+
 /**
  * A class that is to be used widely around the project
  * 
@@ -13,4 +15,23 @@ public final class Globals {
         UBUNTU,
         FEDORA
     }
+
+    public final static void isCpuValid(int newNumOfCores) throws InputOutOfAdminsStandartsException{
+        if (newNumOfCores > ClusterAdmin.getAvailableCpu() || newNumOfCores < 0)
+            throw new InputOutOfAdminsStandartsException();
+    }
+
+    public final static void isRamValid(int newRam) throws InputOutOfAdminsStandartsException{
+        if (newRam > ClusterAdmin.getAvailableRam() || newRam < 0)
+            throw new InputOutOfAdminsStandartsException();
+    }
+
+    public final static void isOsValid(OS newOs) throws InputOutOfAdminsStandartsException {
+        for (Globals.OS os:Globals.OS.values()) {
+            if (newOs.equals(os))
+                return;
+        }
+        throw new InputOutOfAdminsStandartsException();
+    }
+
 }

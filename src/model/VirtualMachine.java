@@ -2,6 +2,7 @@ package src.model;
 
 import lib.utils.Globals;
 import lib.utils.InputOutOfAdminsStandartsException;
+import lib.utils.Globals.OS;
 
 /**
  * An abstract description of a Virtual Machine.
@@ -11,9 +12,9 @@ import lib.utils.InputOutOfAdminsStandartsException;
 public abstract class VirtualMachine {
     
     protected final int vmID;
-    private int cpu;
-    private int ram;
-    private String os;
+    protected int cpu;
+    protected int ram;
+    protected OS os;
 
     /**
      * A method that updates the number of CPU cores used by the VM.
@@ -22,8 +23,7 @@ public abstract class VirtualMachine {
      * @return The number of cores that the VM had before the update.
      */
     private int updateCpu(int newNumOfCores) throws InputOutOfAdminsStandartsException {
-        if (newNumOfCores > ClusterAdmin.getAvailableCpu() || newNumOfCores < 0)
-            throw new InputOutOfAdminsStandartsException();
+        Globals.isCpuValid(newNumOfCores);
         
         int oldCpu = cpu;
         cpu = newNumOfCores;
@@ -37,8 +37,7 @@ public abstract class VirtualMachine {
      * @return The RAM of the VM before the update.
      */
     private int updateRam(int newRam) throws InputOutOfAdminsStandartsException {
-        if (newRam > ClusterAdmin.getAvailableRam() || newRam < 0)
-            throw new InputOutOfAdminsStandartsException();
+        Globals.isRamValid(newRam);
 
         int oldRam = ram;
         ram = newRam;
@@ -48,22 +47,14 @@ public abstract class VirtualMachine {
     /**
      * A method that updates the OS of the VM.
      * 
-     * @param os The OS to be set.
+     * @param newOs The OS to be set.
      * @return The OS used before the update.
      */
-    private String updateOs(String newOs) throws InputOutOfAdminsStandartsException {
-        boolean isValid = false;
-        for (Globals.OS os:Globals.OS.values()) {
-            if (newOs.equals(os.toString())) {
-                isValid = true;
-                break;
-            }
-        }
-        if (isValid == true) {
-            String oldOs = os;
+    private String updateOs(OS newOs) throws InputOutOfAdminsStandartsException {
+            Globals.isOsValid(newOs);
+
+            OS oldOs = os;
             os = newOs;
-            return oldOs;
-        }
-        throw new InputOutOfAdminsStandartsException();
+            return oldOs.toString();
     }
 }
