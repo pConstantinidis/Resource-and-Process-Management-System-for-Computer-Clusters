@@ -11,7 +11,7 @@ import lib.utils.Globals.OS;
  */
 public abstract class VirtualMachine {
     
-    protected final int vmID;
+    protected final int vmID;       //TODO
     protected int cpu;
     protected int ram;
     protected OS os;
