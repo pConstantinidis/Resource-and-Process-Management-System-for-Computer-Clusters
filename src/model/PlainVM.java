@@ -7,7 +7,6 @@ import lib.utils.Globals.*;
 public class PlainVM extends VirtualMachine {
     private int drive;
 
-    // Constructor
     public PlainVM(int cpu, int ram, OS os, int drive) throws InputOutOfAdminsStandartsException {
         Globals.isCpuValid(cpu);
         Globals.isRamValid(ram);
@@ -25,6 +24,7 @@ public class PlainVM extends VirtualMachine {
      * 
      * @param newDrive The total drive that the VM is going to have after the update.
      * @return The drive that the VM had access to before the update.
+     * @throws InputOutOfAdminsStandartsException
      */
     private int updateDrive(int newDrive) throws InputOutOfAdminsStandartsException {
         Globals.isDriveValid(newDrive);

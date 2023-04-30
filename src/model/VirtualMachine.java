@@ -21,6 +21,7 @@ public abstract class VirtualMachine {
      * 
      * @param newNumOfCores The number of the total cores after the update.
      * @return The number of cores that the VM had before the update.
+     * @throws InputOutOfAdminsStandartsException
      */
     private int updateCpu(int newNumOfCores) throws InputOutOfAdminsStandartsException {
         Globals.isCpuValid(newNumOfCores);
@@ -35,6 +36,7 @@ public abstract class VirtualMachine {
      * 
      * @param newRam The number of the total RAM (in GBs) after the update
      * @return The RAM of the VM before the update.
+     * @throws InputOutOfAdminsStandartsException
      */
     private int updateRam(int newRam) throws InputOutOfAdminsStandartsException {
         Globals.isRamValid(newRam);
@@ -49,6 +51,7 @@ public abstract class VirtualMachine {
      * 
      * @param newOs The OS to be set.
      * @return The OS used before the update.
+     * @throws InputOutOfAdminsStandartsException
      */
     private String updateOs(OS newOs) throws InputOutOfAdminsStandartsException {
             Globals.isOsValid(newOs);
