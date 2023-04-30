@@ -16,37 +16,40 @@ public final class Globals {
         FEDORA
     }
 
-    public final static void isCpuValid(int newNumOfCores) throws InputOutOfAdminsStandartsException{
-        if (newNumOfCores < ClusterAdmin.getAvailableCpu() || newNumOfCores < 1)
-            throw new InputOutOfAdminsStandartsException();
-    }
-
-    public final static void isRamValid(int newRam) throws InputOutOfAdminsStandartsException{
-        if (newRam < ClusterAdmin.getAvailableRam() || newRam < 1)
-            throw new InputOutOfAdminsStandartsException();
-    }
-
-    public final static void isOsValid(OS newOs) throws InputOutOfAdminsStandartsException {
-        for (Globals.OS os:Globals.OS.values()) {
-            if (newOs.equals(os))
-                return;
+    /*
+     * Methods that implement validation checks ocording to potential logical errors and model standarts
+     */
+        public final static void isCpuValid(int newNumOfCores) throws InputOutOfAdminsStandartsException{
+            if (newNumOfCores < ClusterAdmin.getAvailableCpu() || newNumOfCores < 1)
+                throw new InputOutOfAdminsStandartsException();
         }
-        throw new InputOutOfAdminsStandartsException();
-    }
 
-    public final static void isDriveValid(int newDrive) throws InputOutOfAdminsStandartsException {
-        if (newDrive < ClusterAdmin.getAvailableDrive() || newDrive < 1)
+        public final static void isRamValid(int newRam) throws InputOutOfAdminsStandartsException{
+            if (newRam < ClusterAdmin.getAvailableRam() || newRam < 1)
+                throw new InputOutOfAdminsStandartsException();
+        }
+
+        public final static void isOsValid(OS newOs) throws InputOutOfAdminsStandartsException {
+            for (Globals.OS os:Globals.OS.values()) {
+                if (newOs.equals(os))
+                    return;
+            }
             throw new InputOutOfAdminsStandartsException();
-    }
+        }
 
-    public final static void isGpuValid(int newGpu) throws InputOutOfAdminsStandartsException {
-        if (newGpu < ClusterAdmin.getAvailableGpu() || newGpu < 1)
-         throw new InputOutOfAdminsStandartsException();
-    }
+        public final static void isDriveValid(int newDrive) throws InputOutOfAdminsStandartsException {
+            if (newDrive < ClusterAdmin.getAvailableDrive() || newDrive < 1)
+                throw new InputOutOfAdminsStandartsException();
+        }
 
-    public final static void isBandwidthValid(int newBandwidth) throws InputOutOfAdminsStandartsException {
-        if (newBandwidth < ClusterAdmin.getAvailableBandwidth() || newBandwidth < 4)
+        public final static void isGpuValid(int newGpu) throws InputOutOfAdminsStandartsException {
+            if (newGpu < ClusterAdmin.getAvailableGpu() || newGpu < 1)
             throw new InputOutOfAdminsStandartsException();
-    }
+        }
+
+        public final static void isBandwidthValid(int newBandwidth) throws InputOutOfAdminsStandartsException {
+            if (newBandwidth < ClusterAdmin.getAvailableBandwidth() || newBandwidth < 4)
+                throw new InputOutOfAdminsStandartsException();
+        }
 
 }
