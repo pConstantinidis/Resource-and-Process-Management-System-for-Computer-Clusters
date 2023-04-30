@@ -34,4 +34,19 @@ public final class Globals {
         throw new InputOutOfAdminsStandartsException();
     }
 
+    public final static void isDriveValid(int newDrive) throws InputOutOfAdminsStandartsException {
+        if (newDrive > ClusterAdmin.getAvailableDrive() || newDrive < 0)
+            throw new InputOutOfAdminsStandartsException();
+    }
+
+    public final static void isGpuValid(int newGpu) throws InputOutOfAdminsStandartsException {
+        if (newGpu > ClusterAdmin.getAvailableGpu() || newGpu < 0)
+         throw new InputOutOfAdminsStandartsException();
+    }
+
+    public final static void isBandwidthValid(int newBandwidth) throws InputOutOfAdminsStandartsException {
+        if (newBandwidth > ClusterAdmin.getAvailableBandwidth() || newBandwidth < 0)
+            throw new InputOutOfAdminsStandartsException();
+    }
+
 }
