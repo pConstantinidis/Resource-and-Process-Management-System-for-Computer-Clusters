@@ -4,6 +4,7 @@ import lib.utils.Globals;
 import lib.utils.InputOutOfAdminsStandartsException;
 
 /**
+ * An abstract description of a Virtual Machine.
  * 
  * @author pConstantinidis
  */
