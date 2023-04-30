@@ -16,21 +16,34 @@ public final class Globals {
         FEDORA
     }
 
+    private static int availableCpu = ClusterAdmin.getCpuCores();
+    private static int availableRam = ClusterAdmin.getRam();
+    private static int availableDrive = ClusterAdmin.getDrive();
+    private static int availableGpu = ClusterAdmin.getGpu();
+    private static int availableBandwidth = ClusterAdmin.getNetworkBandwidth();
+
+    // Accesors
+    public static int getAvailableCpu() {return availableCpu;}
+    public static int getAvailableRam() {return availableRam;}
+    public static int getAvailableDrive() {return availableDrive;}
+    public static int getAvailableGpu() {return availableGpu;}
+    public static int getAvailableBandwidth() {return availableBandwidth;}
+
     /*
      * Methods that implement validation checks ocording to potential logical errors and model standarts
      */
         public final static void isCpuValid(int newNumOfCores) throws InputOutOfAdminsStandartsException{
-            if (newNumOfCores < ClusterAdmin.getAvailableCpu() || newNumOfCores < 1)
+            if (newNumOfCores < availableCpu || newNumOfCores < 1)
                 throw new InputOutOfAdminsStandartsException();
         }
 
         public final static void isRamValid(int newRam) throws InputOutOfAdminsStandartsException{
-            if (newRam < ClusterAdmin.getAvailableRam() || newRam < 1)
+            if (newRam < availableRam || newRam < 1)
                 throw new InputOutOfAdminsStandartsException();
         }
 
         public final static void isOsValid(OS newOs) throws InputOutOfAdminsStandartsException {
-            for (Globals.OS os:Globals.OS.values()) {
+            for (OS os:OS.values()) {
                 if (newOs.equals(os))
                     return;
             }
@@ -38,17 +51,17 @@ public final class Globals {
         }
 
         public final static void isDriveValid(int newDrive) throws InputOutOfAdminsStandartsException {
-            if (newDrive < ClusterAdmin.getAvailableDrive() || newDrive < 1)
+            if (newDrive < availableDrive || newDrive < 1)
                 throw new InputOutOfAdminsStandartsException();
         }
 
         public final static void isGpuValid(int newGpu) throws InputOutOfAdminsStandartsException {
-            if (newGpu < ClusterAdmin.getAvailableGpu() || newGpu < 1)
+            if (newGpu < availableGpu || newGpu < 1)
             throw new InputOutOfAdminsStandartsException();
         }
 
         public final static void isBandwidthValid(int newBandwidth) throws InputOutOfAdminsStandartsException {
-            if (newBandwidth < ClusterAdmin.getAvailableBandwidth() || newBandwidth < 4)
+            if (newBandwidth < availableBandwidth || newBandwidth < 4)
                 throw new InputOutOfAdminsStandartsException();
         }
 
