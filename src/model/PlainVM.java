@@ -2,7 +2,7 @@ package src.model;
 
 import lib.utils.Globals;
 import lib.utils.InputOutOfAdminsStandartsException;
-import lib.utils.Globals.*;
+import lib.utils.Globals.OS;
 
 public class PlainVM extends VirtualMachine {
     private int drive;
