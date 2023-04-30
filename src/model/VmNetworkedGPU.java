@@ -9,6 +9,11 @@ public class VmNetworkedGPU extends VmGPU implements NetworkAccessible {
     
     private int bandwidth;
 
+    @Override
+    public int getBandwidth() {
+        return this.bandwidth;
+    }
+
     public VmNetworkedGPU(int cpu, int ram, OS os, int drive, int gpu, int bandwidth) throws InputOutOfAdminsStandartsException {
         super(cpu, ram, os, drive, gpu);
 

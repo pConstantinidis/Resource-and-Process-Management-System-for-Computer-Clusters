@@ -11,10 +11,13 @@ import lib.utils.Globals.OS;
  */
 public abstract class VirtualMachine {
     
-    protected final int vmID;       //TODO
     protected int cpu;
     protected int ram;
     protected OS os;
+
+    public int getCpu() {return cpu;}
+    public int getRam() {return ram;}
+    public OS getOs() {return os;}
 
     /**
      * A method that updates the number of CPU cores used by the VM.
@@ -23,7 +26,7 @@ public abstract class VirtualMachine {
      * @return The number of cores that the VM had before the update.
      * @throws InputOutOfAdminsStandartsException
      */
-    private int updateCpu(int newNumOfCores) throws InputOutOfAdminsStandartsException {
+    protected int updateCpu(int newNumOfCores) throws InputOutOfAdminsStandartsException {
         Globals.isCpuValid(newNumOfCores);
         
         int oldCpu = cpu;
@@ -38,7 +41,7 @@ public abstract class VirtualMachine {
      * @return The RAM of the VM before the update.
      * @throws InputOutOfAdminsStandartsException
      */
-    private int updateRam(int newRam) throws InputOutOfAdminsStandartsException {
+    protected int updateRam(int newRam) throws InputOutOfAdminsStandartsException {
         Globals.isRamValid(newRam);
 
         int oldRam = ram;

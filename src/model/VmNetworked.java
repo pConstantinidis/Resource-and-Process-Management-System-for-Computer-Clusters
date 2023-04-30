@@ -7,6 +7,11 @@ import lib.utils.Globals.OS;
 
 public class VmNetworked extends PlainVM implements NetworkAccessible {
     private int bandwidth;
+    
+    @Override
+    public int getBandwidth() {
+        return this.bandwidth;
+    }
 
     public VmNetworked(int cpu, int ram, OS os, int drive, int bandwidth) throws InputOutOfAdminsStandartsException {
         super(cpu, ram, os, drive);
@@ -23,4 +28,5 @@ public class VmNetworked extends PlainVM implements NetworkAccessible {
         this.bandwidth = newBandwidth;
         return oldBandwidth;
     }
+
 }

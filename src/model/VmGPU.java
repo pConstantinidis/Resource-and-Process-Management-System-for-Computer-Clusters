@@ -7,6 +7,8 @@ import lib.utils.Globals.OS;
 public class VmGPU extends PlainVM {
     private int gpu;
 
+    public int getGpu() {return gpu;}
+
     public VmGPU(int cpu, int ram, OS os, int drive, int gpu) throws InputOutOfAdminsStandartsException {
         super(cpu, ram, null, drive);
 
@@ -21,7 +23,7 @@ public class VmGPU extends PlainVM {
      * @return The GPU that the VM had access to before the update.
      * @throws InputOutOfAdminsStandartsException
      */
-    private int updateGpu(int newGpu) throws InputOutOfAdminsStandartsException {
+    protected int updateGpu(int newGpu) throws InputOutOfAdminsStandartsException {
         Globals.isGpuValid(newGpu);
 
         int oldGpu = this.gpu;
