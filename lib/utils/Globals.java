@@ -29,6 +29,13 @@ public final class Globals {
     public static int getAvailableGpu() {return availableGpu;}
     public static int getAvailableBandwidth() {return availableBandwidth;}
 
+    // Mutators
+    public static void setAvailableCpu(int availableCpu) {Globals.availableCpu = availableCpu;}
+    public static void setAvailableRam(int availableRam) {Globals.availableRam = availableRam;}
+    public static void setAvailableDrive(int availableDrive) {Globals.availableDrive = availableDrive;}
+    public static void setAvailableGpu(int availableGpu) {Globals.availableGpu = availableGpu;}
+    public static void setAvailableBandwidth(int availableBandwidth) {Globals.availableBandwidth = availableBandwidth;}
+    
     /*
      * Methods that implement validation checks ocording to potential logical errors and model standarts
      */
