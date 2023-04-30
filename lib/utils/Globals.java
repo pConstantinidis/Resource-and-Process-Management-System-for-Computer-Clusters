@@ -17,12 +17,12 @@ public final class Globals {
     }
 
     public final static void isCpuValid(int newNumOfCores) throws InputOutOfAdminsStandartsException{
-        if (newNumOfCores > ClusterAdmin.getAvailableCpu() || newNumOfCores < 0)
+        if (newNumOfCores < ClusterAdmin.getAvailableCpu() || newNumOfCores < 1)
             throw new InputOutOfAdminsStandartsException();
     }
 
     public final static void isRamValid(int newRam) throws InputOutOfAdminsStandartsException{
-        if (newRam > ClusterAdmin.getAvailableRam() || newRam < 0)
+        if (newRam < ClusterAdmin.getAvailableRam() || newRam < 1)
             throw new InputOutOfAdminsStandartsException();
     }
 
@@ -35,17 +35,17 @@ public final class Globals {
     }
 
     public final static void isDriveValid(int newDrive) throws InputOutOfAdminsStandartsException {
-        if (newDrive > ClusterAdmin.getAvailableDrive() || newDrive < 0)
+        if (newDrive < ClusterAdmin.getAvailableDrive() || newDrive < 1)
             throw new InputOutOfAdminsStandartsException();
     }
 
     public final static void isGpuValid(int newGpu) throws InputOutOfAdminsStandartsException {
-        if (newGpu > ClusterAdmin.getAvailableGpu() || newGpu < 0)
+        if (newGpu < ClusterAdmin.getAvailableGpu() || newGpu < 1)
          throw new InputOutOfAdminsStandartsException();
     }
 
     public final static void isBandwidthValid(int newBandwidth) throws InputOutOfAdminsStandartsException {
-        if (newBandwidth > ClusterAdmin.getAvailableBandwidth() || newBandwidth < 0)
+        if (newBandwidth < ClusterAdmin.getAvailableBandwidth() || newBandwidth < 4)
             throw new InputOutOfAdminsStandartsException();
     }
 
