@@ -1,7 +1,7 @@
 package lib.utils;
 
 /**
- * A method that describes virtual machines that have access to the web.
+ * An interface that describes virtual machines that have access to the web.
  * 
  * @author pConstantinidis
  */
