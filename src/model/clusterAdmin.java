@@ -33,28 +33,28 @@ public class ClusterAdmin {
     private void createPlainVm(int cpu, int ram, OS os, int drive) throws InputOutOfAdminsStandartsException {
         
         clusterVms.put(numOfVms+1, new PlainVM(cpu, ram, os, drive));
-        updateClustersReserve(-cpu, ram, drive, 0, 0);
+        updateClustersReserve(-cpu, -ram, -drive, 0, 0);
         numOfVms++;
     }
 
     private void createVmGPU(int cpu, int ram, OS os, int drive, int gpu) throws InputOutOfAdminsStandartsException {
         
         clusterVms.put(numOfVms+1, new VmGPU(cpu, ram, os, drive, gpu));
-        updateClustersReserve(-cpu, ram, drive, gpu, 0);
+        updateClustersReserve(-cpu, -ram, -drive, -gpu, 0);
         numOfVms++;
     }
 
     private void createVmNetworked(int cpu, int ram, OS os, int drive, int bandwidth) throws InputOutOfAdminsStandartsException {
         
         clusterVms.put(numOfVms+1, new VmNetworked(cpu, ram, os, drive, bandwidth));
-        updateClustersReserve(-cpu, ram, drive, 0, bandwidth);
+        updateClustersReserve(-cpu, -ram, -drive, 0, -bandwidth);
         numOfVms++;
     }
 
     private void createVmNetworkedGpu(int cpu, int ram, OS os, int drive, int gpu, int bandwidth) throws InputOutOfAdminsStandartsException {
 
         clusterVms.put(numOfVms+1, new VmNetworkedGPU(cpu, ram, os, drive, gpu, bandwidth));
-        updateClustersReserve(-cpu, ram, drive, gpu, bandwidth);
+        updateClustersReserve(-cpu, -ram, -drive, -gpu, -bandwidth);
         numOfVms++;
     }
 
@@ -62,37 +62,32 @@ public class ClusterAdmin {
                         private void updateCpu(int vmId, int newCpu) throws InputOutOfAdminsStandartsException {
                             VirtualMachine vm = clusterVms.get(vmId);
                             
-                            double ratio = (double)newCpu / (double)vm.getCpu();
-                            updateClustersReserve((int) ((-newCpu+vm.getCpu())/ratio), 0, 0, 0, 0);
+                            updateClustersReserve(vm.getCpu()-newCpu, 0, 0, 0, 0);
                             vm.updateCpu(newCpu);
                         }
 
                         private void updateRam(int vmId, int newRam) throws InputOutOfAdminsStandartsException {
                             VirtualMachine vm = clusterVms.get(vmId);
+                            updateClustersReserve(0, vm.getRam()-newRam, 0, 0, 0);
                             vm.updateRam(newRam);
-                            double ratio = vm.getRam()/newRam;
-                            updateClustersReserve(0, (int) ((vm.getRam()-newRam)/ratio), 0, 0, 0);
                         }
 
                         private void updateDrive(int vmId, int newDrive) throws ClassCastException, InputOutOfAdminsStandartsException, NullPointerException {       //! Exceptions should be handled inside the View package
                             PlainVM vm = (PlainVM) clusterVms.get(vmId);
+                            updateClustersReserve(0, 0, vm.getDrive()-newDrive, 0, 0);
                             vm.updateDrive(newDrive);
-                            double ratio = vm.getDrive()/newDrive;
-                            updateClustersReserve(0, 0, (int) ((vm.getDrive()-newDrive)/ratio), 0, 0);
                         }
 
                         private void updateGpu(int vmId, int newGpu) throws ClassCastException, InputOutOfAdminsStandartsException, NullPointerException {
                             VmGPU vm = (VmGPU) clusterVms.get(vmId);
+                            updateClustersReserve(0, 0, 0, vm.getGpu()-newGpu, 0);
                             vm.updateGpu(newGpu);
-                            double ratio = vm.getGpu()/newGpu;
-                            updateClustersReserve(0, 0, 0, (int) ((vm.getGpu()-newGpu)/ratio), 0);
                         }
 
                         private void updateBandwidth(int vmId, int newBandwidth) throws InputOutOfAdminsStandartsException, ClassCastException, NullPointerException {
                             NetworkAccessible vm = (NetworkAccessible) clusterVms.get(vmId);
+                            updateClustersReserve(0, 0, 0, 0, vm.getBandwidth()-newBandwidth);
                             vm.updateBandwidth(newBandwidth);
-                            double ratio = vm.getBandwidth()/newBandwidth;
-                            updateClustersReserve(0, 0, 0, 0, (int) ((vm.getBandwidth()-newBandwidth)/ratio));
                         }
 
     /**
@@ -106,13 +101,4 @@ public class ClusterAdmin {
             Globals.setAvailableBandwidth(Globals.getAvailableBandwidth() + bandwidth);
     }
 
-
-    public static void main(String[] args) throws InputOutOfAdminsStandartsException {
-        ClusterAdmin admin = new ClusterAdmin();
-
-        admin.createPlainVm(4, 12, Globals.OS.UBUNTU, 612);
-        admin.updateCpu(1, 10);
-        System.out.println(admin.clusterVms.get(1).getCpu());
-        System.out.println(Globals.getAvailableCpu());
-    }
 }

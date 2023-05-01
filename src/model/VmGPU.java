@@ -10,7 +10,7 @@ public class VmGPU extends PlainVM {
     public int getGpu() {return gpu;}
 
     public VmGPU(int cpu, int ram, OS os, int drive, int gpu) throws InputOutOfAdminsStandartsException {
-        super(cpu, ram, null, drive);
+        super(cpu, ram, os, drive);
 
         Globals.isGpuValid(gpu);
         this.gpu = gpu;
