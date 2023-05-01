@@ -61,9 +61,10 @@ public class ClusterAdmin {
     //TODO  NEED TO VERIFY THE FUNCTIONALITY OF THE FOLLOWING METHODS!
                         private void updateCpu(int vmId, int newCpu) throws InputOutOfAdminsStandartsException {
                             VirtualMachine vm = clusterVms.get(vmId);
+                            
+                            double ratio = (double)newCpu / (double)vm.getCpu();
+                            updateClustersReserve((int) ((-newCpu+vm.getCpu())/ratio), 0, 0, 0, 0);
                             vm.updateCpu(newCpu);
-                            double ratio = vm.getCpu()/newCpu;
-                            updateClustersReserve((int) ((vm.getCpu()-newCpu)/ratio), 0, 0, 0, 0);
                         }
 
                         private void updateRam(int vmId, int newRam) throws InputOutOfAdminsStandartsException {
@@ -105,5 +106,13 @@ public class ClusterAdmin {
             Globals.setAvailableBandwidth(Globals.getAvailableBandwidth() + bandwidth);
     }
 
-            
+
+    public static void main(String[] args) throws InputOutOfAdminsStandartsException {
+        ClusterAdmin admin = new ClusterAdmin();
+
+        admin.createPlainVm(4, 12, Globals.OS.UBUNTU, 612);
+        admin.updateCpu(1, 10);
+        System.out.println(admin.clusterVms.get(1).getCpu());
+        System.out.println(Globals.getAvailableCpu());
+    }
 }

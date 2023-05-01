@@ -11,13 +11,26 @@ import lib.utils.Globals.OS;
  */
 public abstract class VirtualMachine {
     
-    protected int cpu;
-    protected int ram;
-    protected OS os;
+    private int cpu;
+    private int ram;
+    private OS os;
 
     public int getCpu() {return cpu;}
     public int getRam() {return ram;}
     public OS getOs() {return os;}
+
+    public void setCpu(int cpu) throws InputOutOfAdminsStandartsException {
+        Globals.isCpuValid(cpu);
+        this.cpu = cpu;
+    }
+    public void setRam(int ram) throws InputOutOfAdminsStandartsException {
+        Globals.isRamValid(ram);
+        this.ram = ram;
+    }
+    public void setOs(OS os) throws InputOutOfAdminsStandartsException {
+        Globals.isOsValid(os);
+        this.os = os;
+    }
 
     /**
      * A method that updates the number of CPU cores used by the VM.
