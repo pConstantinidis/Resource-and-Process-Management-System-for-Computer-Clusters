@@ -40,12 +40,12 @@ public final class Globals {
      * Methods that implement validation checks ocording to potential logical errors and model standarts
      */
         public final static void isCpuValid(int newNumOfCores) throws InputOutOfAdminsStandartsException{
-            if (newNumOfCores < availableCpu || newNumOfCores < 1)
+            if (newNumOfCores > availableCpu || newNumOfCores < 1)
                 throw new InputOutOfAdminsStandartsException();
         }
 
         public final static void isRamValid(int newRam) throws InputOutOfAdminsStandartsException{
-            if (newRam < availableRam || newRam < 1)
+            if (newRam > availableRam || newRam < 1)
                 throw new InputOutOfAdminsStandartsException();
         }
 
@@ -58,17 +58,17 @@ public final class Globals {
         }
 
         public final static void isDriveValid(int newDrive) throws InputOutOfAdminsStandartsException {
-            if (newDrive < availableDrive || newDrive < 1)
+            if (newDrive > availableDrive || newDrive < 1)
                 throw new InputOutOfAdminsStandartsException();
         }
 
         public final static void isGpuValid(int newGpu) throws InputOutOfAdminsStandartsException {
-            if (newGpu < availableGpu || newGpu < 1)
+            if (newGpu > availableGpu || newGpu < 1)
             throw new InputOutOfAdminsStandartsException();
         }
 
         public final static void isBandwidthValid(int newBandwidth) throws InputOutOfAdminsStandartsException {
-            if (newBandwidth < availableBandwidth || newBandwidth < 4)
+            if (newBandwidth > availableBandwidth || newBandwidth < 4)
                 throw new InputOutOfAdminsStandartsException();
         }
 
