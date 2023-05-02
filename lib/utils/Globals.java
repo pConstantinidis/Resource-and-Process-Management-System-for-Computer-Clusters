@@ -10,6 +10,9 @@ import src.model.ClusterAdmin;
  */
 public final class Globals {
     
+    /**
+     * We declare the types of Operating Systems that are aplicable to the VMs.
+     */
     public static enum OS {
         WINDOWS,
         UBUNTU,
@@ -47,14 +50,6 @@ public final class Globals {
         public final static void isRamValid(int newRam) throws InputOutOfAdminsStandartsException{
             if (newRam > availableRam || newRam < 1)
                 throw new InputOutOfAdminsStandartsException();
-        }
-
-        public final static void isOsValid(OS newOs) throws InputOutOfAdminsStandartsException {
-            for (OS os:OS.values()) {
-                if (newOs.equals(os))
-                    return;
-            }
-            throw new InputOutOfAdminsStandartsException();
         }
 
         public final static void isDriveValid(int newDrive) throws InputOutOfAdminsStandartsException {

@@ -19,21 +19,8 @@ public abstract class VirtualMachine {
     public int getRam() {return ram;}
     public OS getOs() {return os;}
 
-    public void setCpu(int cpu) throws InputOutOfAdminsStandartsException {
-        Globals.isCpuValid(cpu);
-        this.cpu = cpu;
-    }
-    public void setRam(int ram) throws InputOutOfAdminsStandartsException {
-        Globals.isRamValid(ram);
-        this.ram = ram;
-    }
-    public void setOs(OS os) throws InputOutOfAdminsStandartsException {
-        Globals.isOsValid(os);
-        this.os = os;
-    }
-
     /**
-     * A method that updates the number of CPU cores used by the VM.
+     * A method that updates/initializes the number of CPU cores used by the VM.
      * 
      * @param newNumOfCores The number of the total cores after the update.
      * @return The number of cores that the VM had before the update.
@@ -48,7 +35,7 @@ public abstract class VirtualMachine {
     }
 
     /**
-     * A method that updates the RAM used by a VM.
+     * A method that updates/initializes the RAM used by a VM.
      * 
      * @param newRam The number of the total RAM (in GBs) after the update
      * @return The RAM of the VM before the update.
@@ -63,15 +50,16 @@ public abstract class VirtualMachine {
     }
 
     /**
-     * A method that updates the OS of the VM.
+     * A method that updates/initializes the OS of the VM.
+     * 
+     * @apiNote In the case that an invalid type of OS manages to be set, the program will
+     * throw an error at compile time, for the reason why the newOs won't be of type OS.
      * 
      * @param newOs The OS to be set.
      * @return The OS used before the update.
      * @throws InputOutOfAdminsStandartsException
      */
-    private String updateOs(OS newOs) throws InputOutOfAdminsStandartsException {
-            Globals.isOsValid(newOs);
-
+    protected String updateOs(OS newOs) throws InputOutOfAdminsStandartsException {
             OS oldOs = os;
             os = newOs;
             return oldOs.toString();

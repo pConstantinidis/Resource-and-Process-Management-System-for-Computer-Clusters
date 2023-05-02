@@ -12,9 +12,9 @@ public class PlainVM extends VirtualMachine {
     public PlainVM(int cpu, int ram, OS os, int drive) throws InputOutOfAdminsStandartsException {
         Globals.isDriveValid(drive);
       
-        setCpu(cpu);
-        setRam(ram);
-        setOs(os);
+        updateCpu(cpu);
+        updateRam(ram);
+        updateOs(os);
         this.drive = drive;
     }
 
