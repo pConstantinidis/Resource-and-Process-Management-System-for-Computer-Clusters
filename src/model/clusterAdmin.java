@@ -2,6 +2,7 @@ package src.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 import lib.utils.Globals;
 import lib.utils.InputOutOfAdminsStandartsException;
@@ -30,28 +31,28 @@ public class ClusterAdmin {
     public static int getNetworkBandwidth() {return NETWORK_BANDWIDTH;}
     public int getNumOfVms() {return this.numOfVms;}
     
-    private void createPlainVm(int cpu, int ram, OS os, int drive) throws InputOutOfAdminsStandartsException {
+    public void createPlainVm(int cpu, int ram, OS os, int drive) throws InputOutOfAdminsStandartsException {
         
         clusterVms.put(numOfVms+1, new PlainVM(cpu, ram, os, drive));
         updateClustersReserve(-cpu, -ram, -drive, 0, 0);
         numOfVms++;
     }
 
-    private void createVmGPU(int cpu, int ram, OS os, int drive, int gpu) throws InputOutOfAdminsStandartsException {
+    public void createVmGPU(int cpu, int ram, OS os, int drive, int gpu) throws InputOutOfAdminsStandartsException {
         
         clusterVms.put(numOfVms+1, new VmGPU(cpu, ram, os, drive, gpu));
         updateClustersReserve(-cpu, -ram, -drive, -gpu, 0);
         numOfVms++;
     }
 
-    private void createVmNetworked(int cpu, int ram, OS os, int drive, int bandwidth) throws InputOutOfAdminsStandartsException {
+    public void createVmNetworked(int cpu, int ram, OS os, int drive, int bandwidth) throws InputOutOfAdminsStandartsException {
         
         clusterVms.put(numOfVms+1, new VmNetworked(cpu, ram, os, drive, bandwidth));
         updateClustersReserve(-cpu, -ram, -drive, 0, -bandwidth);
         numOfVms++;
     }
 
-    private void createVmNetworkedGpu(int cpu, int ram, OS os, int drive, int gpu, int bandwidth) throws InputOutOfAdminsStandartsException {
+    public void createVmNetworkedGpu(int cpu, int ram, OS os, int drive, int gpu, int bandwidth) throws InputOutOfAdminsStandartsException {
 
         clusterVms.put(numOfVms+1, new VmNetworkedGPU(cpu, ram, os, drive, gpu, bandwidth));
         updateClustersReserve(-cpu, -ram, -drive, -gpu, -bandwidth);
@@ -120,14 +121,14 @@ public class ClusterAdmin {
      * @param vmId For input 0 the method will return a report for all the VMs
      * @return The report is returned in the following formmat: // TODO
      */
-    private StringBuilder report(int vmId) {
-        if (vmId == 0) {
+//    private StringBuilder report(int vmId) {
+//        if (vmId == 0) {
 
-        }
-        else if (clusterVms.containsKey(vmId)) {
+//        }
+//        else if (clusterVms.containsKey(vmId)) {
 
-        }
-    }
+//        }
+//    }
 
     /**
      * A method that updates the clusters stock of materials.
@@ -146,6 +147,11 @@ public class ClusterAdmin {
         ClusterAdmin admin = new ClusterAdmin();
 
         admin.createVmNetworkedGpu(10, 32, OS.FEDORA, 512, 2, 10);
+
+        Scanner sc = new Scanner(System.in);
+        System.out.print("::");
+        System.out.println(sc.hasNextShort());
+        sc.close();
 
     }
 
