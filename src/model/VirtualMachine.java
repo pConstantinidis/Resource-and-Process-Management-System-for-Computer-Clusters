@@ -62,6 +62,8 @@ public abstract class VirtualMachine {
     protected String updateOs(OS newOs) throws InputOutOfAdminsStandartsException {
             OS oldOs = os;
             os = newOs;
-            return oldOs.toString();
+            if (oldOs != null)
+                return oldOs.toString();
+            return null;
     }
 }
