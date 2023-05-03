@@ -95,6 +95,41 @@ public class ClusterAdmin {
     }
 
     /**
+     * A method that deletes a VM from the cluster and updates the reserve accordingly
+     * 
+     * @param vmId The ID of the VM to be removed.
+     */
+    private void deleteVm(int vmId) {                   //TODO      NEED TO IMPLEMENT TRY-CATCH AT HIGHER LEVEL
+        if (!clusterVms.containsKey(vmId)) {
+            throw new IllegalArgumentException("This ID does not exist");
+        }
+        PlainVM vm = (PlainVM) clusterVms.remove(vmId);
+
+        if (vm instanceof NetworkAccessible) {
+            updateClustersReserve( 0, 0, 0, 0, ((VmNetworkedGPU) vm).getBandwidth());
+        }
+        if (vm instanceof VmGPU) {
+            updateClustersReserve( 0, 0, 0, ((VmGPU) vm).getGpu() , 0);
+        }
+        updateClustersReserve(vm.getCpu(), vm.getRam(), vm.getDrive(), 0, 0);
+    }
+
+    /**
+     * A method that reports the available sources of a single VM if an ID is given or of all the clusters VMs if the ID is zero.
+     * 
+     * @param vmId For input 0 the method will return a report for all the VMs
+     * @return The report is returned in the following formmat: // TODO
+     */
+    private StringBuilder report(int vmId) {
+        if (vmId == 0) {
+
+        }
+        else if (clusterVms.containsKey(vmId)) {
+
+        }
+    }
+
+    /**
      * A method that updates the clusters stock of materials.
      */
     private static void updateClustersReserve(int cpu, int ram, int drive, int gpu, int bandwidth) {
@@ -105,11 +140,13 @@ public class ClusterAdmin {
             Globals.setAvailableBandwidth(Globals.getAvailableBandwidth() + bandwidth);
     }
 
+
+
     public static void main(String[] args) throws InputOutOfAdminsStandartsException {
         ClusterAdmin admin = new ClusterAdmin();
 
-        admin.createVmNetworked(4, 8, OS.WINDOWS, 32, 15);
-        admin.updateOS(1, OS.UBUNTU);
-        System.out.println(admin.clusterVms.get(1).getOs().toString());
+        admin.createVmNetworkedGpu(10, 32, OS.FEDORA, 512, 2, 10);
+
     }
+
 }
