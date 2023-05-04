@@ -149,8 +149,8 @@ public final class CommandLineInterface {
         short vmChoice;
         short [] basicData = new short[3];    // [CPU, RAM, SSD]
         OS os;
-        System.out.print(vmPresentation+"\n"+underLine+"\n VM Type: ");
-        vmChoice = shortReader((short) 0, (short) 4, null, (short) 3, null);
+        System.out.print(vmPresentation+"\n"+underLine+"\n ~VM Type: ");
+        vmChoice = shortReader((short) 1, (short) 4, null, (short) 3, null);
         reserveReport();
         basicData = acquirBasicData();
         os = acquirOS(null);
@@ -160,16 +160,19 @@ public final class CommandLineInterface {
                 case 1:
                     admin.createPlainVm(basicData[0], basicData[1], os, basicData[2]);
                     showSuccessMsg("Plain VM creation");
+                    break;
 
                 case 2:
                     short gpu = acquirGPU();    // This way the aritmetical submition won't split
                     admin.createVmGPU(basicData[0], basicData[1], os, basicData[2], gpu);
                     showSuccessMsg("GPU accessible VM creation");
+                    break;
 
                 case 3:
                     short bandwidth = acquirBandwidth();
                     admin.createVmNetworked(basicData[0], basicData[1], os, basicData[2], bandwidth);
                     showSuccessMsg("Network accessible VM creation");
+                    break;
 
                 case 4:
                     short gpu1 = acquirGPU(), bandwidth1 = acquirBandwidth();
@@ -216,6 +219,7 @@ public final class CommandLineInterface {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                break;
 
             case "VmNetworked":
                 System.out.print("\n\t\t~Bandwidth : ");
@@ -226,7 +230,8 @@ public final class CommandLineInterface {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-            
+                break;
+
             case "VmNetworkedGPU":
                 System.out.print("\n\t\t~GPU : ");
                 newGpu = shortReader((short) 1, (short) Globals.getAvailableGpu(), "Input out of valid range : 1 - "+Globals.getAvailableGpu(), (short) 3, ignoreInputSequence);
@@ -269,9 +274,9 @@ public final class CommandLineInterface {
             switch (choice) {
                 case 0: break outer;
 
-                case 1: cli.createVm();
+                case 1: cli.createVm(); break;
 
-                case 2: cli.updateVm();
+                case 2: cli.updateVm(); break;
 
                 case 3:
                 
