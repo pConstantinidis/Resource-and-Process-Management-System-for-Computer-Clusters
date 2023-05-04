@@ -14,7 +14,7 @@ public final class CommandLineInterface {
     private final static String doubleLine = "====================================================================================";
     private final static String underLine = "____________________________________________________________________________________";
     private final static String intro = doubleLine+"\n\tThis is a Resource and Process Managment System for a Computer Cluster"+ "\n"+underLine+
-    "\n\n\tA software model for the OOP course fully developed in Java.\n\n\tAuthor: pConstantinidis\n\tDate: 5/2023\n"+doubleLine;
+    "\n\n\tA software for the OOP course fully developed in Java.\n\n\tAuthor: pConstantinidis\n\tDate: 5/2023\n"+doubleLine;
     private final static String vmPresentation = "\n"+doubleLine+"\nThere are 4 VM types you can choose from...\n\t[1] Plain VM (CPU, RAM, SSD, selected OS)"+
     "\n\t[2] GPU accessible VM (plain + GPU)\n\t[3] Network accessible VM (plain + given bandwidth)\n\t[4] VM with GPU and network access";
     private final static String osPresentation = "\n\n\tThere are 3 Operating Systems available.\n\n "+
