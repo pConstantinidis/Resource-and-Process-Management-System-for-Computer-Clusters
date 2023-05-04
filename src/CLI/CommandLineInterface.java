@@ -126,16 +126,21 @@ public final class CommandLineInterface {
                     isValid = false;
                     countInvalid++;
                 }
-                    else isValid = true;
+                else isValid = true;
                 if (!isValid && countInvalid >= msgFrequency) {
                     System.out.print("\n"+underLine+"\n\t"+errMsg+"\n"+underLine +"\n Try again: ");
+                    reader.nextLine();
                     countInvalid=0;
                 }
-                else if (!isValid) System.out.print("\n"+underLine+"\n"+ "Try again: ");
-
+                else if (!isValid) {
+                    System.out.print("\n"+underLine+"\n"+ "Try again: ");
+                    reader.nextLine();
+                }
             } catch (NumberFormatException e) {
                 System.out.print("\n"+underLine+"\n"+ "Try again: ");
+                reader.nextLine();
                 isValid = false;
+                countInvalid++;
             }
         } while(!isValid);
         return Short.parseShort(input);
