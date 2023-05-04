@@ -13,7 +13,7 @@ import lib.utils.Globals.OS;
  * 
  * @author pConstantinidis
  */
-public class ClusterAdmin {
+public final class ClusterAdmin {
     private final static int CPU_CORES = 128;          // Cores
     private final static int RAM = 256;                // Gb
     private final static int DRIVE = 2048;             // Gb
@@ -60,39 +60,47 @@ public class ClusterAdmin {
     }
 
     
-    private void updateCPU(int vmId, int newCpu) throws InputOutOfAdminsStandartsException {
+    public void updateCPU(int vmId, int newCpu) throws InputOutOfAdminsStandartsException {
         VirtualMachine vm = clusterVms.get(vmId);
                             
         updateClustersReserve(vm.getCpu()-newCpu, 0, 0, 0, 0);
         vm.updateCpu(newCpu);
     }
 
-    private void updateRAM(int vmId, int newRam) throws InputOutOfAdminsStandartsException {
+    public void updateRAM(int vmId, int newRam) throws InputOutOfAdminsStandartsException {
         VirtualMachine vm = clusterVms.get(vmId);
         updateClustersReserve(0, vm.getRam()-newRam, 0, 0, 0);
         vm.updateRam(newRam);
     }
 
-    private void updateDrive(int vmId, int newDrive) throws ClassCastException, InputOutOfAdminsStandartsException, NullPointerException {       //! Exceptions should be handled inside the View package
+    public void updateDrive(int vmId, int newDrive) throws ClassCastException, InputOutOfAdminsStandartsException, NullPointerException {       //! Exceptions should be handled inside the View package
         PlainVM vm = (PlainVM) clusterVms.get(vmId);
         updateClustersReserve(0, 0, vm.getDrive()-newDrive, 0, 0);
         vm.updateDrive(newDrive);
     }
 
-    private void updateGPU(int vmId, int newGpu) throws ClassCastException, InputOutOfAdminsStandartsException, NullPointerException {
+    public void updateGPU(int vmId, int newGpu) throws ClassCastException, InputOutOfAdminsStandartsException, NullPointerException {
         VmGPU vm = (VmGPU) clusterVms.get(vmId);
         updateClustersReserve(0, 0, 0, vm.getGpu()-newGpu, 0);
         vm.updateGpu(newGpu);
     }
 
-    private void updateBandwidth(int vmId, int newBandwidth) throws InputOutOfAdminsStandartsException, ClassCastException, NullPointerException {
+    public void updateBandwidth(int vmId, int newBandwidth) throws InputOutOfAdminsStandartsException, ClassCastException, NullPointerException {
         NetworkAccessible vm = (NetworkAccessible) clusterVms.get(vmId);
         updateClustersReserve(0, 0, 0, 0, vm.getBandwidth()-newBandwidth);
         vm.updateBandwidth(newBandwidth);
     }
 
-    private void updateOS(int vmId, OS newOs) throws InputOutOfAdminsStandartsException {
-        clusterVms.get(vmId).updateOs(newOs);
+    public void updateOS(int vmId, OS newOs) throws InputOutOfAdminsStandartsException {
+        if (newOs != null)
+            clusterVms.get(vmId).updateOs(newOs);
+    }
+
+    /**
+     * An accesor for the VMs class name.
+     */
+    public String getVmsClass(int vmId) {
+        return clusterVms.get(vmId).getClass().getSimpleName();
     }
 
     /**
@@ -145,7 +153,12 @@ public class ClusterAdmin {
 
     public static void main(String[] args) throws InputOutOfAdminsStandartsException {
         
-        System.out.println(OS.values());
+        ClusterAdmin admin = new ClusterAdmin();
+        admin.createVmGPU(10, 15, OS.FEDORA, 12, 1);
+        System.out.println(admin.getVmsClass(1));
+
+        admin.updateCPU(1, 0);
+        System.out.println(admin.clusterVms.get(1).getCpu());
 
     }
 
