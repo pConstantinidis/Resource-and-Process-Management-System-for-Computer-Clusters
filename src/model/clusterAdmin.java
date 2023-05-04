@@ -144,14 +144,8 @@ public class ClusterAdmin {
 
 
     public static void main(String[] args) throws InputOutOfAdminsStandartsException {
-        ClusterAdmin admin = new ClusterAdmin();
-
-        admin.createVmNetworkedGpu(10, 32, OS.FEDORA, 512, 2, 10);
-
-        Scanner sc = new Scanner(System.in);
-        System.out.print("::");
-        System.out.println(sc.hasNextShort());
-        sc.close();
+        
+        System.out.println(OS.values());
 
     }
 
