@@ -73,7 +73,7 @@ public final class ClusterAdmin {
         vm.updateRam(newRam);
     }
 
-    public void updateDrive(int vmId, int newDrive) throws ClassCastException, InputOutOfAdminsStandartsException, NullPointerException {       //! Exceptions should be handled inside the View package
+    public void updateDrive(int vmId, int newDrive) throws ClassCastException, InputOutOfAdminsStandartsException, NullPointerException {
         PlainVM vm = (PlainVM) clusterVms.get(vmId);
         updateClustersReserve(0, 0, vm.getDrive()-newDrive, 0, 0);
         vm.updateDrive(newDrive);
@@ -108,7 +108,7 @@ public final class ClusterAdmin {
      * 
      * @param vmId The ID of the VM to be removed.
      */
-    private void deleteVm(int vmId) {                   //TODO      NEED TO IMPLEMENT TRY-CATCH AT HIGHER LEVEL
+    public void deleteVm(int vmId) throws IllegalArgumentException {                   //TODO      NEED TO IMPLEMENT TRY-CATCH AT HIGHER LEVEL
         if (!clusterVms.containsKey(vmId)) {
             throw new IllegalArgumentException("This ID does not exist");
         }
