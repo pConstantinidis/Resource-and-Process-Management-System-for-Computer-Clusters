@@ -6,6 +6,13 @@ import lib.utils.InputOutOfAdminsStandartsException;
 import lib.utils.Globals.OS;
 import src.model.ClusterAdmin;
 
+/**
+ * TODO
+ * 
+ * @apiNote Keep in mind that this class takes measures against invalid inputs and
+ * logical errors althought in the view of a fatal error the program will return (void) and not terminate.
+ * @author pConstantinidis
+ */
 public final class CommandLineInterface {
     
     private final static String ignoreInputSequence = "-";
@@ -186,22 +193,19 @@ public final class CommandLineInterface {
             }
         } catch(InputOutOfAdminsStandartsException e) {
             System.err.println("\n\n\t*FATAL ERROR*");
-            e.printStackTrace();
-            System.exit(1);
+            return;
         }
     }
 
     /**
-     * TODO
+     * A method that updates the elements of a VM.
      */
     private void updateVm() {
         if (admin.getNumOfVms() == 0) {
             System.out.println("\n\t\tCurrently there are no VMs in the cluster!");
             return;
         }
-        short vmId;
-        System.out.print("\n"+doubleLine+"\n ~The ID of the VM to be updated is : ");
-        vmId = shortReader((short) 1, (short) admin.getNumOfVms(), "There is no such ID", (short)1, null);
+        int vmId = readID("updated");
         short newCpu, newRam, newDrive, newGpu, newBandwidth;
         OS newOs;
 
@@ -221,8 +225,7 @@ public final class CommandLineInterface {
                     admin.updateGPU(vmId, newGpu);
                 } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
                     System.err.println("\n\n\t*FATAL ERROR*");
-                    e.printStackTrace();
-                    System.exit(1);
+                    return;
                 }
                 break;
 
@@ -233,8 +236,7 @@ public final class CommandLineInterface {
                     admin.updateBandwidth(vmId, newBandwidth);
                 } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
                     System.err.println("\n\n\t*FATAL ERROR*");
-                    e.printStackTrace();
-                    System.exit(1);
+                    return;
                 }
                 break;
 
@@ -250,8 +252,7 @@ public final class CommandLineInterface {
                     admin.updateGPU(vmId, newGpu);
                 } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
                     System.err.println("\n\n\t*FATAL ERROR*");
-                    e.printStackTrace();
-                    System.exit(1);
+                    return;
                 }
         }
         System.out.print("\t\t~OS : ");
@@ -264,14 +265,34 @@ public final class CommandLineInterface {
             admin.updateOS(vmId, newOs);
         } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
             System.err.println("\n\n\t*FATAL ERROR*");
-                    e.printStackTrace();
-                    System.exit(1);
+            return;
         }
-        
-
-        
+    }
+    /**
+     * TODO
+     * @param operation
+     */
+    private int readID(String operation) {
+        System.out.print("\n"+doubleLine+"\n ~The ID of the VM to be "+operation+" is : ");
+         return shortReader((short) 1, (short) admin.getNumOfVms(), "There is no such ID", (short)1, null);
     }
     
+    /**
+     * TODO
+     */
+    private void deleteVm() {
+        if (admin.getNumOfVms() == 0) {
+            System.out.println("\n\t\tCurrently there are no VMs in the cluster!");
+            return;
+        }
+        int vmId = readID("deleted");
+        
+        try {admin.deleteVm(vmId); } catch(IllegalArgumentException e) {
+            System.err.println("\n\n\t*FATAL ERROR*");
+            return;
+        }
+    }
+
     public static void main(String[] args) {
         CommandLineInterface cli = new CommandLineInterface();
         System.out.println(intro);
@@ -282,13 +303,17 @@ public final class CommandLineInterface {
             switch (choice) {
                 case 0: break outer;
 
-                case 1: cli.createVm(); break;
+                case 1: cli.createVm();
+                    break;
 
-                case 2: cli.updateVm(); break;
+                case 2: cli.updateVm();
+                    break;
 
-                case 3:
-                
+                case 3: cli.deleteVm();
+                    break;
+            
                 case 4:
+                    break;
             }
         }
 
@@ -299,5 +324,6 @@ public final class CommandLineInterface {
 
         CommandLineInterface.reader.close();
     }
+
 
 }
