@@ -185,8 +185,7 @@ public final class CommandLineInterface {
                     showSuccessMsg("VM with GPU and network access creation");
             }
         } catch(InputOutOfAdminsStandartsException e) {
-            System.err.println("\n\n\t*FATAL ERROR* deu to\n"+ e.getClass());
-            if (e.getMessage() != null) System.out.print( " : "+e.getMessage() + "\n");
+            System.err.println("\n\n\t*FATAL ERROR*");
             e.printStackTrace();
             System.exit(1);
         }
@@ -206,50 +205,53 @@ public final class CommandLineInterface {
         short newCpu, newRam, newDrive, newGpu, newBandwidth;
         OS newOs;
 
-        System.out.println("\n"+underLine+"\n\n\tIn order to update the VM we will follow the convention : to not change an attribute type '-' (dash)");
-        System.out.print("\t\t~CPU cores : ");
+        System.out.println("\n"+underLine+"\n\nIn order to update the VM we will follow the convention : to not change an attribute type '-' (dash)");
+        System.out.print("\n\t~CPU cores : ");
         newCpu = shortReader((short) 1, (short) Globals.getAvailableCpu(), "Input out of valid range : 1 - "+Globals.getAvailableCpu(), (short) 3, ignoreInputSequence);
-        System.out.print("\n\t\t~RAM : ");
+        System.out.print("\n\t~RAM : ");
         newRam = shortReader((short) 1, (short) Globals.getAvailableRam(), "Input out of valid range : 1 - "+Globals.getAvailableRam(), (short) 3, ignoreInputSequence);
-        System.out.print("\n\t\t~SSD : ");
+        System.out.print("\n\t~SSD : ");
         newDrive = shortReader((short) 1, (short) Globals.getAvailableDrive(), "Input out of valid range : 1 - "+Globals.getAvailableDrive(), (short) 3, ignoreInputSequence);
 
         switch (admin.getVmsClass(vmId)) {
             case "VmGPU":
-                System.out.print("\n\t\t~GPU : ");
+                System.out.print("\n\t~GPU : ");
                 newGpu = shortReader((short) 1, (short) Globals.getAvailableGpu(), "Input out of valid range : 1 - "+Globals.getAvailableGpu(), (short) 3, ignoreInputSequence);
                 try {
                     admin.updateGPU(vmId, newGpu);
                 } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
-                    // TODO Auto-generated catch block
+                    System.err.println("\n\n\t*FATAL ERROR*");
                     e.printStackTrace();
+                    System.exit(1);
                 }
                 break;
 
             case "VmNetworked":
-                System.out.print("\n\t\t~Bandwidth : ");
+                System.out.print("\n\t~Bandwidth : ");
                 newBandwidth = shortReader((short) 4, (short) Globals.getAvailableBandwidth(), "Input out of valid range : 4 - "+Globals.getAvailableBandwidth(), (short) 3, ignoreInputSequence);
                 try {
                     admin.updateBandwidth(vmId, newBandwidth);
                 } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
-                    // TODO Auto-generated catch block
+                    System.err.println("\n\n\t*FATAL ERROR*");
                     e.printStackTrace();
+                    System.exit(1);
                 }
                 break;
 
             case "VmNetworkedGPU":
-                System.out.print("\n\t\t~GPU : ");
+                System.out.print("\n\t~GPU : ");
                 newGpu = shortReader((short) 1, (short) Globals.getAvailableGpu(), "Input out of valid range : 1 - "+Globals.getAvailableGpu(), (short) 3, ignoreInputSequence);
                 
-                System.out.print("\n\t\t~Bandwidth : ");
+                System.out.print("\n\t~Bandwidth : ");
                 newBandwidth = shortReader((short) 4, (short) Globals.getAvailableBandwidth(), "Input out of valid range : 4 - "+Globals.getAvailableBandwidth(), (short) 3, ignoreInputSequence);
                 
                 try {
                     admin.updateBandwidth(vmId, newBandwidth);
                     admin.updateGPU(vmId, newGpu);
                 } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
-                    // TODO Auto-generated catch block
+                    System.err.println("\n\n\t*FATAL ERROR*");
                     e.printStackTrace();
+                    System.exit(1);
                 }
         }
         System.out.print("\t\t~OS : ");
@@ -261,8 +263,9 @@ public final class CommandLineInterface {
             if (newDrive != 0) admin.updateDrive(vmId, newDrive);
             admin.updateOS(vmId, newOs);
         } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.err.println("\n\n\t*FATAL ERROR*");
+                    e.printStackTrace();
+                    System.exit(1);
         }
         
 
@@ -294,7 +297,7 @@ public final class CommandLineInterface {
 
 
 
-        cli.reader.close();
+        CommandLineInterface.reader.close();
     }
 
 }
