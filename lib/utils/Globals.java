@@ -1,6 +1,12 @@
 package lib.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import src.model.ClusterAdmin;
+import src.model.PlainVM;
+import src.model.VmGPU;
 
 /**
  * A class that is to be used widely around the project
@@ -19,6 +25,8 @@ public final class Globals {
         FEDORA
     }
 
+    private static final Object PlainVM = null;
+
     private static int availableCpu = ClusterAdmin.getCpuCores();
     private static int availableRam = ClusterAdmin.getRam();
     private static int availableDrive = ClusterAdmin.getDrive();
@@ -26,18 +34,24 @@ public final class Globals {
     private static int availableBandwidth = ClusterAdmin.getNetworkBandwidth();
 
     // Accesors
-    public static int getAvailableCpu() {return availableCpu;}
-    public static int getAvailableRam() {return availableRam;}
-    public static int getAvailableDrive() {return availableDrive;}
-    public static int getAvailableGpu() {return availableGpu;}
-    public static int getAvailableBandwidth() {return availableBandwidth;}
+        public static int getAvailableCpu() {return availableCpu;}
+        public static int getAvailableRam() {return availableRam;}
+        public static int getAvailableDrive() {return availableDrive;}
+        public static int getAvailableGpu() {return availableGpu;}
+        public static int getAvailableBandwidth() {return availableBandwidth;}
+
+        public static int getInUseCpu() {return ClusterAdmin.getCpuCores()-availableCpu;}
+        public static int getInUseRam() {return ClusterAdmin.getRam()-availableRam;}
+        public static int getInUseDrive() {return ClusterAdmin.getDrive()-availableDrive;}
+        public static int getInUseGpu() {return ClusterAdmin.getGpu()-availableGpu;}
+        public static int getInUseBandwidth() {return ClusterAdmin.getNetworkBandwidth()-availableBandwidth;}
 
     // Mutators
-    public static void setAvailableCpu(int availableCpu) {Globals.availableCpu = availableCpu;}
-    public static void setAvailableRam(int availableRam) {Globals.availableRam = availableRam;}
-    public static void setAvailableDrive(int availableDrive) {Globals.availableDrive = availableDrive;}
-    public static void setAvailableGpu(int availableGpu) {Globals.availableGpu = availableGpu;}
-    public static void setAvailableBandwidth(int availableBandwidth) {Globals.availableBandwidth = availableBandwidth;}
+        public static void setAvailableCpu(int availableCpu) {Globals.availableCpu = availableCpu;}
+        public static void setAvailableRam(int availableRam) {Globals.availableRam = availableRam;}
+        public static void setAvailableDrive(int availableDrive) {Globals.availableDrive = availableDrive;}
+        public static void setAvailableGpu(int availableGpu) {Globals.availableGpu = availableGpu;}
+        public static void setAvailableBandwidth(int availableBandwidth) {Globals.availableBandwidth = availableBandwidth;}
     
     /*
      * Methods that implement validation checks ocording to potential logical errors and model standarts
@@ -84,5 +98,18 @@ public final class Globals {
                 default : return null;
             }
         }
+
+
+
+
+        public static void main(String[] args) throws InputOutOfAdminsStandartsException {
+            ClusterAdmin admin = new ClusterAdmin();
+            admin.createVmGPU(1, 4, OS.UBUNTU, 4, 5);
+            if (!admin.getVmsClass(1).equals("PlainVM"))
+                System.out.println("BLABLABLA");
+      
+
+        }
+
 
 }
