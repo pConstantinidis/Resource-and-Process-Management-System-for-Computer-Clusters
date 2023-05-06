@@ -98,6 +98,7 @@ public final class ClusterAdmin {
 
     /**
      * An accesor for the VMs class name.
+     * @return The "Simple name" of the VMs class.
      */
     public String getVmsClass(int vmId) {
         return clusterVms.get(vmId).getClass().getSimpleName();
@@ -115,7 +116,7 @@ public final class ClusterAdmin {
         PlainVM vm = (PlainVM) clusterVms.remove(vmId);
 
         if (vm instanceof NetworkAccessible) {
-            updateClustersReserve( 0, 0, 0, 0, ((VmNetworkedGPU) vm).getBandwidth());
+            updateClustersReserve( 0, 0, 0, 0, ((NetworkAccessible) vm).getBandwidth());
         }
         if (vm instanceof VmGPU) {
             updateClustersReserve( 0, 0, 0, ((VmGPU) vm).getGpu() , 0);
@@ -129,14 +130,14 @@ public final class ClusterAdmin {
      * @param vmId For input 0 the method will return a report for all the VMs
      * @return The report is returned in the following formmat: // TODO
      */
-//    private StringBuilder report(int vmId) {
-//        if (vmId == 0) {
+    private StringBuilder report(int vmId) {
+        if (vmId == 0) {
 
-//        }
-//        else if (clusterVms.containsKey(vmId)) {
+        }
+        else if (clusterVms.containsKey(vmId)) {
 
-//        }
-//    }
+        }
+    }
 
     /**
      * A method that updates the clusters stock of materials.
@@ -150,16 +151,5 @@ public final class ClusterAdmin {
     }
 
 
-
-    public static void main(String[] args) throws InputOutOfAdminsStandartsException {
-        
-        ClusterAdmin admin = new ClusterAdmin();
-        admin.createVmGPU(10, 15, OS.FEDORA, 12, 1);
-        System.out.println(admin.getVmsClass(1));
-
-        admin.updateCPU(1, 0);
-        System.out.println(admin.clusterVms.get(1).getCpu());
-
-    }
 
 }
