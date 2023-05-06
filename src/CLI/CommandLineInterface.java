@@ -21,11 +21,11 @@ public final class CommandLineInterface {
     private final static String doubleLine = "====================================================================================";
     private final static String underLine = "____________________________________________________________________________________";
     private final static String intro = doubleLine+"\n\tThis is a Resource and Process Managment System for a Computer Cluster"+ "\n"+underLine+
-    "\n\n\tA software developed for the OOP course fully developed in Java.\n\n\tAuthor: pConstantinidis\n\tDate: 5/2023\n"+doubleLine;
+    "\n\n\tA software developed for the OOP course fully developed in Java.\n\n\tAuthor: pConstantinidis\n\tDate: 5/2023\n";
     private final static String vmPresentation = "\n"+doubleLine+"\nThere are 4 VM types you can choose from...\n\t[1] Plain VM (CPU, RAM, SSD, selected OS)"+
     "\n\t[2] GPU accessible VM (plain + GPU)\n\t[3] Network accessible VM (plain + given bandwidth)\n\t[4] VM with GPU and network access";
-    private final static String osPresentation = "\n\n\tThere are 3 Operating Systems available.\n\n "+
-    OS.WINDOWS.toString()+"\n "+OS.UBUNTU.toString()+"\n "+OS.FEDORA +"\n\n ~Choose one : ";
+    private final static String osPresentation = "\n\n\tThere are 3 Operating Systems available.\n\n\t\t"+
+    OS.WINDOWS.toString()+"\n\t\t"+OS.UBUNTU.toString()+"\n\t\t"+OS.FEDORA +"\n\n ~Choose one : ";
     
     /**
      * A method that displays to the user the curent state of the clusters reserve
@@ -44,7 +44,7 @@ public final class CommandLineInterface {
      * @param msg The messages topic.
      */
     private final static void showSuccessMsg(String msg) {
-        System.out.println("\n"+underLine+"\n\t\t"+msg+ " completed successfuly!\n" +doubleLine);
+        System.out.println("\n"+underLine+"\n\t"+msg+ " completed successfuly!");
     }
 
     /**
@@ -53,7 +53,7 @@ public final class CommandLineInterface {
      * @return The number (short) correspondng to the choice.
      */
     private short showMenu() {
-        System.out.print("\n"+"\t(0) Done with VMs technical specifications\n\t(1) Create a VM\n\t(2) Update an existing VM\n\t(3) Delete a VM\n\t(4) Report\n"+underLine+
+        System.out.print("\n"+doubleLine+"\n\t(0) Done with VMs technical specifications\n\t(1) Create a VM\n\t(2) Update an existing VM\n\t(3) Delete a VM\n\t(4) Report\n"+underLine+
         "\n Choose one of the above: ");
 
         return shortReader((short) 0, (short) 5, null,  (short)0, null);
@@ -198,6 +198,26 @@ public final class CommandLineInterface {
     }
 
     /**
+     * @param msg The operation to be verified.
+     * @return {@code true} if the answer was positive {@code false} otherwise.
+     */
+    private boolean verify(String msg) {
+        char input;
+        System.out.print("\n\n\tAre you sure that you want to "+ msg +" [Y/N]?  ~");
+        do {
+        input = Character.toLowerCase(reader.next().charAt(0));
+        if (input != 'y' && input != 'n') {
+            reader.nextLine();
+            System.out.print("\n\tTry again [Y/N]  ~");
+        }
+        } while (input != 'y' && input != 'n');
+
+        if (input == 'n') return false;
+        else if (input == 'y') return true;
+        else return false;
+    }
+
+    /**
      * A method that updates the elements of a VM.
      */
     private void updateVm() {
@@ -207,6 +227,7 @@ public final class CommandLineInterface {
         }
         int vmId = readID("updated");
         short newCpu, newRam, newDrive, newGpu, newBandwidth;
+        boolean hasBeenUpdated=false;
         OS newOs;
 
         System.out.println("\n"+underLine+"\n\nIn order to update the VM we will follow the convention : to not change an attribute type '-' (dash)");
@@ -221,24 +242,30 @@ public final class CommandLineInterface {
             case "VmGPU":
                 System.out.print("\n\t~GPU : ");
                 newGpu = shortReader((short) 1, (short) Globals.getAvailableGpu(), "Input out of valid range : 1 - "+Globals.getAvailableGpu(), (short) 3, ignoreInputSequence);
-                try {
-                    admin.updateGPU(vmId, newGpu);
-                } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
-                    System.err.println("\n\n\t*FATAL ERROR*");
-                    return;
+                if (newGpu!=0 && verify("update the VM with ID : "+ vmId)) {
+                    try {
+                        admin.updateGPU(vmId, newGpu);
+                        hasBeenUpdated = true;
+                    } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
+                        System.err.println("\n\n\t*FATAL ERROR*");
+                        return;
+                    }
+                    break;
                 }
-                break;
 
             case "VmNetworked":
                 System.out.print("\n\t~Bandwidth : ");
                 newBandwidth = shortReader((short) 4, (short) Globals.getAvailableBandwidth(), "Input out of valid range : 4 - "+Globals.getAvailableBandwidth(), (short) 3, ignoreInputSequence);
-                try {
-                    admin.updateBandwidth(vmId, newBandwidth);
-                } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
-                    System.err.println("\n\n\t*FATAL ERROR*");
-                    return;
+                if (newBandwidth!=0 && verify("update the VM with ID : "+ vmId)) {
+                    try {
+                        admin.updateBandwidth(vmId, newBandwidth);
+                        hasBeenUpdated = true;
+                    } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
+                        System.err.println("\n\n\t*FATAL ERROR*");
+                        return;
+                    }
+                    break;
                 }
-                break;
 
             case "VmNetworkedGPU":
                 System.out.print("\n\t~GPU : ");
@@ -246,28 +273,34 @@ public final class CommandLineInterface {
                 
                 System.out.print("\n\t~Bandwidth : ");
                 newBandwidth = shortReader((short) 4, (short) Globals.getAvailableBandwidth(), "Input out of valid range : 4 - "+Globals.getAvailableBandwidth(), (short) 3, ignoreInputSequence);
-                
-                try {
-                    admin.updateBandwidth(vmId, newBandwidth);
-                    admin.updateGPU(vmId, newGpu);
-                } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
-                    System.err.println("\n\n\t*FATAL ERROR*");
-                    return;
+                if ((newGpu!=0 || newBandwidth!=0) && verify("update the VM with ID : "+ vmId)) {
+                    try {
+                        if(newGpu!=0) admin.updateBandwidth(vmId, newBandwidth);
+                        if(newBandwidth!=0) admin.updateGPU(vmId, newGpu);
+                        hasBeenUpdated= true;
+                    } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
+                        System.err.println("\n\n\t*FATAL ERROR*");
+                        e.printStackTrace();
+                        return;
+                    }
                 }
         }
-        System.out.print("\t\t~OS : ");
         newOs = acquirOS(ignoreInputSequence);
 
-        try {
-            if (newCpu != 0) admin.updateCPU(vmId, newCpu);
-            if (newRam != 0) admin.updateRAM(vmId, newRam);
-            if (newDrive != 0) admin.updateDrive(vmId, newDrive);
-            admin.updateOS(vmId, newOs);
-        } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
-            System.err.println("\n\n\t*FATAL ERROR*");
-            return;
+        if (hasBeenUpdated || ((newCpu!=0 || newRam!=0 || newDrive!=0) && verify("update the VM with ID : "+ vmId))) {              //! TODO  TO BE RATED
+            try {                                                                                                                   //! TOTO NEED TO CHANGE THE PROGRAMS RESPONSE WHEN A "FATAL" OCCURRUS
+                if (newCpu != 0) admin.updateCPU(vmId, newCpu);
+                if (newRam != 0) admin.updateRAM(vmId, newRam);
+                if (newDrive != 0) admin.updateDrive(vmId, newDrive);
+                if (newOs!=null && verify("update the VMs operating system")) admin.updateOS(vmId, newOs);
+            } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
+                System.err.println("\n\n\t*FATAL ERROR*");
+                return;
+            }
+            showSuccessMsg("VM updated");
         }
     }
+
     /**
      * TODO
      * @param operation
@@ -287,10 +320,20 @@ public final class CommandLineInterface {
         }
         int vmId = readID("deleted");
         
-        try {admin.deleteVm(vmId); } catch(IllegalArgumentException e) {
-            System.err.println("\n\n\t*FATAL ERROR*");
-            return;
+        if (verify("delete the VM with ID : "+ vmId)) {
+            try {admin.deleteVm(vmId); } catch(IllegalArgumentException e) {
+                System.err.println("\n\n\t*FATAL ERROR*");
+                return;
+            }
         }
+        showSuccessMsg("VM deleted");
+    }
+
+    /**
+     * 
+     */
+    private void report() {
+
     }
 
     public static void main(String[] args) {
@@ -312,10 +355,12 @@ public final class CommandLineInterface {
                 case 3: cli.deleteVm();
                     break;
             
-                case 4:
+                case 4: cli.report();
                     break;
             }
         }
+
+
 
 
 
