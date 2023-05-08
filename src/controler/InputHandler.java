@@ -298,7 +298,7 @@ public final class InputHandler {
                 System.err.println("\n\n\t*FATAL ERROR*");
                 return;
             }
-            showSuccessMsg("VM updated");
+            showSuccessMsg("VM update");
         }
     }
 
@@ -327,7 +327,7 @@ public final class InputHandler {
                 return;
             }
         }
-        showSuccessMsg("VM deleted");
+        showSuccessMsg("VM deletion");
     }
 
     /**
@@ -338,10 +338,4 @@ public final class InputHandler {
     }
 
     
-
-    public static void main(String[] args) {
-        System.out.print("Hello ");
-    }
-
-
 }

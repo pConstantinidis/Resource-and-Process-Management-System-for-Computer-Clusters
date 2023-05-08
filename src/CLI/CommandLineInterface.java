@@ -1,6 +1,6 @@
 package src.CLI;
 
-import src.controler.*;
+import src.controler.InputHandler;
 
 public final class CommandLineInterface {
 
@@ -27,8 +27,6 @@ public final class CommandLineInterface {
                     break;
             }
         }
-        InputHandler.reader.close();
-
     }
 
 
