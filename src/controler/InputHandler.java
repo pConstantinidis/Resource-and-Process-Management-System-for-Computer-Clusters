@@ -17,16 +17,17 @@ public final class InputHandler {
     
     private final static String ignoreInputSequence = "-";
     private final ClusterAdmin admin = new ClusterAdmin();
-    private final static Scanner reader = new Scanner(System.in);
+    private final static Scanner reader = new Scanner(System.in);           //TODO To be closed ath the end of the program by the last possible method to be called (or somethung like that)
     private final static String doubleLine = "====================================================================================";
     private final static String underLine = "____________________________________________________________________________________";
-    private final static String intro = doubleLine+"\n\tThis is a Resource and Process Managment System for a Computer Cluster"+ "\n"+underLine+
+    public final static String intro = doubleLine+"\n\tThis is a Resource and Process Managment System for a Computer Cluster"+ "\n"+underLine+
     "\n\n\tA software developed for the OOP course fully developed in Java.\n\n\tAuthor: pConstantinidis\n\tDate: 5/2023\n";
     private final static String vmPresentation = "\n"+doubleLine+"\nThere are 4 VM types you can choose from...\n\t[1] Plain VM (CPU, RAM, SSD, selected OS)"+
     "\n\t[2] GPU accessible VM (plain + GPU)\n\t[3] Network accessible VM (plain + given bandwidth)\n\t[4] VM with GPU and network access";
     private final static String osPresentation = "\n\n\tThere are 3 Operating Systems available.\n\n\t\t"+
     OS.WINDOWS.toString()+"\n\t\t"+OS.UBUNTU.toString()+"\n\t\t"+OS.FEDORA +"\n\n ~Choose one : ";
     
+
     /**
      * A method that displays to the user the curent state of the clusters reserve
      */
@@ -52,7 +53,7 @@ public final class InputHandler {
      * 
      * @return The number (short) correspondng to the choice.
      */
-    private short showMenu() {
+    public short showMenu() {
         System.out.print("\n"+doubleLine+"\n\t(0) Done with VMs technical specifications\n\t(1) Create a VM\n\t(2) Update an existing VM\n\t(3) Delete a VM\n\t(4) Report\n"+underLine+
         "\n Choose one of the above: ");
 
@@ -157,7 +158,7 @@ public final class InputHandler {
      * 
      * @return
      */
-    private void createVm() {
+    public void createVm() {
         short vmChoice;
         short [] basicData = new short[3];    // [CPU, RAM, SSD]
         OS os;
@@ -220,7 +221,7 @@ public final class InputHandler {
     /**
      * A method that updates the elements of a VM.
      */
-    private void updateVm() {
+    public void updateVm() {
         if (admin.getNumOfVms() == 0) {
             System.out.println("\n\t\tCurrently there are no VMs in the cluster!");
             return;
@@ -313,7 +314,7 @@ public final class InputHandler {
     /**
      * TODO
      */
-    private void deleteVm() {
+    public void deleteVm() {
         if (admin.getNumOfVms() == 0) {
             System.out.println("\n\t\tCurrently there are no VMs in the cluster!");
             return;
@@ -332,14 +333,15 @@ public final class InputHandler {
     /**
      * 
      */
-    private void report() {
+    public void report() {
 
     }
 
+    
+
+    public static void main(String[] args) {
+        System.out.print("Hello ");
+    }
 
 
-
-
-
-    InputHandler.reader.close();
 }
