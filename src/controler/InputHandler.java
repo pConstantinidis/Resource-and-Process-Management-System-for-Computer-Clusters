@@ -7,6 +7,8 @@ import lib.utils.Globals.OS;
 import src.model.ClusterAdmin;
 
 /**
+ * A class that provides the UI with access to the application logic.
+ * This class is used from both the CLI and GUI user interfaces.
  * TODO
  * 
  * @apiNote Keep in mind that this class takes measures against invalid inputs and
@@ -19,15 +21,21 @@ public final class InputHandler {
     private final ClusterAdmin admin = new ClusterAdmin();
     private final static Scanner reader = new Scanner(System.in);           //TODO To be closed ath the end of the program by the last possible method to be called (or somethung like that)
     private final static String doubleLine = "====================================================================================";
-    private final static String underLine = "____________________________________________________________________________________";
+    public final static String underLine = "____________________________________________________________________________________";
     public final static String intro = doubleLine+"\n\tThis is a Resource and Process Managment System for a Computer Cluster"+ "\n"+underLine+
-    "\n\n\tA software developed for the OOP course fully developed in Java.\n\n\tAuthor: pConstantinidis\n\tDate: 5/2023\n";
+                "\n\n\tA software developed for the OOP course fully developed in Java.\n\n\tAuthor: pConstantinidis\n\tDate: 5/2023\n";
     private final static String vmPresentation = "\n"+doubleLine+"\nThere are 4 VM types you can choose from...\n\t[1] Plain VM (CPU, RAM, SSD, selected OS)"+
-    "\n\t[2] GPU accessible VM (plain + GPU)\n\t[3] Network accessible VM (plain + given bandwidth)\n\t[4] VM with GPU and network access";
+                "\n\t[2] GPU accessible VM (plain + GPU)\n\t[3] Network accessible VM (plain + given bandwidth)\n\t[4] VM with GPU and network access";
     private final static String osPresentation = "\n\n\tThere are 3 Operating Systems available.\n\n\t\t"+
-    OS.WINDOWS.toString()+"\n\t\t"+OS.UBUNTU.toString()+"\n\t\t"+OS.FEDORA +"\n\n ~Choose one : ";
+                OS.WINDOWS.toString()+"\n\t\t"+OS.UBUNTU.toString()+"\n\t\t"+OS.FEDORA +"\n\n ~Choose one : ";
+    private final static String introducePrograms = "\n"+doubleLine+"\n\tNow you can submit any programs that you wish to be executed on the cluster."+
+                "\n\n\tThe only limitation concerns the overall clusters hardware capability's.\n"+doubleLine;
+    private final static String programErrMsg = "The sources that are used currently by the VMs lack your requirements";
     
+    // Accesors
+    public int getNumOfVMs() {return admin.getNumOfVms();}
 
+    
     /**
      * A method that displays to the user the curent state of the clusters reserve
      */
@@ -120,7 +128,7 @@ public final class InputHandler {
      * @param errMsg A message printed to the console after {@code msgFrequency} invalid inputs
      * @param ignoreSequnce A character that if it's given the method will return 0
      */
-    private static short shortReader(short min, short max, String errMsg, short msgFrequency, String ignoreSequnce) {
+    public static short shortReader(short min, short max, String errMsg, short msgFrequency, String ignoreSequnce) {
         boolean isValid;
         String input;
         int countInvalid = 0;
@@ -289,7 +297,7 @@ public final class InputHandler {
         newOs = acquirOS(ignoreInputSequence);
 
         if (hasBeenUpdated || ((newCpu!=0 || newRam!=0 || newDrive!=0) && verify("update the VM with ID : "+ vmId))) {              //! TODO  TO BE RATED
-            try {                                                                                                                   //! TOTO NEED TO CHANGE THE PROGRAMS RESPONSE WHEN A "FATAL" OCCURRUS
+            try {                                                                                                                   //! TODO NEED TO CHANGE THE PROGRAMS RESPONSE WHEN A "FATAL" OCCURRUS
                 if (newCpu != 0) admin.updateCPU(vmId, newCpu);
                 if (newRam != 0) admin.updateRAM(vmId, newRam);
                 if (newDrive != 0) admin.updateDrive(vmId, newDrive);
@@ -333,9 +341,33 @@ public final class InputHandler {
     /**
      * 
      */
-    public void report() {
+    public void report() {  //! TODO
 
     }
 
-    
+    public void acquirProgramData() {
+        short cpu, ram, ssd, gpu, bandwidth;
+        
+        System.out.println(InputHandler.introducePrograms);
+        System.out.println("\n\t Submit needed specs...");
+        System.out.print(" ~CPU cores required (>0) - ");
+        shortReader((short) 1, (short) Globals.getInUseCpu(), programErrMsg, (short) 2, null);
+        System.out.print("\n\t ~RAM required (>0) - ");
+        shortReader((short) 1, (short) Globals.getInUseRam(), programErrMsg, (short) 2, null);
+        System.out.print("\n\t ~Drive required (>0) - ");
+        shortReader((short) 1, (short) Globals.getInUseDrive(), programErrMsg, (short) 2, null);
+
+                        //System.out.println("\n\n\tIf you are not intrested in any of the following type '-' (dash).");        maybe not needed TODO
+        System.out.print("\n\t ~GPU required - ");
+        shortReader((short) 0, (short) Globals.getInUseGpu(), programErrMsg, (short) 2,"-");
+        System.out.print("\n\t ~Bandwidth required - ");
+        shortReader((short) 0, (short) Globals.getInUseBandwidth(), programErrMsg, (short) 2, "-");
+
+        System.out.print("\n"+underLine+"\nThe expected execution time of the program is: ");
+        shortReader((short) 0, (short) ClusterAdmin.MAX_PROGRAM_RUNTIME, "The expected execution time is too long", (short) 1, null);
+
+        
+    }
+
+
 }

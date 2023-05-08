@@ -1,12 +1,6 @@
 package lib.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import src.model.ClusterAdmin;
-import src.model.PlainVM;
-import src.model.VmGPU;
 
 /**
  * A class that is to be used widely around the project
@@ -25,13 +19,11 @@ public final class Globals {
         FEDORA
     }
 
-    private static final Object PlainVM = null;
-
-    private static int availableCpu = ClusterAdmin.getCpuCores();
-    private static int availableRam = ClusterAdmin.getRam();
-    private static int availableDrive = ClusterAdmin.getDrive();
-    private static int availableGpu = ClusterAdmin.getGpu();
-    private static int availableBandwidth = ClusterAdmin.getNetworkBandwidth();
+    private static int availableCpu = ClusterAdmin.CPU_CORES;
+    private static int availableRam = ClusterAdmin.RAM;
+    private static int availableDrive = ClusterAdmin.DRIVE;
+    private static int availableGpu = ClusterAdmin.GPU;
+    private static int availableBandwidth = ClusterAdmin.NETWORK_BANDWIDTH;
 
     // Accesors
         public static int getAvailableCpu() {return availableCpu;}
@@ -40,11 +32,11 @@ public final class Globals {
         public static int getAvailableGpu() {return availableGpu;}
         public static int getAvailableBandwidth() {return availableBandwidth;}
 
-        public static int getInUseCpu() {return ClusterAdmin.getCpuCores()-availableCpu;}
-        public static int getInUseRam() {return ClusterAdmin.getRam()-availableRam;}
-        public static int getInUseDrive() {return ClusterAdmin.getDrive()-availableDrive;}
-        public static int getInUseGpu() {return ClusterAdmin.getGpu()-availableGpu;}
-        public static int getInUseBandwidth() {return ClusterAdmin.getNetworkBandwidth()-availableBandwidth;}
+        public static int getInUseCpu() {return ClusterAdmin.CPU_CORES-availableCpu;}
+        public static int getInUseRam() {return ClusterAdmin.RAM-availableRam;}
+        public static int getInUseDrive() {return ClusterAdmin.DRIVE-availableDrive;}
+        public static int getInUseGpu() {return ClusterAdmin.GPU-availableGpu;}
+        public static int getInUseBandwidth() {return ClusterAdmin.NETWORK_BANDWIDTH-availableBandwidth;}
 
     // Mutators
         public static void setAvailableCpu(int availableCpu) {Globals.availableCpu = availableCpu;}

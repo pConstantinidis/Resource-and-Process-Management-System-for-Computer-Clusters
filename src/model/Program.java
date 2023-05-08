@@ -19,34 +19,10 @@ public final class Program implements Comparable<Program> {
     private final int bandwidthRequired;
     private final int expectedDuration;  // Secs
     private int executionTime = 0;
-    private final HashSet<Integer> programsIDs = new HashSet<>(5);
     
-    public Program(int coresRequired, int ramRequired, int driveRequired, int expectedDuration) {
-        this.coresRequired = coresRequired;
-        this.ramRequired = ramRequired;
-        this.driveRequired = driveRequired;
-        this.expectedDuration = expectedDuration;
-        this.pID = generateID();
-    }
-
-    public Program(int coresRequired, int ramRequired, int driveRequired, int gpuRequired, int expectedDuration) {
-        this.coresRequired = coresRequired;
-        this.ramRequired = ramRequired;
-        this.driveRequired = driveRequired;
-        this.expectedDuration = expectedDuration;
-        this.gpuRequired = gpuRequired;
-        this.pID = generateID();
-    }
-    
-    public Program(int coresRequired, int ramRequired, int driveRequired, int bandwidthRequired, int expectedDuration) {
-        this.coresRequired = coresRequired;
-        this.ramRequired = ramRequired;
-        this.driveRequired = driveRequired;
-        this.expectedDuration = expectedDuration;
-        this.bandwidthRequired = bandwidthRequired;
-        this.pID = generateID();
-    }
-    
+    /**
+     * Parameters that aren't required should be set to 0.
+     */    
     public Program(int coresRequired, int ramRequired, int driveRequired, int gpuRequired, int bandwidthRequired, int expectedDuration) {
         this.coresRequired = coresRequired;
         this.ramRequired = ramRequired;
@@ -65,7 +41,7 @@ public final class Program implements Comparable<Program> {
         int num;
         do {
         num = Math.abs(ran.nextInt());        
-        } while (!programsIDs.add(num));
+        } while (!ClusterAdmin.addID(num));
         return num;
     }
 
