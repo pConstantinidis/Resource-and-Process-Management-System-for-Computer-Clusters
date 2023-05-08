@@ -5,6 +5,7 @@ import lib.utils.Globals;
 import lib.utils.InputOutOfAdminsStandartsException;
 import lib.utils.Globals.OS;
 import src.model.ClusterAdmin;
+import src.model.Program;
 
 /**
  * A class that provides the UI with access to the application logic.
@@ -345,28 +346,29 @@ public final class InputHandler {
 
     }
 
-    public void acquirProgramData() {
-        short cpu, ram, ssd, gpu, bandwidth;
+    public void acquirProgramData() {                           //! TODO double check
+        short cpu, ram, ssd, gpu, bandwidth, expDuration;
         
         System.out.println(InputHandler.introducePrograms);
         System.out.println("\n\t Submit needed specs...");
         System.out.print(" ~CPU cores required (>0) - ");
-        shortReader((short) 1, (short) Globals.getInUseCpu(), programErrMsg, (short) 2, null);
+        cpu = shortReader((short) 1, (short) Globals.getInUseCpu(), programErrMsg, (short) 2, null);
         System.out.print("\n\t ~RAM required (>0) - ");
-        shortReader((short) 1, (short) Globals.getInUseRam(), programErrMsg, (short) 2, null);
+        ram = shortReader((short) 1, (short) Globals.getInUseRam(), programErrMsg, (short) 2, null);
         System.out.print("\n\t ~Drive required (>0) - ");
-        shortReader((short) 1, (short) Globals.getInUseDrive(), programErrMsg, (short) 2, null);
+        ssd = shortReader((short) 1, (short) Globals.getInUseDrive(), programErrMsg, (short) 2, null);
 
                         //System.out.println("\n\n\tIf you are not intrested in any of the following type '-' (dash).");        maybe not needed TODO
         System.out.print("\n\t ~GPU required - ");
-        shortReader((short) 0, (short) Globals.getInUseGpu(), programErrMsg, (short) 2,"-");
+        gpu = shortReader((short) 0, (short) Globals.getInUseGpu(), programErrMsg, (short) 2,"-");
         System.out.print("\n\t ~Bandwidth required - ");
-        shortReader((short) 0, (short) Globals.getInUseBandwidth(), programErrMsg, (short) 2, "-");
+        bandwidth = shortReader((short) 0, (short) Globals.getInUseBandwidth(), programErrMsg, (short) 2, "-");
 
         System.out.print("\n"+underLine+"\nThe expected execution time of the program is: ");
-        shortReader((short) 0, (short) ClusterAdmin.MAX_PROGRAM_RUNTIME, "The expected execution time is too long", (short) 1, null);
+        expDuration = shortReader((short) 0, (short) ClusterAdmin.MAX_PROGRAM_RUNTIME, "The expected execution time is too long", (short) 1, null);
 
-        
+        int id = Program.generateID();
+        ClusterAdmin.addProgram(id, new Program(id, cpu, ram, ssd, gpu, bandwidth, expDuration));
     }
 
 

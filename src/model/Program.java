@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import javax.swing.JSpinner.DateEditor;
 
@@ -19,29 +20,33 @@ public final class Program implements Comparable<Program> {
     private final int bandwidthRequired;
     private final int expectedDuration;  // Secs
     private int executionTime = 0;
+
+    private static final Set<Integer> IDs = new HashSet<>(5);
     
     /**
      * Parameters that aren't required should be set to 0.
      */    
-    public Program(int coresRequired, int ramRequired, int driveRequired, int gpuRequired, int bandwidthRequired, int expectedDuration) {
+    public Program(int id, int coresRequired, int ramRequired, int driveRequired, int gpuRequired, int bandwidthRequired, int expectedDuration) {
+        this.pID = id;
         this.coresRequired = coresRequired;
         this.ramRequired = ramRequired;
         this.driveRequired = driveRequired;
         this.expectedDuration = expectedDuration;
         this.gpuRequired = gpuRequired;
         this.bandwidthRequired = bandwidthRequired;
-        this.pID = generateID();
+
+        IDs.add(this.pID);
     }
     
     /**
      * @return An unbounded positive integer.
      */
-    private int generateID() {
+    public static int generateID() {
         Random ran = new Random();
         int num;
         do {
         num = Math.abs(ran.nextInt());        
-        } while (!ClusterAdmin.addID(num));
+        } while (IDs.contains(num));
         return num;
     }
 

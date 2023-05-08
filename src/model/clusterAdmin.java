@@ -24,10 +24,10 @@ public final class ClusterAdmin {
 
     private static Map<Integer, VirtualMachine> clusterVms = new HashMap<>();
     private static int numOfVms = 0;
-    private static Set<Integer> programsIDs = new HashSet<>(5);
+    private static Set<Program> clustersPrograms = new HashSet<>(5);
 
     // Accessors
-    public int getNumOfVms() {return this.numOfVms;}
+    public int getNumOfVms() {return ClusterAdmin.numOfVms;}
     
     public void createPlainVm(int cpu, int ram, OS os, int drive) throws InputOutOfAdminsStandartsException {
         
@@ -36,8 +36,8 @@ public final class ClusterAdmin {
         numOfVms++;
     }
 
-    public static boolean addID(int id) {
-        return programsIDs.add(id);
+    public static void addProgram(int id , Program p) {         //! TODO double check
+        clustersPrograms.add(p);
     }
 
     public static void createVmGPU(int cpu, int ram, OS os, int drive, int gpu) throws InputOutOfAdminsStandartsException {
