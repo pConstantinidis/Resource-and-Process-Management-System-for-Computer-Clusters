@@ -90,16 +90,37 @@ public final class Globals {
                 default : return null;
             }
         }
-
-
-
+        /**
+         * 
+         * @param a An array of objects that implement the comparable class.
+         */
+        private abstract class Sort <E extends Comparable<E>> {
+            public static <E extends Comparable<E>> void sort(E[] a) {
+                for (int nextPos =1; nextPos < a.length; nextPos++) {
+                    Sort.insert(a, nextPos);
+                }
+            }
+        
+            private static <E extends Comparable<E>> void insert(E[] a, int nextPos) {
+                E nextValue = a[nextPos];
+                while (nextPos > 0 && nextValue.compareTo(a[nextPos-1]) < 0) {
+                    a[nextPos] = a[nextPos-1];
+                    nextPos--;
+                }
+                a[nextPos] = nextValue;
+            }
+        }
+        
+        
+        
 
         public static void main(String[] args) throws InputOutOfAdminsStandartsException {
-            ClusterAdmin admin = new ClusterAdmin();
-            admin.createVmGPU(1, 4, OS.UBUNTU, 4, 5);
-            if (!admin.getVmsClass(1).equals("PlainVM"))
-                System.out.println("BLABLABLA");
-      
+            Integer [] array = {5, 8, 4, 9, 7, 4, 7};
+            Sort.<Integer>sort(array);
+
+            for (Integer i:array)
+                System.out.print(i);
+
 
         }
 
