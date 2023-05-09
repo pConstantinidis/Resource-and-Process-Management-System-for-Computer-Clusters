@@ -1,8 +1,8 @@
 package src.model;
 
+import lib.Dependencies.InputOutOfAdminsStandartsException;
+import lib.Dependencies.NetworkAccessible;
 import lib.utils.Globals;
-import lib.utils.InputOutOfAdminsStandartsException;
-import lib.utils.NetworkAccessible;
 import lib.utils.Globals.OS;
 
 public class VmNetworked extends PlainVM implements NetworkAccessible {

@@ -1,5 +1,6 @@
 package lib.utils;
 
+import lib.Dependencies.InputOutOfAdminsStandartsException;
 import src.model.ClusterAdmin;
 
 /**
@@ -94,7 +95,8 @@ public final class Globals {
          * 
          * @param a An array of objects that implement the comparable class.
          */
-        private abstract class Sort <E extends Comparable<E>> {
+        public abstract class Sort <E extends Comparable<E>> {
+
             public static <E extends Comparable<E>> void sort(E[] a) {
                 for (int nextPos =1; nextPos < a.length; nextPos++) {
                     Sort.insert(a, nextPos);
@@ -110,16 +112,10 @@ public final class Globals {
                 a[nextPos] = nextValue;
             }
         }
-        
-        
-        
+              
 
         public static void main(String[] args) throws InputOutOfAdminsStandartsException {
-            Integer [] array = {5, 8, 4, 9, 7, 4, 7};
-            Sort.<Integer>sort(array);
-
-            for (Integer i:array)
-                System.out.print(i);
+            System.out.println((double) 8/42);
 
 
         }

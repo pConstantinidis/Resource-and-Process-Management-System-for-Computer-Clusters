@@ -1,7 +1,7 @@
 package src.model;
 
+import lib.Dependencies.InputOutOfAdminsStandartsException;
 import lib.utils.Globals;
-import lib.utils.InputOutOfAdminsStandartsException;
 import lib.utils.Globals.OS;
 
 public class VmGPU extends PlainVM {
