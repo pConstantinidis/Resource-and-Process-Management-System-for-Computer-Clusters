@@ -1,12 +1,7 @@
 package src.model;
 
-import java.sql.Date;
-import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
-
-import javax.swing.JSpinner.DateEditor;
 
 import lib.utils.Globals;
 
@@ -20,42 +15,42 @@ public final class Program implements Comparable<Program> {
     private final int bandwidthRequired;
     private final int expectedDuration;  // Secs
     private int executionTime = 0;
-
-    private static final Set<Integer> IDs = new HashSet<>(5);
+    private static final HashSet<Integer> IDs = new HashSet<>(5);
     
     /**
      * Parameters that aren't required should be set to 0.
      */    
-    public Program(int id, int coresRequired, int ramRequired, int driveRequired, int gpuRequired, int bandwidthRequired, int expectedDuration) {
-        this.pID = id;
+    public Program(int coresRequired, int ramRequired, int driveRequired, int gpuRequired, int bandwidthRequired, int expectedDuration) {
         this.coresRequired = coresRequired;
         this.ramRequired = ramRequired;
         this.driveRequired = driveRequired;
         this.expectedDuration = expectedDuration;
         this.gpuRequired = gpuRequired;
         this.bandwidthRequired = bandwidthRequired;
-
-        IDs.add(this.pID);
+        pID = generateID();
     }
     
     /**
-     * @return An unbounded positive integer.
+     * @return The priority factor of a program.
+     */
+    private double computePriority() {
+        return ((double) this.coresRequired / Globals.getInUseCpu())+
+        ((double) this.ramRequired / Globals.getInUseRam())+
+        ((double) this.driveRequired / Globals.getInUseDrive())+
+        ((double) this.gpuRequired / Globals.getInUseGpu())+
+        ((double) this.bandwidthRequired / Globals.getInUseBandwidth()); 
+    }
+
+    /**
+     * @return A positive integer, whose possible max value depends on the clusters queue size.
      */
     public static int generateID() {
         Random ran = new Random();
         int num;
         do {
-        num = Math.abs(ran.nextInt());        
+            num = ran.nextInt(100, ClusterAdmin.QUEUE_CAPACITY+100);
         } while (IDs.contains(num));
-        return num;
-    }
-
-    /**
-     * @return The priority factor of a program.
-     */
-    private double computePriority() {
-        return (coresRequired / Globals.getInUseCpu())+(ramRequired / Globals.getInUseRam())+(driveRequired / Globals.getInUseDrive())+
-            (gpuRequired / Globals.getInUseGpu())+(bandwidthRequired / Globals.getInUseBandwidth()); 
+        return num;        
     }
 
     /**
@@ -70,5 +65,12 @@ public final class Program implements Comparable<Program> {
         return Double.compare(thisPriority, otherPriority);
     }
 
+    /**
+     * @return Just the programs ID.
+     */
+    @Override
+    public String toString() {
+        return String.valueOf(pID);
+    }
     
 }
