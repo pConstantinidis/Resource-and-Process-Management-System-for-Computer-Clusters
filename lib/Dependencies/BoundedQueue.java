@@ -1,8 +1,4 @@
-package lib.utils;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Queue;
+package lib.Dependencies;
 
 /**
  * 
@@ -21,7 +17,7 @@ public class BoundedQueue<E> {
         return size == data.length;
     }
 
-    private void push(E e) throws IllegalStateException {
+    public void push(E e) throws IllegalStateException {
         if (isFull())
             throw new IllegalStateException("The queue is full");
 
@@ -33,7 +29,7 @@ public class BoundedQueue<E> {
         return size == 0;
     }
 
-    private E pop() {
+    public E pop() {
         if (isEmpty())
             throw new IllegalStateException("can not pop fron an empty queue");
 

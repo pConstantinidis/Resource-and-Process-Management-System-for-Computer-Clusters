@@ -1,4 +1,4 @@
-package lib.utils;
+package lib.Dependencies;
 
 /**
  * An exception that is been thrown whenever the value given mismatches the clusters
