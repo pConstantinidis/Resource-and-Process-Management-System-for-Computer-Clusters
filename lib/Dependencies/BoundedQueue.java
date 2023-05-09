@@ -5,12 +5,13 @@ package lib.Dependencies;
  *
  */
 public class BoundedQueue<E> {
-    final Object [] data;
+    final E [] data;
     int head=0;
     int size = 0;
 
+    @SuppressWarnings("unchecked")
     public BoundedQueue(int maxSize) {
-        data = new Object[maxSize];
+        data = (E[]) new Object[maxSize];
     }
 
     private boolean isFull() {
@@ -39,8 +40,20 @@ public class BoundedQueue<E> {
         return e;
     }
 
-    @SuppressWarnings ("unchecked")
-    private E peek() {
+    @SuppressWarnings ("Unchecked")
+    public E peek() {
         return isEmpty() ? null: (E) data[head];
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder("[");
+        for (int i=0; i<size; i++) {
+            str.append(data[i].toString());
+            if (i<size-1)
+                str.append(", ");
+        }
+        str.append(']');
+        return str.toString();
     }
 }
