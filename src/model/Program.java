@@ -5,7 +5,7 @@ import java.util.Random;
 
 import lib.utils.Globals;
 
-public final class Program implements Comparable<Program> {
+public final class Program extends ClusterAdmin implements Comparable<Program>  {
 
     private final int pID;
     private final int coresRequired;
@@ -15,8 +15,18 @@ public final class Program implements Comparable<Program> {
     private final int bandwidthRequired;
     private final int expectedDuration;  // Secs
     private int executionTime = 0;
-    private static final HashSet<Integer> IDs = new HashSet<>(5);
+    private final HashSet<Integer> IDs = new HashSet<>(5);
     
+    public int getpID() {return pID;}
+    public int getCoresRequired() {return coresRequired;}
+    public int getRamRequired() {return ramRequired;}
+    public int getDriveRequired() {return driveRequired;}
+    public int getGpuRequired() {return gpuRequired;}
+    public int getBandwidthRequired() {return bandwidthRequired;}
+
+    int getExpectedDuration() {return this.expectedDuration;}
+    int getExecutionTime() {return this.executionTime;}
+
     /**
      * Parameters that aren't required should be set to 0.
      */    
@@ -44,11 +54,11 @@ public final class Program implements Comparable<Program> {
     /**
      * @return A positive integer, whose possible max value depends on the clusters queue size.
      */
-    public static int generateID() {
+    private int generateID() {
         Random ran = new Random();
         int num;
         do {
-            num = ran.nextInt(100, ClusterAdmin.QUEUE_CAPACITY+100);
+            num = ran.nextInt(100, getQueueCapacity()+100);
         } while (IDs.contains(num));
         return num;        
     }
@@ -66,11 +76,12 @@ public final class Program implements Comparable<Program> {
     }
 
     /**
-     * @return Just the programs ID.
+     * @return The programs ID.
      */
     @Override
     public String toString() {
         return String.valueOf(pID);
     }
+    
     
 }
