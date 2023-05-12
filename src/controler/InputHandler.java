@@ -29,9 +29,9 @@ public final class InputHandler {
                 "\n\t[2] GPU accessible VM (plain + GPU)\n\t[3] Network accessible VM (plain + given bandwidth)\n\t[4] VM with GPU and network access";
     private final static String osPresentation = "\n\n\tThere are 3 Operating Systems available.\n\n\t\t"+
                 OS.WINDOWS.toString()+"\n\t\t"+OS.UBUNTU.toString()+"\n\t\t"+OS.FEDORA +"\n\n ~Choose one : ";
-    private final static String introducePrograms = "\n"+doubleLine+"\n\tNow you can submit any programs that you wish to be executed on the cluster."+
+    public final static String introducePrograms = "\n"+doubleLine+"\n\tNow you can submit any programs that you wish to be executed on the cluster."+
                 "\n\n\tThe only limitation concerns the overall clusters hardware capability's.\n"+doubleLine;
-    private final static String programErrMsg = "The sources that are used currently by the VMs lack your requirements";
+    private final static String programErrMsg = "Your input either exceeds the sources that are used currently by the VMs or is just invalid";
     
     // Accesors
     public int getNumOfVMs() {return ClusterAdmin.getNumOfVms();}
@@ -208,12 +208,14 @@ public final class InputHandler {
     }
 
     /**
-     * @param msg The operation to be verified.
+     * A method that aqcuires a boolean input from tha user.
+     * 
+     * @param msg The context of the input.
      * @return {@code true} if the answer was positive {@code false} otherwise.
      */
-    private boolean verify(String msg) {
+    public static boolean verify(String msg) {
         char input;
-        System.out.print("\n\n\tAre you sure that you want to "+ msg +" [Y/N]?  ~");
+        System.out.print("\n\n\t"+ msg +" [Y/N]?  ~");
         do {
         input = Character.toLowerCase(reader.next().charAt(0));
         if (input != 'y' && input != 'n') {
@@ -252,7 +254,7 @@ public final class InputHandler {
             case "VmGPU":
                 System.out.print("\n\t~GPU : ");
                 newGpu = shortReader((short) 1, (short) Globals.getAvailableGpu(), "Input out of valid range : 1 - "+Globals.getAvailableGpu(), (short) 3, ignoreInputSequence);
-                if (newGpu!=0 && verify("update the VM with ID : "+ vmId)) {
+                if (newGpu!=0 && verify("Are you sure that you want to update the VM with ID : "+ vmId)) {
                     try {
                         ClusterAdmin.updateGPU(vmId, newGpu);
                         hasBeenUpdated = true;
@@ -266,7 +268,7 @@ public final class InputHandler {
             case "VmNetworked":
                 System.out.print("\n\t~Bandwidth : ");
                 newBandwidth = shortReader((short) 4, (short) Globals.getAvailableBandwidth(), "Input out of valid range : 4 - "+Globals.getAvailableBandwidth(), (short) 3, ignoreInputSequence);
-                if (newBandwidth!=0 && verify("update the VM with ID : "+ vmId)) {
+                if (newBandwidth!=0 && verify("Are you sure that you want to update the VM with ID : "+ vmId)) {
                     try {
                         ClusterAdmin.updateBandwidth(vmId, newBandwidth);
                         hasBeenUpdated = true;
@@ -283,7 +285,7 @@ public final class InputHandler {
                 
                 System.out.print("\n\t~Bandwidth : ");
                 newBandwidth = shortReader((short) 4, (short) Globals.getAvailableBandwidth(), "Input out of valid range : 4 - "+Globals.getAvailableBandwidth(), (short) 3, ignoreInputSequence);
-                if ((newGpu!=0 || newBandwidth!=0) && verify("update the VM with ID : "+ vmId)) {
+                if ((newGpu!=0 || newBandwidth!=0) && verify("Are you sure that you want to update the VM with ID : "+ vmId)) {
                     try {
                         if(newGpu!=0) ClusterAdmin.updateBandwidth(vmId, newBandwidth);
                         if(newBandwidth!=0) ClusterAdmin.updateGPU(vmId, newGpu);
@@ -297,12 +299,12 @@ public final class InputHandler {
         }
         newOs = acquirOS(ignoreInputSequence);
 
-        if (hasBeenUpdated || ((newCpu!=0 || newRam!=0 || newDrive!=0) && verify("update the VM with ID : "+ vmId))) {              //! TODO  TO BE RATED
+        if (hasBeenUpdated || ((newCpu!=0 || newRam!=0 || newDrive!=0) && verify("Are you sure that you want to update the VM with ID : "+ vmId))) {              //! TODO  TO BE RATED
             try {                                                                                                                   //! TODO NEED TO CHANGE THE PROGRAMS RESPONSE WHEN A "FATAL" OCCURRUS
                 if (newCpu != 0) ClusterAdmin.updateCPU(vmId, newCpu);
                 if (newRam != 0) ClusterAdmin.updateRAM(vmId, newRam);
                 if (newDrive != 0) ClusterAdmin.updateDrive(vmId, newDrive);
-                if (newOs!=null && verify("update the VMs operating system")) ClusterAdmin.updateOS(vmId, newOs);
+                if (newOs!=null && verify("Are you sure that you want to update the VMs operating system")) ClusterAdmin.updateOS(vmId, newOs);
             } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
                 System.err.println("\n\n\t*FATAL ERROR*");
                 return;
@@ -330,7 +332,7 @@ public final class InputHandler {
         }
         int vmId = readID("deleted");
         
-        if (verify("delete the VM with ID : "+ vmId)) {
+        if (verify("Are you sure that you want to delete the VM with ID : "+ vmId)) {
             try {ClusterAdmin.deleteVm(vmId); } catch(IllegalArgumentException e) {
                 System.err.println("\n\n\t*FATAL ERROR*");
                 return;
@@ -349,7 +351,6 @@ public final class InputHandler {
     public void acquirProgramData() {                           //! TODO double check
         short cpu, ram, ssd, gpu, bandwidth, expDuration;
         
-        System.out.println(InputHandler.introducePrograms);
         System.out.println("\n\t Submit needed specs...");
         System.out.print(" ~CPU cores required (>0) - ");
         cpu = shortReader((short) 1, (short) Globals.getInUseCpu(), programErrMsg, (short) 2, null);
@@ -369,6 +370,7 @@ public final class InputHandler {
 
         ClusterAdmin.addProgram(new Program(cpu, ram, ssd, gpu, bandwidth, expDuration));
     }
+
 
 
 }
