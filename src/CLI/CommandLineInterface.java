@@ -43,7 +43,12 @@ public final class CommandLineInterface extends CLI_IOHandler {
         do {
             acquirProgramData();
         } while (verify("Do you want to add another program"));
+        
+        queuePrograms();
         loadPrograms();
+
+
+
     }
     
     public static void main(String[] args) {
