@@ -20,4 +20,14 @@ public interface NetworkAccessible {
     * @throws InputOutOfAdminsStandartsException
     */
   int updateBandwidth(int newBandwidth) throws InputOutOfAdminsStandartsException;
+  
+
+  /**
+   * A method that should implement needed checks in order to set {@code Allocated Bandwidth} attribute.
+   * 
+   * @param bandwidth
+   * @throws IllegalArgumentException
+   */
+  void addAllocBandwidth(int bandwidth) throws IllegalArgumentException ; 
+
 }
