@@ -1,7 +1,6 @@
 package src.CLI;
 
-import src.controler.InputHandler;
-import src.model.ClusterAdmin;
+import src.controler.CLI_IOHandler;
 
 /**
  * ! ! !    TODO
@@ -9,43 +8,46 @@ import src.model.ClusterAdmin;
     * The CLI class and the GUI class will communicate there inputs to the {@code ClusterAdmin} class and form there (and not only)
     * the errors will be thrown and each UI will iplement different error handling
  */
-public final class CommandLineInterface {
-
-    public static void main(String[] args) {
-        InputHandler IO_Handler = new InputHandler();
-        System.out.println(InputHandler.intro);
+public final class CommandLineInterface extends CLI_IOHandler {
+    
+    public CommandLineInterface() {
+        System.out.println(intro);
         short choice;      //TODO choice==0
         
-        outer: while (true) {      
-            choice = IO_Handler.showMenu();
+        outer: while (true) {
+            choice = showMenu();
             switch (choice) {
                 case 0: 
-                    if (IO_Handler.getNumOfVMs() == 0) {
-                        System.out.println(InputHandler.underLine+"\n It seems that there aren't currently"
+                    if (getNumOfVms() == 0) {
+                        System.out.println(underLine+"\n It seems that there aren't currently"
                             +" any VMs running on the cluster\n In this case you can not proceed.");
                         break;
                     }
                     else break outer;
 
-                case 1: IO_Handler.createVm();
+                case 1: createVm();
                     break;
 
-                case 2: IO_Handler.updateVm();
+                case 2: updateVm();
                     break;
 
-                case 3: IO_Handler.deleteVm();
+                case 3: deleteVm();
                     break;
             
-                case 4: IO_Handler.report();
+                case 4: report();
                     break;
             }
         }
 
-        System.out.println(InputHandler.introducePrograms);
+        System.out.println(introducePrograms);
         do {
-            IO_Handler.acquirProgramData();
-        } while (InputHandler.verify("Do you want to add another program"));
-        ClusterAdmin.loadPrograms();
-
+            acquirProgramData();
+        } while (verify("Do you want to add another program"));
+        loadPrograms();
+    }
+    
+    public static void main(String[] args) {
+        
+        new CommandLineInterface();
     }
 }

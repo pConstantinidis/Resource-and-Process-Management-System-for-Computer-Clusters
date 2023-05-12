@@ -95,7 +95,7 @@ public final class Globals {
          * 
          * @param a An array of objects that implement the comparable class.
          */
-        public abstract class Sort <E extends Comparable<E>> {
+        public class Sort <E extends Comparable<E>> {
 
             public static <E extends Comparable<E>> void sort(E[] a) {
                 for (int nextPos =1; nextPos < a.length; nextPos++) {
@@ -115,8 +115,6 @@ public final class Globals {
               
 
         public static void main(String[] args) throws InputOutOfAdminsStandartsException {
-            System.out.println((double) 8/42);
-
 
         }
 
