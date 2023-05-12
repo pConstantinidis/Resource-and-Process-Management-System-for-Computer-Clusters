@@ -92,30 +92,34 @@ public final class Globals {
             }
         }
         /**
+         * Sorts in ascending order an array of elements that implements the {@code Comparable} interface.
          * 
          * @param a An array of objects that implement the comparable class.
          */
-        public class Sort <E extends Comparable<E>> {
-
-            public static <E extends Comparable<E>> void sort(E[] a) {
-                for (int nextPos =1; nextPos < a.length; nextPos++) {
-                    Sort.insert(a, nextPos);
-                }
-            }
-        
-            private static <E extends Comparable<E>> void insert(E[] a, int nextPos) {
-                E nextValue = a[nextPos];
-                while (nextPos > 0 && nextValue.compareTo(a[nextPos-1]) < 0) {
-                    a[nextPos] = a[nextPos-1];
-                    nextPos--;
-                }
-                a[nextPos] = nextValue;
+        public static <E extends Comparable<E>> void sort(E[] a) {
+            for (int nextPos =1; nextPos < a.length; nextPos++) {
+                insert(a, nextPos);
             }
         }
-              
+        
+        private static <E extends Comparable<E>> void insert(E[] a, int nextPos) {
+            E nextValue = a[nextPos];
+            while (nextPos > 0 && nextValue.compareTo(a[nextPos-1]) < 0) {
+                a[nextPos] = a[nextPos-1];
+                    nextPos--;
+            }
+            a[nextPos] = nextValue;
+        }
 
+        
+
+
+
+         
         public static void main(String[] args) throws InputOutOfAdminsStandartsException {
-
+            Integer [] array = {5, 4, 3, 2, 1};
+            sort(array);
+            System.out.println(array[0] +" - "+array[4]);
         }
 
 
