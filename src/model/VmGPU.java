@@ -6,8 +6,16 @@ import lib.utils.Globals.OS;
 
 public class VmGPU extends PlainVM {
     private int gpu;
+    private int allocGPU;
 
     public int getGpu() {return gpu;}
+    public int getAllocGPU() {return allocGPU;}
+
+    public void addAllocGPU(int gpu) throws IllegalArgumentException {
+        if (gpu <= this.gpu-allocGPU)
+            allocGPU += gpu;
+        else throw new IllegalArgumentException();
+    }
 
     public VmGPU(int cpu, int ram, OS os, int drive, int gpu) throws InputOutOfAdminsStandartsException {
         super(cpu, ram, os, drive);
@@ -29,5 +37,9 @@ public class VmGPU extends PlainVM {
         int oldGpu = this.gpu;
         this.gpu = newGpu;
         return oldGpu;
+    }
+
+    protected double computeLoad(int cpuToAlloc, int ramToAlloc, int driveToAlloc, int gpuToAlloc) {
+        return (double) (gpuToAlloc+allocGPU)/ + computeLoad(cpuToAlloc, ramToAlloc, driveToAlloc);
     }
 }
