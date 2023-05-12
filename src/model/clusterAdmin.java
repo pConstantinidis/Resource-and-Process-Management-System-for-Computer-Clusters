@@ -19,15 +19,19 @@ public abstract class ClusterAdmin {
     public final static int CPU_CORES = 128;          // Cores
     public final static int RAM = 256;                // Gb
     public final static int DRIVE = 2048;             // Gb
-    public final static int GPU = 11;                  // GPUs //!
+    public final static int GPU = 8;                  // GPUs
     public final static int NETWORK_BANDWIDTH = 320;  // Gb/sec
     public final static int MAX_PROGRAM_RUNTIME = 5400; //Seconds
     public final static int QUEUE_CAPACITY = 15;
 
     private static final Map<Integer, VirtualMachine> clusterVms = new TreeMap<>();
     private static int numOfVms = 0;
-    private static final LinkedList<Program> clustersPrograms = new LinkedList<>();
     private static final BoundedQueue<Program> programsInQueue = new BoundedQueue<>(QUEUE_CAPACITY);
+
+    /**
+     * A buffer-like data collection in which user inputs are stored prior to be loaded to the clusters VMs.
+     */
+    private static final LinkedList<Program> clustersPrograms = new LinkedList<>();
 
     // Accessors
     public static int getNumOfVms() {return ClusterAdmin.numOfVms;}
@@ -158,7 +162,8 @@ public abstract class ClusterAdmin {
             Globals.setAvailableBandwidth(Globals.getAvailableBandwidth() + bandwidth);
     }
 
-    private static void loadPrograms() {
+
+    public static void loadPrograms() {
         Program [] array = new Program[clustersPrograms.size()];
         array = clustersPrograms.toArray(array);
 
@@ -166,23 +171,6 @@ public abstract class ClusterAdmin {
         
         for (Program p:array)
             programsInQueue.push(p);
-    }
-
-    public static void main(String[] args) throws InputOutOfAdminsStandartsException {
-        ClusterAdmin.createVmNetworkedGpu(42, 64, OS.UBUNTU, 512, 11, 220);
-
-        ClusterAdmin.addProgram(new Program(2, 4, 4, 6, 190, 10));
-        ClusterAdmin.addProgram(new Program(8, 32, 4, 0, 0, 5));
-        ClusterAdmin.addProgram(new Program(12, 8, 128, 0, 16, 3));
-        ClusterAdmin.addProgram(new Program(2, 4, 4, 3, 0, 0));
-        ClusterAdmin.addProgram(new Program(12, 8, 128, 2, 0, 3));
-
-
-        System.out.println(ClusterAdmin.clustersPrograms);
-
-        ClusterAdmin.loadPrograms();
-
-        System.out.println(ClusterAdmin.programsInQueue.toString());
     }
 
 }
