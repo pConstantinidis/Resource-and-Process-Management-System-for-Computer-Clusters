@@ -170,49 +170,128 @@ public class ClusterAdmin {
     }
 
     /**
-     * A method that loads all the {@code Program} elements
-     * from the {@code clustersPrograms} to the queue.
+     * A method that adds all the {@code Program} elements
+     * from the {@code clustersPrograms} to queue.
      */
-    protected void loadPrograms() {
+    protected void queuePrograms() {
         Program [] array = new Program[queueCapacity];
         clustersPrograms.toArray(array);
 
-        // This could be done in a better way if we used the build-in method
-        Globals.Sort.<Program>sort(array);
+        // Could be done in a better way if we used the build-in method
+        Globals.sort(array);
         
         programsInQueue = new BoundedQueue<>(queueCapacity);
         for (Program p:clustersPrograms)
             programsInQueue.push(p);
     }
 
+
+
+    /*
+     * TODO
+     */
+        private PlainVM getBetterPlain(int cpu, int ram, int drive) {
+            PlainVM betterVm = (PlainVM) clusterVms.values().iterator().next();
+            double bestLoad = betterVm.computeLoad(cpu, ram, drive);
+            for (VirtualMachine vm:clusterVms.values()) {
+                if (vm instanceof PlainVM) {
+                    double load = ((PlainVM) vm).computeLoad(cpu, ram, drive);
+                    if (bestLoad > load) {
+                        bestLoad = load;
+                        betterVm = (PlainVM) vm;
+                    }
+                }
+            }
+            return betterVm;
+        }
+        
+        private VmGPU getBetterGPU(int cpu, int ram, int drive, int gpu) {
+            VmGPU betterVm = (VmGPU) clusterVms.values().iterator().next();
+            double bestLoad = betterVm.computeLoad(cpu, ram, drive, gpu);
+            for (VirtualMachine vm:clusterVms.values()) {
+                if (vm instanceof VmGPU) {
+                    double load = ((VmGPU) vm).computeLoad(cpu, ram, drive, gpu);
+                    if (bestLoad > load) {
+                        bestLoad = load;
+                        betterVm = (VmGPU) vm;
+                    }
+                }
+            }
+            return betterVm;
+        }
+
+        private VmNetworked getBetterNetworked(int cpu, int ram, int drive, int network) {
+            VmNetworked betterVm = (VmNetworked) clusterVms.values().iterator().next();
+            double bestLoad = betterVm.computeLoad(cpu, ram, drive, network);
+            for (VirtualMachine vm:clusterVms.values()) {
+                if (vm instanceof VmNetworked) {
+                    double load = ((VmNetworked) vm).computeLoad(cpu, ram, drive, network);
+                    if (bestLoad > load) {
+                        bestLoad = load;
+                        betterVm = (VmNetworked) vm;
+                    }
+                }
+            }
+            return betterVm;
+        }
+
+        private VmNetworkedGPU getBetterGPUNetworked(int cpu, int ram, int drive, int gpu, int network) {
+            VmNetworkedGPU betterVm = (VmNetworkedGPU) clusterVms.values().iterator().next();
+            double bestLoad = betterVm.computeLoad(cpu, ram, drive, gpu);
+            for (VirtualMachine vm:clusterVms.values()) {
+                if (vm instanceof VmNetworkedGPU) {
+                    double load = ((VmNetworkedGPU) vm).computeLoad(cpu, ram, drive, gpu, network);
+                    if (bestLoad > load) {
+                        bestLoad = load;
+                        betterVm = (VmNetworkedGPU) vm;
+                    }
+                }
+            }
+            return betterVm;
+        }
+
     /**
+     * Identifys the programs requirments and calls the prorer method to find the better VM.
+     * 
      * @param p The program to be assigned.
      * @param vm The VM that the program is going to be assigned to. 
+     * @throws IllegalArgumentException
      */
-    protected void assignProgramToVM(Program p, VirtualMachine vm) throws IllegalArgumentException {
-        
-        switch (getVmsClass(vm)) {
-            case "PlainVM":
-                
+    private VirtualMachine identifyProgram(Program p) throws IllegalArgumentException {
+        String vmType;
+        boolean isNetworked = p.getBandwidthRequired() != 0;
+        boolean isGPUed = p.getGpuRequired() != 0;
+
+        if (isGPUed && isNetworked) vmType = "vmnetworkedgpu";
+        else if (isGPUed && !isNetworked) vmType = "vmgpu";
+        else if (!isGPUed && !isNetworked) vmType = "plainvm";
+        else vmType = "vmnetworked";
+
+        VirtualMachine betterVM;
+        switch (vmType) {
+
+            case "plainvm":
+                betterVM = getBetterPlain(p.getCoresRequired(), p.getRamRequired(), p.getDriveRequired());
                 break;
-            case "VmGPU":
+            case "vmgpu":
+                betterVM = getBetterGPU(p.getCoresRequired(), p.getRamRequired(), p.getDriveRequired(), p.getGpuRequired());
+                break;
+            case "vmnetworked":
+                betterVM = getBetterNetworked(p.getCoresRequired(), p.getRamRequired(), p.getDriveRequired(), p.getBandwidthRequired());
+                break;
+            case "vmnetworkedgpu":
+                betterVM = getBetterGPUNetworked(p.getCoresRequired(), p.getRamRequired(), p.getDriveRequired(), p.getGpuRequired(), p.getBandwidthRequired());
+                break;
 
-            case "VmNetworked":
-
-            case "VmNetworkedGPU":
-
-            default:
-                throw new IllegalArgumentException();
+            default: throw new IllegalArgumentException();
         }
+        return betterVM;
     }
-
-
-
-
-
-
-
-
-
+    
+    public void loadPrograms() {
+       // if (!vm.assignProgram(p)) throw new IllegalArgumentException("duplicate program assignment");    
+        
+    }
+    
 
 }
