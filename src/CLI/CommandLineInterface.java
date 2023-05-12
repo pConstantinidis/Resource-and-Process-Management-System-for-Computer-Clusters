@@ -1,6 +1,7 @@
 package src.CLI;
 
 import src.controler.InputHandler;
+import src.model.ClusterAdmin;
 
 /**
  * ! ! !    TODO
@@ -40,8 +41,11 @@ public final class CommandLineInterface {
             }
         }
 
-        IO_Handler.acquirProgramData();
+        System.out.println(InputHandler.introducePrograms);
+        do {
+            IO_Handler.acquirProgramData();
+        } while (InputHandler.verify("Do you want to add another program"));
+        ClusterAdmin.loadPrograms();
+
     }
-
-
 }
