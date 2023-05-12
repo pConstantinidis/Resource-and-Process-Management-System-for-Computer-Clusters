@@ -1,5 +1,8 @@
 package src.model;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import lib.Dependencies.InputOutOfAdminsStandartsException;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
@@ -15,9 +18,35 @@ public abstract class VirtualMachine {
     private int ram;
     private OS os;
 
+    /**
+     * An in order (according to the comparator) collection of all the programs assigned to a VM.
+     */
+    private Set<Program> programsAssigned = new TreeSet<Program>( (p1, p2) -> {
+        return Integer.compare(p1.getExecutionTime(), p2.getExecutionTime());
+    });
+
+    /**
+     * The CPU/RAM that is allready allocated on the VM.
+     */
+    private int allocCPU, allocRAM;
+
     public int getCpu() {return cpu;}
     public int getRam() {return ram;}
     public OS getOs() {return os;}
+    public int getAllocCPU() {return allocCPU;}
+    public int getAllocRAM() {return allocRAM;}
+
+    public void addAllocCPU(int cpu) {
+        if (cpu <= this.cpu-allocCPU)
+            allocCPU += cpu;
+        else throw new IllegalArgumentException();
+    }
+    
+    public void addAllocRAM(int ram) {
+        if (ram <= this.ram-allocRAM)
+            allocRAM += ram;
+        else throw new IllegalArgumentException();
+    }
 
     /**
      * A method that updates/initializes the number of CPU cores used by the VM.
@@ -66,4 +95,17 @@ public abstract class VirtualMachine {
                 return oldOs.toString();
             return null;
     }
+
+    public double computeLoad(int cpuToAlloc, int ramToAlloc) {
+        return (double) (cpuToAlloc+allocCPU)/cpu + (double) (ramToAlloc+ramToAlloc)/ram;
+    }
+
+    /**
+     * @param p The program to be assigned.
+     * @return {@code true} if {@code p} wasn't already in the set, {@code false} otherwise.
+     */
+    protected boolean assignProgram(Program p) {
+        return programsAssigned.add(p);
+    }
+
 }
