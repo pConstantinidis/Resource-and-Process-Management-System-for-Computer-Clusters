@@ -1,11 +1,13 @@
 package src.model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Random;
 
 import lib.utils.Globals;
+import lib.utils.ProgramDismissal;
 
-public final class Program extends ClusterAdmin implements Comparable<Program>  {
+public final class Program extends Admin implements Comparable<Program>, Serializable  {
 
     private final int pID;
     private final int coresRequired;
@@ -16,8 +18,9 @@ public final class Program extends ClusterAdmin implements Comparable<Program>  
     private final int expectedDuration;  // Secs
     private int executionTime = 0;
     private final HashSet<Integer> IDs = new HashSet<>(5);
+    private short countRejections = 0;
+    void addRejection() {this.countRejections++;}
     
-    public int getpID() {return pID;}
     public int getCoresRequired() {return coresRequired;}
     public int getRamRequired() {return ramRequired;}
     public int getDriveRequired() {return driveRequired;}
@@ -26,6 +29,7 @@ public final class Program extends ClusterAdmin implements Comparable<Program>  
 
     int getExpectedDuration() {return this.expectedDuration;}
     int getExecutionTime() {return this.executionTime;}
+    short getNumOfRejections() {return this.countRejections;}
 
     /**
      * Parameters that aren't required should be set to 0.
@@ -58,7 +62,7 @@ public final class Program extends ClusterAdmin implements Comparable<Program>  
         Random ran = new Random();
         int num;
         do {
-            num = ran.nextInt(100, getQueueCapacity()+100);
+            num = ran.nextInt(100, getQueueCapacity()+101);
         } while (IDs.contains(num));
         return num;        
     }
@@ -83,5 +87,7 @@ public final class Program extends ClusterAdmin implements Comparable<Program>  
         return String.valueOf(pID);
     }
     
-    
+    public void triggerDismiss() {
+        new ProgramDismissal(this);
+    }
 }

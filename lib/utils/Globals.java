@@ -1,7 +1,9 @@
 package lib.utils;
 
 import lib.Dependencies.InputOutOfAdminsStandartsException;
+import lib.Dependencies.NetworkAccessible;
 import src.model.ClusterAdmin;
+import src.model.VmNetworkedGPU;
 
 /**
  * A class that is to be used widely around the project
@@ -117,9 +119,9 @@ public final class Globals {
 
          
         public static void main(String[] args) throws InputOutOfAdminsStandartsException {
-            Integer [] array = {5, 4, 3, 2, 1};
-            sort(array);
-            System.out.println(array[0] +" - "+array[4]);
+            VmNetworkedGPU vm = new VmNetworkedGPU(12, 34, OS.FEDORA, 64, 2, 34);
+            System.out.println(vm instanceof NetworkAccessible);
+            
         }
 
 

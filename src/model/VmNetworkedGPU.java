@@ -47,4 +47,14 @@ public class VmNetworkedGPU extends VmGPU implements NetworkAccessible {
     protected double computeLoad(int cpuToAlloc, int ramToAlloc, int driveToAlloc, int gpuToAlloc, int bandwidthToAlloc) {
         return (double) (bandwidthToAlloc+allocBandwidth)/bandwidth + computeLoad(cpuToAlloc, ramToAlloc, driveToAlloc, gpuToAlloc);
     }
+
+    /**
+     * @param p The program to be assigned.
+     * @return {@code true} if {@code p} wasn't already in the set, {@code false} otherwise.
+     */
+    @Override
+    protected boolean assignProgram(Program p) {
+        this.addAllocBandwidth(p.getBandwidthRequired());
+        return super.assignProgram(p);
+    }
 }

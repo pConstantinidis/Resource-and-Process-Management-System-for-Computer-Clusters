@@ -10,9 +10,14 @@ import src.controler.CLI_IOHandler;
  */
 public final class CommandLineInterface extends CLI_IOHandler {
     
+    public static void main(String[] args) {
+        new CommandLineInterface();
+    }
+
+
     public CommandLineInterface() {
         System.out.println(intro);
-        short choice;      //TODO choice==0
+        short choice;
         
         outer: while (true) {
             choice = showMenu();
@@ -51,8 +56,4 @@ public final class CommandLineInterface extends CLI_IOHandler {
 
     }
     
-    public static void main(String[] args) {
-        
-        new CommandLineInterface();
-    }
 }

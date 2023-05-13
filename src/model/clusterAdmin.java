@@ -27,7 +27,11 @@ public class ClusterAdmin {
     public final static int GPU = 8;                  // GPUs
     public final static int NETWORK_BANDWIDTH = 320;  // Gb/sec
     public final static int MAX_PROGRAM_RUNTIME = 5400; //Seconds
+    public final static short PROGRAM_REJECTIONS_toDISMISS = 3;
 
+    /**
+     * A {@code Map} that contains all the (vmID, VM) pairs
+     */
     private final Map<Integer, VirtualMachine> clusterVms = new TreeMap<>();
     private int numOfVms = 0;
 
@@ -40,7 +44,7 @@ public class ClusterAdmin {
 
     // Accessors
     protected int getNumOfVms() {return numOfVms;}
-    protected int getQueueCapacity() {return queueCapacity;}
+    public int getQueueCapacity() {return queueCapacity;}
     protected VirtualMachine getVmByID(int id) {return clusterVms.get(id);}            //TODO     Is this error prone?
 
 
@@ -171,7 +175,7 @@ public class ClusterAdmin {
 
     /**
      * A method that adds all the {@code Program} elements
-     * from the {@code clustersPrograms} to queue.
+     * from the {@code clustersPrograms} to the queue.
      */
     protected void queuePrograms() {
         Program [] array = new Program[queueCapacity];
@@ -188,12 +192,14 @@ public class ClusterAdmin {
 
 
     /*
-     * TODO
+     * A set of four methods that find the best suited VM according to the programs requirments
      */
         private PlainVM getBetterPlain(int cpu, int ram, int drive) {
+
             PlainVM betterVm = (PlainVM) clusterVms.values().iterator().next();
             double bestLoad = betterVm.computeLoad(cpu, ram, drive);
             for (VirtualMachine vm:clusterVms.values()) {
+
                 if (vm instanceof PlainVM) {
                     double load = ((PlainVM) vm).computeLoad(cpu, ram, drive);
                     if (bestLoad > load) {
@@ -206,8 +212,10 @@ public class ClusterAdmin {
         }
         
         private VmGPU getBetterGPU(int cpu, int ram, int drive, int gpu) {
+
             VmGPU betterVm = (VmGPU) clusterVms.values().iterator().next();
             double bestLoad = betterVm.computeLoad(cpu, ram, drive, gpu);
+
             for (VirtualMachine vm:clusterVms.values()) {
                 if (vm instanceof VmGPU) {
                     double load = ((VmGPU) vm).computeLoad(cpu, ram, drive, gpu);
@@ -221,10 +229,12 @@ public class ClusterAdmin {
         }
 
         private VmNetworked getBetterNetworked(int cpu, int ram, int drive, int network) {
+
             VmNetworked betterVm = (VmNetworked) clusterVms.values().iterator().next();
             double bestLoad = betterVm.computeLoad(cpu, ram, drive, network);
+
             for (VirtualMachine vm:clusterVms.values()) {
-                if (vm instanceof VmNetworked) {
+                if (vm instanceof NetworkAccessible) {
                     double load = ((VmNetworked) vm).computeLoad(cpu, ram, drive, network);
                     if (bestLoad > load) {
                         bestLoad = load;
@@ -236,8 +246,10 @@ public class ClusterAdmin {
         }
 
         private VmNetworkedGPU getBetterGPUNetworked(int cpu, int ram, int drive, int gpu, int network) {
+
             VmNetworkedGPU betterVm = (VmNetworkedGPU) clusterVms.values().iterator().next();
             double bestLoad = betterVm.computeLoad(cpu, ram, drive, gpu);
+
             for (VirtualMachine vm:clusterVms.values()) {
                 if (vm instanceof VmNetworkedGPU) {
                     double load = ((VmNetworkedGPU) vm).computeLoad(cpu, ram, drive, gpu, network);
@@ -250,11 +262,12 @@ public class ClusterAdmin {
             return betterVm;
         }
 
+
     /**
      * Identifys the programs requirments and calls the prorer method to find the better VM.
      * 
      * @param p The program to be assigned.
-     * @param vm The VM that the program is going to be assigned to. 
+     * @return The better VM to assign the program {@code p}
      * @throws IllegalArgumentException
      */
     private VirtualMachine identifyProgram(Program p) throws IllegalArgumentException {
@@ -289,8 +302,13 @@ public class ClusterAdmin {
     }
     
     public void loadPrograms() {
-       // if (!vm.assignProgram(p)) throw new IllegalArgumentException("duplicate program assignment");    
-        
+        VirtualMachine vm;
+        Program p;
+        while (!programsInQueue.isEmpty()) {
+            p = programsInQueue.pop();
+            vm = identifyProgram(p);
+            vm.assignProgram(p);
+        }
     }
     
 

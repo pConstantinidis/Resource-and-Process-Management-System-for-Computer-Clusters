@@ -43,4 +43,14 @@ public class VmNetworked extends PlainVM implements NetworkAccessible {
         return (double) (allocBandwidth+bandwidthToAlloc)/bandwidth + computeLoad(cpuToAlloc, ramToAlloc, driveToAlloc);
     }
 
+    /**
+     * @param p The program to be assigned.
+     * @return {@code true} if {@code p} wasn't already in the set, {@code false} otherwise.
+     */
+    @Override
+    protected boolean assignProgram(Program p) {
+        this.addAllocBandwidth(p.getBandwidthRequired());
+        return super.assignProgram(p);
+    }
+
 }

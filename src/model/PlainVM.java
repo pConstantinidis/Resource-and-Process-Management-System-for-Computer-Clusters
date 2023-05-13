@@ -45,5 +45,14 @@ public class PlainVM extends VirtualMachine {
         return (double) (allocDrive+driveToAlloc)/drive + computeLoad(cpuToAlloc, ramToAlloc);
     }
     
+    /**
+     * @param p The program to be assigned.
+     * @return {@code true} if {@code p} wasn't already in the set, {@code false} otherwise.
+     */
+    @Override
+    protected boolean assignProgram(Program p) {
+        this.addAllocDrive(p.getDriveRequired());
+        return super.assignProgram(p);
+    }
     
 }

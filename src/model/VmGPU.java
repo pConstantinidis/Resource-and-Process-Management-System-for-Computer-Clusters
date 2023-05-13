@@ -42,4 +42,14 @@ public class VmGPU extends PlainVM {
     protected double computeLoad(int cpuToAlloc, int ramToAlloc, int driveToAlloc, int gpuToAlloc) {
         return (double) (gpuToAlloc+allocGPU)/ + computeLoad(cpuToAlloc, ramToAlloc, driveToAlloc);
     }
+
+    /**
+     * @param p The program to be assigned.
+     * @return {@code true} if {@code p} wasn't already in the set, {@code false} otherwise.
+     */
+    @Override
+    protected boolean assignProgram(Program p) {
+        this.addAllocGPU(p.getGpuRequired());
+        return super.assignProgram(p);
+    }
 }

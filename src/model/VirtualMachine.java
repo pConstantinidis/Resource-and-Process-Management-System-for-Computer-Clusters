@@ -36,13 +36,13 @@ public abstract class VirtualMachine {
     public int getAllocCPU() {return allocCPU;}
     public int getAllocRAM() {return allocRAM;}
 
-    public void addAllocCPU(int cpu) {
+    public void addAllocCPU(int cpu) throws IllegalArgumentException {
         if (cpu <= this.cpu-allocCPU)
             allocCPU += cpu;
         else throw new IllegalArgumentException();
     }
     
-    public void addAllocRAM(int ram) {
+    public void addAllocRAM(int ram) throws IllegalArgumentException {
         if (ram <= this.ram-allocRAM)
             allocRAM += ram;
         else throw new IllegalArgumentException();
@@ -105,6 +105,15 @@ public abstract class VirtualMachine {
      * @return {@code true} if {@code p} wasn't already in the set, {@code false} otherwise.
      */
     protected boolean assignProgram(Program p) {
+        try {
+            this.addAllocCPU(p.getCoresRequired());
+            this.addAllocRAM(p.getRamRequired());            
+        } catch (IllegalArgumentException e) {
+            p.addRejection();
+            if (p.getNumOfRejections() == ClusterAdmin.PROGRAM_REJECTIONS_toDISMISS)
+                p.triggerDismiss();
+        }
+
         return programsAssigned.add(p);
     }
 

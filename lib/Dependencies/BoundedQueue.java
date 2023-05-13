@@ -18,6 +18,10 @@ public class BoundedQueue<E> {
         return size == data.length;
     }
 
+    /**
+     * Adds an element to the queue's tail.
+     * @throws IllegalStateException
+     */
     public void push(E e) throws IllegalStateException {
         if (isFull())
             throw new IllegalStateException("The queue is full");
@@ -26,10 +30,13 @@ public class BoundedQueue<E> {
         size++;
     }
 
-    private boolean isEmpty() {
+    public boolean isEmpty() {
         return size == 0;
     }
 
+    /**
+     * @return An elements from the queue's head.
+     */
     public E pop() {
         if (isEmpty())
             throw new IllegalStateException("can not pop fron an empty queue");

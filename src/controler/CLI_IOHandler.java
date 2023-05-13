@@ -338,7 +338,7 @@ public abstract class CLI_IOHandler extends Admin {
 
     }
 
-    protected void acquirProgramData() {                           //! TODO double check
+    protected void acquirProgramData() {
         short cpu, ram, ssd, gpu, bandwidth, expDuration;
         
         System.out.println("\n\t Submit needed specs...");
@@ -349,7 +349,6 @@ public abstract class CLI_IOHandler extends Admin {
         System.out.print("\n\t ~Drive required (>0) - ");
         ssd = shortReader((short) 1, (short) Globals.getInUseDrive(), programErrMsg, (short) 2, null);
 
-                        //System.out.println("\n\n\tIf you are not intrested in any of the following type '-' (dash).");        maybe not needed TODO
         System.out.print("\n\t ~GPU required - ");
         gpu = shortReader((short) 0, (short) Globals.getInUseGpu(), programErrMsg, (short) 2,"-");
         System.out.print("\n\t ~Bandwidth required - ");
