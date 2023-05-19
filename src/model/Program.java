@@ -1,5 +1,6 @@
 package src.model;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Random;
@@ -7,7 +8,9 @@ import java.util.Random;
 import lib.utils.Globals;
 import lib.utils.ProgramDismissal;
 
-public final class Program extends Admin implements Comparable<Program>, Serializable  {
+public final class Program implements Comparable<Program>, Serializable  {
+
+    private final ClusterAdmin admin = ClusterAdmin.getAdmin();
 
     private final int pID;
     private final int coresRequired;
@@ -62,7 +65,7 @@ public final class Program extends Admin implements Comparable<Program>, Seriali
         Random ran = new Random();
         int num;
         do {
-            num = ran.nextInt(100, getQueueCapacity()+101);
+            num = ran.nextInt(100, admin.getQueueCapacity()+101);
         } while (IDs.contains(num));
         return num;        
     }
@@ -87,7 +90,7 @@ public final class Program extends Admin implements Comparable<Program>, Seriali
         return String.valueOf(pID);
     }
     
-    public void triggerDismiss() {
+    public void triggerDismiss() throws IOException {
         new ProgramDismissal(this);
     }
 }

@@ -23,7 +23,7 @@ public final class CommandLineInterface extends CLI_IOHandler {
             choice = showMenu();
             switch (choice) {
                 case 0: 
-                    if (getNumOfVms() == 0) {
+                    if (admin.getNumOfVms() == 0) {
                         System.out.println(underLine+"\n It seems that there aren't currently"
                             +" any VMs running on the cluster\n In this case you can not proceed.");
                         break;
@@ -49,8 +49,8 @@ public final class CommandLineInterface extends CLI_IOHandler {
             acquirProgramData();
         } while (verify("Do you want to add another program"));
         
-        queuePrograms();
-        loadPrograms();
+        admin.queuePrograms();
+        admin.loadPrograms();
 
 
 

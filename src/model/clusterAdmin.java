@@ -19,7 +19,7 @@ import lib.utils.Globals.OS;
  * 
  * @author pConstantinidis
  */
-public class ClusterAdmin {
+public final class ClusterAdmin {
 
     public final static int RAM = 256;                // Gb
     public final static int DRIVE = 2048;             // Gb
@@ -40,40 +40,52 @@ public class ClusterAdmin {
      */
     private final ArrayList<Program> clustersPrograms = new ArrayList<>();
     private BoundedQueue<Program> programsInQueue;
-    protected int queueCapacity = 0;
+    public int queueCapacity = 0;
+
+    /**
+     * A method that returns the clusters admin based on the singleton design pattern.
+     * <p>This way only one single instantiation of this class is possible.
+     */
+    public static ClusterAdmin getAdmin() {
+        if (CLUSTERS_ADMIN == null)
+            return new ClusterAdmin();
+        return CLUSTERS_ADMIN;
+    }
+    private static ClusterAdmin CLUSTERS_ADMIN;
+    private ClusterAdmin() {}
 
     // Accessors
-    protected int getNumOfVms() {return numOfVms;}
+    public int getNumOfVms() {return numOfVms;}
     public int getQueueCapacity() {return queueCapacity;}
-    protected VirtualMachine getVmByID(int id) {return clusterVms.get(id);}            //TODO     Is this error prone?
+    public VirtualMachine getVmByID(int id) {return clusterVms.get(id);}            //TODO     Is this error prone?
 
 
-    protected void addProgram(Program p) {
+    public void addProgram(Program p) {
         clustersPrograms.add(p);
     }
 
-    protected void createPlainVm(int cpu, int ram, OS os, int drive) throws InputOutOfAdminsStandartsException {
+    public void createPlainVm(int cpu, int ram, OS os, int drive) throws InputOutOfAdminsStandartsException {
         
         clusterVms.put(numOfVms+1, new PlainVM(cpu, ram, os, drive));
         updateClustersReserve(-cpu, -ram, -drive, 0, 0);
         numOfVms++;
     }
 
-    protected void createVmGPU(int cpu, int ram, OS os, int drive, int gpu) throws InputOutOfAdminsStandartsException {
+    public void createVmGPU(int cpu, int ram, OS os, int drive, int gpu) throws InputOutOfAdminsStandartsException {
         
         clusterVms.put(numOfVms+1, new VmGPU(cpu, ram, os, drive, gpu));
         updateClustersReserve(-cpu, -ram, -drive, -gpu, 0);
         numOfVms++;
     }
 
-    protected void createVmNetworked(int cpu, int ram, OS os, int drive, int bandwidth) throws InputOutOfAdminsStandartsException {
+    public void createVmNetworked(int cpu, int ram, OS os, int drive, int bandwidth) throws InputOutOfAdminsStandartsException {
         
         clusterVms.put(numOfVms+1, new VmNetworked(cpu, ram, os, drive, bandwidth));
         updateClustersReserve(-cpu, -ram, -drive, 0, -bandwidth);
         numOfVms++;
     }
 
-    protected void createVmNetworkedGpu(int cpu, int ram, OS os, int drive, int gpu, int bandwidth) throws InputOutOfAdminsStandartsException {
+    public void createVmNetworkedGpu(int cpu, int ram, OS os, int drive, int gpu, int bandwidth) throws InputOutOfAdminsStandartsException {
 
         clusterVms.put(numOfVms+1, new VmNetworkedGPU(cpu, ram, os, drive, gpu, bandwidth));
         updateClustersReserve(-cpu, -ram, -drive, -gpu, -bandwidth);
@@ -81,38 +93,38 @@ public class ClusterAdmin {
     }
 
     
-    protected void updateCPU(int vmId, int newCpu) throws InputOutOfAdminsStandartsException {
+    public void updateCPU(int vmId, int newCpu) throws InputOutOfAdminsStandartsException {
         VirtualMachine vm = clusterVms.get(vmId);
                             
         updateClustersReserve(vm.getCpu()-newCpu, 0, 0, 0, 0);
         vm.updateCpu(newCpu);
     }
 
-    protected void updateRAM(int vmId, int newRam) throws InputOutOfAdminsStandartsException {
+    public void updateRAM(int vmId, int newRam) throws InputOutOfAdminsStandartsException {
         VirtualMachine vm = clusterVms.get(vmId);
         updateClustersReserve(0, vm.getRam()-newRam, 0, 0, 0);
         vm.updateRam(newRam);
     }
 
-    protected void updateDrive(int vmId, int newDrive) throws ClassCastException, InputOutOfAdminsStandartsException, NullPointerException {
+    public void updateDrive(int vmId, int newDrive) throws ClassCastException, InputOutOfAdminsStandartsException, NullPointerException {
         PlainVM vm = (PlainVM) clusterVms.get(vmId);
         updateClustersReserve(0, 0, vm.getDrive()-newDrive, 0, 0);
         vm.updateDrive(newDrive);
     }
 
-    protected void updateGPU(int vmId, int newGpu) throws ClassCastException, InputOutOfAdminsStandartsException, NullPointerException {
+    public void updateGPU(int vmId, int newGpu) throws ClassCastException, InputOutOfAdminsStandartsException, NullPointerException {
         VmGPU vm = (VmGPU) clusterVms.get(vmId);
         updateClustersReserve(0, 0, 0, vm.getGpu()-newGpu, 0);
         vm.updateGpu(newGpu);
     }
 
-    protected void updateBandwidth(int vmId, int newBandwidth) throws InputOutOfAdminsStandartsException, ClassCastException, NullPointerException {
+    public void updateBandwidth(int vmId, int newBandwidth) throws InputOutOfAdminsStandartsException, ClassCastException, NullPointerException {
         NetworkAccessible vm = (NetworkAccessible) clusterVms.get(vmId);
         updateClustersReserve(0, 0, 0, 0, vm.getBandwidth()-newBandwidth);
         vm.updateBandwidth(newBandwidth);
     }
 
-    protected void updateOS(int vmId, OS newOs) throws InputOutOfAdminsStandartsException {
+    public void updateOS(int vmId, OS newOs) throws InputOutOfAdminsStandartsException {
         if (newOs != null)
             clusterVms.get(vmId).updateOs(newOs);
     }
@@ -121,7 +133,7 @@ public class ClusterAdmin {
      * An accesor for the VMs class name.
      * @return The "Simple name" of the VMs class.
      */
-    protected String getVmsClass(VirtualMachine vm) {
+    public String getVmsClass(VirtualMachine vm) {
         return clusterVms.getClass().getSimpleName();
     }
 
@@ -130,7 +142,7 @@ public class ClusterAdmin {
      * 
      * @param vmId The ID of the VM to be removed.
      */
-    protected void deleteVm(int vmId) throws IllegalArgumentException {                   //TODO      NEED TO IMPLEMENT TRY-CATCH AT HIGHER LEVEL
+    public void deleteVm(int vmId) throws IllegalArgumentException {                   //TODO      NEED TO IMPLEMENT TRY-CATCH AT HIGHER LEVEL
         if (!clusterVms.containsKey(vmId)) {
             throw new IllegalArgumentException("This ID does not exist");
         }
@@ -177,7 +189,7 @@ public class ClusterAdmin {
      * A method that adds all the {@code Program} elements
      * from the {@code clustersPrograms} to the queue.
      */
-    protected void queuePrograms() {
+    public void queuePrograms() {
         Program [] array = new Program[queueCapacity];
         clustersPrograms.toArray(array);
 
@@ -278,7 +290,7 @@ public class ClusterAdmin {
         if (isGPUed && isNetworked) vmType = "vmnetworkedgpu";
         else if (isGPUed && !isNetworked) vmType = "vmgpu";
         else if (!isGPUed && !isNetworked) vmType = "plainvm";
-        else vmType = "vmnetworked";
+        vmType = "vmnetworked";
 
         VirtualMachine betterVM;
         switch (vmType) {

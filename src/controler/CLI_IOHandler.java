@@ -5,12 +5,13 @@ import java.util.Scanner;
 import lib.Dependencies.InputOutOfAdminsStandartsException;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
-import src.model.Admin;
 import src.model.ClusterAdmin;
 import src.model.Program;
 import src.model.VirtualMachine;
 
-public abstract class CLI_IOHandler extends Admin {
+public abstract class CLI_IOHandler {
+
+    protected final ClusterAdmin admin = ClusterAdmin.getAdmin();
     
     private final String ignoreInputSequence = "-";
     private final Scanner reader = new Scanner(System.in);           //TODO To be closed at the end of the program by the last possible method to be called (or somethung like that)
@@ -138,7 +139,7 @@ public abstract class CLI_IOHandler extends Admin {
                     reader.nextLine();
                     countInvalid=0;
                 }
-                else if (!isValid) {
+                if (!isValid) {
                     System.out.print("\n"+underLine+"\n"+ "Try again: ");
                     reader.nextLine();
                 }
@@ -169,25 +170,25 @@ public abstract class CLI_IOHandler extends Admin {
         try {
             switch (vmChoice) {
                 case 1:
-                    createPlainVm(basicData[0], basicData[1], os, basicData[2]);
+                    admin.createPlainVm(basicData[0], basicData[1], os, basicData[2]);
                     showSuccessMsg("Plain VM creation");
                     break;
 
                 case 2:
                     short gpu = acquirGPU();    // This way the aritmetical submition won't split
-                    createVmGPU(basicData[0], basicData[1], os, basicData[2], gpu);
+                    admin.createVmGPU(basicData[0], basicData[1], os, basicData[2], gpu);
                     showSuccessMsg("GPU accessible VM creation");
                     break;
 
                 case 3:
                     short bandwidth = acquirBandwidth();
-                    createVmNetworked(basicData[0], basicData[1], os, basicData[2], bandwidth);
+                    admin.createVmNetworked(basicData[0], basicData[1], os, basicData[2], bandwidth);
                     showSuccessMsg("Network accessible VM creation");
                     break;
 
                 case 4:
                     short gpu1 = acquirGPU(), bandwidth1 = acquirBandwidth();
-                    createVmNetworkedGpu(basicData[0], basicData[1], os, basicData[2], gpu1, bandwidth1);
+                    admin.createVmNetworkedGpu(basicData[0], basicData[1], os, basicData[2], gpu1, bandwidth1);
                     showSuccessMsg("VM with GPU and network access creation");
             }
         } catch(InputOutOfAdminsStandartsException e) {
@@ -215,19 +216,19 @@ public abstract class CLI_IOHandler extends Admin {
 
         if (input == 'n') return false;
         else if (input == 'y') return true;
-        else return false;
+        return false;
     }
 
     /**
      * A method that updates the elements of a VM.
      */
     protected void updateVm() {
-        if (getNumOfVms() == 0) {
+        if (admin.getNumOfVms() == 0) {
             System.out.println("\n\t\tCurrently there are no VMs in the cluster!");
             return;
         }
         int vmId = readID("updated");
-        VirtualMachine vm = getVmByID(vmId);
+        VirtualMachine vm = admin.getVmByID(vmId);
         short newCpu, newRam, newDrive, newGpu, newBandwidth;
         boolean hasBeenUpdated=false;
         OS newOs;
@@ -240,13 +241,13 @@ public abstract class CLI_IOHandler extends Admin {
         System.out.print("\n\t~SSD : ");
         newDrive = shortReader((short) 1, (short) Globals.getAvailableDrive(), "Input out of valid range : 1 - "+Globals.getAvailableDrive(), (short) 3, ignoreInputSequence);
 
-        switch (getVmsClass(vm)) {
+        switch (admin.getVmsClass(vm)) {
             case "VmGPU":
                 System.out.print("\n\t~GPU : ");
                 newGpu = shortReader((short) 1, (short) Globals.getAvailableGpu(), "Input out of valid range : 1 - "+Globals.getAvailableGpu(), (short) 3, ignoreInputSequence);
                 if (newGpu!=0 && verify("Are you sure that you want to update the VM with ID : "+ vmId)) {
                     try {
-                        updateGPU(vmId, newGpu);
+                        admin.updateGPU(vmId, newGpu);
                         hasBeenUpdated = true;
                     } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
                         System.err.println("\n\n\t*FATAL ERROR*");
@@ -260,7 +261,7 @@ public abstract class CLI_IOHandler extends Admin {
                 newBandwidth = shortReader((short) 4, (short) Globals.getAvailableBandwidth(), "Input out of valid range : 4 - "+Globals.getAvailableBandwidth(), (short) 3, ignoreInputSequence);
                 if (newBandwidth!=0 && verify("Are you sure that you want to update the VM with ID : "+ vmId)) {
                     try {
-                        updateBandwidth(vmId, newBandwidth);
+                        admin.updateBandwidth(vmId, newBandwidth);
                         hasBeenUpdated = true;
                     } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
                         System.err.println("\n\n\t*FATAL ERROR*");
@@ -277,8 +278,8 @@ public abstract class CLI_IOHandler extends Admin {
                 newBandwidth = shortReader((short) 4, (short) Globals.getAvailableBandwidth(), "Input out of valid range : 4 - "+Globals.getAvailableBandwidth(), (short) 3, ignoreInputSequence);
                 if ((newGpu!=0 || newBandwidth!=0) && verify("Are you sure that you want to update the VM with ID : "+ vmId)) {
                     try {
-                        if(newGpu!=0) updateBandwidth(vmId, newBandwidth);
-                        if(newBandwidth!=0) updateGPU(vmId, newGpu);
+                        if(newGpu!=0) admin.updateBandwidth(vmId, newBandwidth);
+                        if(newBandwidth!=0) admin.updateGPU(vmId, newGpu);
                         hasBeenUpdated= true;
                     } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
                         System.err.println("\n\n\t*FATAL ERROR*");
@@ -291,10 +292,10 @@ public abstract class CLI_IOHandler extends Admin {
 
         if (hasBeenUpdated || ((newCpu!=0 || newRam!=0 || newDrive!=0) && verify("Are you sure that you want to update the VM with ID : "+ vmId))) {              //! TODO  TO BE RATED
             try {                                                                                                                   //! TODO NEED TO CHANGE THE PROGRAMS RESPONSE WHEN A "FATAL" OCCURRUS
-                if (newCpu != 0) updateCPU(vmId, newCpu);
-                if (newRam != 0) updateRAM(vmId, newRam);
-                if (newDrive != 0) updateDrive(vmId, newDrive);
-                if (newOs!=null && verify("Are you sure that you want to update the VMs operating system")) updateOS(vmId, newOs);
+                if (newCpu != 0) admin.updateCPU(vmId, newCpu);
+                if (newRam != 0) admin.updateRAM(vmId, newRam);
+                if (newDrive != 0) admin.updateDrive(vmId, newDrive);
+                if (newOs!=null && verify("Are you sure that you want to update the VMs operating system")) admin.updateOS(vmId, newOs);
             } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
                 System.err.println("\n\n\t*FATAL ERROR*");
                 return;
@@ -309,21 +310,21 @@ public abstract class CLI_IOHandler extends Admin {
      */
     private int readID(String operation) {
         System.out.print("\n"+doubleLine+"\n ~The ID of the VM to be "+operation+" is : ");
-         return shortReader((short) 1, (short) getNumOfVms(), "There is no such ID", (short)1, null);
+         return shortReader((short) 1, (short) admin.getNumOfVms(), "There is no such ID", (short)1, null);
     }
     
     /**
      * TODO
      */
     protected void deleteVm() {
-        if (getNumOfVms() == 0) {
+        if (admin.getNumOfVms() == 0) {
             System.out.println("\n\t\tCurrently there are no VMs in the cluster!");
             return;
         }
         int vmId = readID("deleted");
         
         if (verify("Are you sure that you want to delete the VM with ID : "+ vmId)) {
-            try {deleteVm(vmId); } catch(IllegalArgumentException e) {
+            try {admin.deleteVm(vmId); } catch(IllegalArgumentException e) {
                 System.err.println("\n\n\t*FATAL ERROR*");
                 return;
             }
@@ -357,8 +358,8 @@ public abstract class CLI_IOHandler extends Admin {
         System.out.print("\n"+underLine+"\nThe expected execution time of the program is: ");
         expDuration = shortReader((short) 0, (short) ClusterAdmin.MAX_PROGRAM_RUNTIME, "The expected execution time is too long", (short) 1, null);
 
-        addProgram(new Program(cpu, ram, ssd, gpu, bandwidth, expDuration));
-        queueCapacity++;
+        admin.addProgram(new Program(cpu, ram, ssd, gpu, bandwidth, expDuration));
+        admin.queueCapacity++;
     }
 
 
