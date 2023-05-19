@@ -41,8 +41,9 @@ public final class ProgramDismissal extends ObjectOutputStream {
 
             ois.close();
             writer.close();
+            return;
         }
-        else throw new IOException();
+        throw new IOException();
     }
 
 

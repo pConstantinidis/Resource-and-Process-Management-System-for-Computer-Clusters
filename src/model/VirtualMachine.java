@@ -1,5 +1,6 @@
 package src.model;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -104,7 +105,7 @@ public abstract class VirtualMachine {
      * @param p The program to be assigned.
      * @return {@code true} if {@code p} wasn't already in the set, {@code false} otherwise.
      */
-    protected boolean assignProgram(Program p) {
+    protected boolean assignProgram(Program p) throws IOException {
         try {
             this.addAllocCPU(p.getCoresRequired());
             this.addAllocRAM(p.getRamRequired());            
