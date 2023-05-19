@@ -2,7 +2,7 @@ package src.model;
 
 import java.io.IOException;
 
-import lib.Dependencies.InputOutOfAdminsStandartsException;
+import lib.dependencies.InputOutOfAdminsStandartsException;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
 

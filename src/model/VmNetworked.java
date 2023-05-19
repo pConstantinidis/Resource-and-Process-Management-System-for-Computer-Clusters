@@ -2,8 +2,8 @@ package src.model;
 
 import java.io.IOException;
 
-import lib.Dependencies.InputOutOfAdminsStandartsException;
-import lib.Dependencies.NetworkAccessible;
+import lib.dependencies.InputOutOfAdminsStandartsException;
+import lib.dependencies.NetworkAccessible;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
 

@@ -6,7 +6,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
-import lib.Dependencies.InputOutOfAdminsStandartsException;
+import lib.dependencies.InputOutOfAdminsStandartsException;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
 
@@ -93,7 +93,7 @@ public abstract class VirtualMachine {
      * @return The OS used before the update.
      * @throws InputOutOfAdminsStandartsException
      */
-    protected String updateOs(OS newOs) throws InputOutOfAdminsStandartsException {
+    protected String updateOs(OS newOs) {
             OS oldOs = os;
             os = newOs;
             if (oldOs != null)

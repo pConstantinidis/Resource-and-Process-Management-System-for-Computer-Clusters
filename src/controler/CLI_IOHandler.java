@@ -2,7 +2,7 @@ package src.controler;
 
 import java.util.Scanner;
 
-import lib.Dependencies.InputOutOfAdminsStandartsException;
+import lib.dependencies.InputOutOfAdminsStandartsException;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
 import src.model.ClusterAdmin;

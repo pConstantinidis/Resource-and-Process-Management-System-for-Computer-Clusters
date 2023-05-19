@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import lib.Dependencies.BoundedQueue;
-import lib.Dependencies.InputOutOfAdminsStandartsException;
-import lib.Dependencies.NetworkAccessible;
+import lib.dependencies.BoundedQueue;
+import lib.dependencies.InputOutOfAdminsStandartsException;
+import lib.dependencies.NetworkAccessible;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
 

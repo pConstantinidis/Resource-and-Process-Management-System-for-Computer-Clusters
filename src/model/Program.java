@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 import lib.utils.Globals;
-import lib.utils.ProgramDismissal;
+import src.backend.ProgramDismissal;
 
 public final class Program implements Comparable<Program>, Serializable  {
 

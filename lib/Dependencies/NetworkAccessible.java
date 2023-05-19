@@ -1,4 +1,4 @@
-package lib.Dependencies;
+package lib.dependencies;
 
 /**
  * An interface that describes virtual machines that have access to the web.

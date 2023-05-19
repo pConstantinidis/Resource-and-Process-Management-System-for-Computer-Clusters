@@ -1,4 +1,4 @@
-package lib.Dependencies;
+package lib.dependencies;
 
 /**
  * 
