@@ -1,6 +1,8 @@
 package src.model;
 
 import java.io.IOException;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -20,9 +22,11 @@ public abstract class VirtualMachine {
     private OS os;
 
     /**
-     * An in order (according to the comparator) collection of all the programs assigned to a VM.
+     * An ascending collection of all the programs assigned to a VM.
+     * 
+     * <p>
      */
-    private Set<Program> programsAssigned = new TreeSet<Program>( (p1, p2) -> {
+    private Queue<Program> programsAssigned = new PriorityQueue<>( (p1, p2) -> {
         return Integer.compare(p1.getExecutionTime(), p2.getExecutionTime());
     });
 
