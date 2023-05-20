@@ -1,9 +1,10 @@
 package src.model;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-
+import java.util.TreeMap;
 
 import lib.dependencies.InputOutOfAdminsStandartsException;
 import lib.utils.Globals;
@@ -23,13 +24,26 @@ public abstract class VirtualMachine {
 
 
     /**
-     * An ascending collection of all the programs assigned to a VM.
-     * 
-     * <p>TODO
+     * TODO
      */
-    private Queue<Program> programsAssigned = new PriorityQueue<>( (p1, p2) -> {
-        return Integer.compare(p1.getExecutionTime(), p2.getExecutionTime());
+    private Queue<Program> programsAssigned = new PriorityQueue<>((p1, p2) -> {
+        long expToEnd1 = p1.getExpectedDuration() + p1.getStartedExecution();
+        long expToEnd2 = p2.getExpectedDuration() + p2.getStartedExecution();
+        return Long.compare(expToEnd1, expToEnd2);
     });
+
+    /**
+     * TODO
+     * @return
+     */
+    Integer peekRunningPrgs() {
+        Program prg = programsAssigned.peek();
+        if (prg.getExpectedDuration() + prg.getStartedExecution() <= System.currentTimeMillis()) {
+            return programsAssigned.poll().getID();
+        }
+        return null;
+    }
+    
 
     /**
      * The CPU/RAM that is allready allocated on the VM.
@@ -132,6 +146,7 @@ public abstract class VirtualMachine {
             return 1;
         }
         programsAssigned.add(p);
+        p.setStartedExecution(System.currentTimeMillis());
         return 0;
     }
 
