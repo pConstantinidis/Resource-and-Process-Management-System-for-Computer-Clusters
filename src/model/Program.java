@@ -22,6 +22,7 @@ public final class Program implements Comparable<Program>, Serializable  {
     private int executionTime = 0;
     private final HashSet<Integer> IDs = new HashSet<>(5);
     private short countRejections = 0;
+
     void addRejection() {this.countRejections++;}
     
     public int getCoresRequired() {return coresRequired;}
@@ -91,6 +92,6 @@ public final class Program implements Comparable<Program>, Serializable  {
     }
     
     public void triggerDismiss() throws IOException {
-        new ProgramDismissal(this);
+        ProgramDismissal.dismiss(this);
     }
 }
