@@ -40,6 +40,7 @@ public final class ClusterAdmin {
      */
     private final ArrayList<Program> clustersPrograms = new ArrayList<>();
     private BoundedQueue<Program> programsInQueue;
+    public boolean isQueueEmpty() {return programsInQueue.isEmpty();}
     public int queueCapacity = 0;
     public void pushProgram(Program p) {
         programsInQueue.push(p);
@@ -316,14 +317,31 @@ public final class ClusterAdmin {
         return betterVM;
     }
     
-    public void loadPrograms() {
+    /**
+     * Pops a program from the queue and assignes it to the optimum VM.
+     */
+    public void loadProgram() {
         VirtualMachine vm;
-        Program p;
-        while (!programsInQueue.isEmpty()) {
-            p = programsInQueue.pop();
-            vm = identifyProgram(p);
-            vm.assignProgram(p);
+        Program prg;
+        prg = programsInQueue.pop();
+        vm = identifyProgram(prg);
+        vm.assignProgram(prg);
+    }
+
+    /**
+     * TODO
+     * @return The programs IDs that terminated succesfuly.
+     */
+    public ArrayList<Integer> updateRunningPrograms() {             //!!!!! TODO
+        ArrayList<Integer> finished = new ArrayList<>();
+        for (VirtualMachine vm:clusterVms.values()) {
+            Integer vmId = vm.peekRunningPrgs();
+            if (vmId != null) {
+                finished.add(vmId);
+            }
+
         }
+        return finished;
     }
     
 
