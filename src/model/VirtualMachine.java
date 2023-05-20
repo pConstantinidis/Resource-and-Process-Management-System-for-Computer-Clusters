@@ -3,8 +3,7 @@ package src.model;
 import java.io.IOException;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Set;
-import java.util.TreeSet;
+
 
 import lib.dependencies.InputOutOfAdminsStandartsException;
 import lib.utils.Globals;
@@ -20,11 +19,13 @@ public abstract class VirtualMachine {
     private int cpu;
     private int ram;
     private OS os;
+    private ClusterAdmin admin = ClusterAdmin.getAdmin();
+
 
     /**
      * An ascending collection of all the programs assigned to a VM.
      * 
-     * <p>
+     * <p>TODO
      */
     private Queue<Program> programsAssigned = new PriorityQueue<>( (p1, p2) -> {
         return Integer.compare(p1.getExecutionTime(), p2.getExecutionTime());
@@ -41,12 +42,20 @@ public abstract class VirtualMachine {
     public int getAllocCPU() {return allocCPU;}
     public int getAllocRAM() {return allocRAM;}
 
+    /**
+     * @param cpu
+     * @throws IllegalArgumentException In the case that the {@code cpu} exceeds the one allocated on the VMs.
+     */
     public void addAllocCPU(int cpu) throws IllegalArgumentException {
         if (cpu <= this.cpu-allocCPU)
             allocCPU += cpu;
         else throw new IllegalArgumentException();
     }
     
+    /**
+     * @param ram
+     * @throws IllegalArgumentException In the case that the {@code ram} exceeds the one allocated on the VMs.
+     */
     public void addAllocRAM(int ram) throws IllegalArgumentException {
         if (ram <= this.ram-allocRAM)
             allocRAM += ram;
@@ -107,19 +116,23 @@ public abstract class VirtualMachine {
 
     /**
      * @param p The program to be assigned.
-     * @return {@code true} if {@code p} wasn't already in the set, {@code false} otherwise.
+     * @return 0 If the program was assigned succesfuly, 1 if the program was re-pushed to the queue and -1 if it gote dismissed.
      */
-    protected boolean assignProgram(Program p) throws IOException {
+    protected int assignProgram(Program p) throws IOException {
         try {
             this.addAllocCPU(p.getCoresRequired());
             this.addAllocRAM(p.getRamRequired());            
         } catch (IllegalArgumentException e) {
             p.addRejection();
-            if (p.getNumOfRejections() == ClusterAdmin.PROGRAM_REJECTIONS_toDISMISS)
+            if (p.getNumOfRejections() == ClusterAdmin.PROGRAM_REJECTIONS_toDISMISS) {
                 p.triggerDismiss();
+                return -1;
+            }
+            admin.pushProgram(p);
+            return 1;
         }
-
-        return programsAssigned.add(p);
+        programsAssigned.add(p);
+        return 0;
     }
 
 }
