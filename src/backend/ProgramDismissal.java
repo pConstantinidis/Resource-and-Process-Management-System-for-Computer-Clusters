@@ -38,7 +38,7 @@ public final class ProgramDismissal {
             System.out.println(ois.readChar());
 
 
-            //writer.append(p.toString()+':'+p.getCoresRequired()+'|'+p.getRamRequired()+'|'+p.getDriveRequired()+'|'+p.getGpuRequired()+'|'+p.getBandwidthRequired()+"\n");
+            //writer.append(p.getID()+':'+p.getCoresRequired()+'|'+p.getRamRequired()+'|'+p.getDriveRequired()+'|'+p.getGpuRequired()+'|'+p.getBandwidthRequired()+"\n");
 
             ois.close();
             writer.close();

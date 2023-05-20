@@ -7,6 +7,8 @@ import src.controler.CLI_IOHandler;
     * This class is propably going to be merged with the {@code InputHandler} class and form a CLI class.
     * The CLI class and the GUI class will communicate there inputs to the {@code ClusterAdmin} class and form there (and not only)
     * the errors will be thrown and each UI will iplement different error handling
+
+ * @author pConstantinidis
  */
 public final class CommandLineInterface extends CLI_IOHandler {
     
@@ -50,9 +52,13 @@ public final class CommandLineInterface extends CLI_IOHandler {
         } while (verify("Do you want to add another program"));
         
         admin.queuePrograms();
-        admin.loadPrograms();
 
+        admin.loadProgram();
+        while (!admin.isQueueEmpty()) {
+            admin.updateRunningPrograms();
 
+            admin.loadProgram();
+        }
 
     }
     

@@ -8,6 +8,10 @@ import java.util.Random;
 import lib.utils.Globals;
 import src.backend.ProgramDismissal;
 
+/**
+ * 
+ * @author pConstantinidis
+ */
 public final class Program implements Comparable<Program>, Serializable  {
 
     private final ClusterAdmin admin = ClusterAdmin.getAdmin();
@@ -19,8 +23,8 @@ public final class Program implements Comparable<Program>, Serializable  {
     private final int gpuRequired;
     private final int bandwidthRequired;
     private final int expectedDuration;  // Secs
-    private int executionTime = 0;
-    private final HashSet<Integer> IDs = new HashSet<>(5);
+    private long startedExecution;
+    private static final HashSet<Integer> IDs = new HashSet<>(5);
     private short countRejections = 0;
 
     void addRejection() {this.countRejections++;}
@@ -32,8 +36,9 @@ public final class Program implements Comparable<Program>, Serializable  {
     public int getBandwidthRequired() {return bandwidthRequired;}
 
     int getExpectedDuration() {return this.expectedDuration;}
-    int getExecutionTime() {return this.executionTime;}
     short getNumOfRejections() {return this.countRejections;}
+    long getStartedExecution() {return this.startedExecution;}
+    void setStartedExecution(long timeInMillis) {this.startedExecution = timeInMillis;}
 
     /**
      * Parameters that aren't required should be set to 0.
@@ -86,9 +91,8 @@ public final class Program implements Comparable<Program>, Serializable  {
     /**
      * @return The programs ID.
      */
-    @Override
-    public String toString() {
-        return String.valueOf(pID);
+    public int getID() {
+        return pID;
     }
     
     public void triggerDismiss() throws IOException {
