@@ -41,6 +41,9 @@ public final class ClusterAdmin {
     private final ArrayList<Program> clustersPrograms = new ArrayList<>();
     private BoundedQueue<Program> programsInQueue;
     public int queueCapacity = 0;
+    public void pushProgram(Program p) {
+        programsInQueue.push(p);
+    }
 
     /**
      * A method that returns the clusters admin based on the singleton design pattern.
