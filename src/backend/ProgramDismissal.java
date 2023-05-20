@@ -11,6 +11,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
+import src.model.ClusterAdmin;
 import src.model.Program;
 
 /**
@@ -18,14 +19,14 @@ import src.model.Program;
  * 
  * @author pConstantinidis
  */
-public final class ProgramDismissal extends ObjectOutputStream {
+public final class ProgramDismissal {
 
     private static Program p;
     private final static File dismissed = new File("./log/rejected.out");
     private static FileWriter writer;
     private static ObjectOutput oos;                                                                    //!
 
-    public ProgramDismissal(Program p) throws IOException {
+    public static void dismiss(Program p) throws IOException {
         ProgramDismissal.p = p;
         if (dismissed.canWrite() && dismissed.exists()) {                                                     //! NEED TO LEARN ABOUT THESE
             writer = new FileWriter(dismissed, true);
@@ -44,11 +45,6 @@ public final class ProgramDismissal extends ObjectOutputStream {
             return;
         }
         throw new IOException();
-    }
-
-
-    public static void main(String[] args) throws IOException {
-        new ProgramDismissal(new Program(2, 3, 4, 2, 0, 0));
     }
 
 
