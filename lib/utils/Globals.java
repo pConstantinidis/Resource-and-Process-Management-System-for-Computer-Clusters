@@ -1,9 +1,7 @@
 package lib.utils;
 
 import lib.dependencies.InputOutOfAdminsStandartsException;
-import lib.dependencies.NetworkAccessible;
 import src.model.ClusterAdmin;
-import src.model.VmNetworkedGPU;
 
 /**
  * A class that is to be used widely around the project
@@ -122,8 +120,9 @@ public final class Globals {
           * ! To be removed
           */
         public static void main(String[] args) throws InputOutOfAdminsStandartsException {
-            
-            
+            String str = "geia:sas";
+
+            System.out.println(str.split(":")[0]);
             
         }
 
