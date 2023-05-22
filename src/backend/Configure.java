@@ -21,7 +21,7 @@ import src.model.VmNetworkedGPU;
 /**
  * TODO
  */
-public final class Configuration {
+public final class Configure {
     
     /**
      * A method that reads data from a {@code config} text file and returns a list of the equivilant VMs.
@@ -53,9 +53,10 @@ public final class Configuration {
                 gpu = getGPU(line, true);
                 bandwidth = getBandwidth(line, true);
             } catch (Exception e) {
+                throw new IllegalArgumentException("invalid resource value");
+            } finally {
                 vms.close();
                 fReader.close();
-                throw new IllegalArgumentException("invalid resource value");
             }
 
             switch (concludeType(gpu, bandwidth)) {
@@ -216,16 +217,15 @@ public final class Configuration {
                 bandwidth = getBandwidth(line, false);
                 time = getExeTime(line);
             } catch (Exception e) {
+                throw new IllegalBlockSizeException("invalid resource value");
+            } finally {
                 programs.close();
                 fReader.close();
-                throw new IllegalBlockSizeException("invalid resource value");
             }
             data.add(new Program(cpu, ram, drive, gpu, bandwidth, time));
             
             line = fReader.readLine().trim().split(",");
         }
-        programs.close();
-        fReader.close();
         return data;
     }
 
