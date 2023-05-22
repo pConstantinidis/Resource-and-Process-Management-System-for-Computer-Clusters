@@ -56,7 +56,7 @@ public abstract class CLI_IOHandler {
         System.out.print("\n"+doubleLine+"\n\t(0) Done with VMs technical specifications\n\t(1) Create a VM\n\t(2) Update an existing VM\n\t(3) Delete a VM\n\t(4) Report\n"+underLine+
         "\n Choose one of the above: ");
 
-        return shortReader((short) 0, (short) 5, "",  (short)0, null);
+        return shortReader((short) 0, (short) 5, null,  (short)0, null);
     }
 
     /**
@@ -134,7 +134,7 @@ public abstract class CLI_IOHandler {
                     countInvalid++;
                 }
                 else isValid = true;
-                if (!isValid && countInvalid >= msgFrequency) {
+                if (!isValid && countInvalid >= msgFrequency && errMsg != null) {
                     System.out.print("\n"+underLine+"\n\t"+errMsg+"\n"+underLine +"\n Try again: ");
                     reader.nextLine();
                     countInvalid=0;
@@ -162,7 +162,7 @@ public abstract class CLI_IOHandler {
         short [] basicData = new short[3];    // [CPU, RAM, SSD]
         OS os;
         System.out.print(vmPresentation+"\n"+underLine+"\n ~VM Type: ");
-        vmChoice = shortReader((short) 1, (short) 4, null, (short) 3, null);
+        vmChoice = shortReader((short) 1, (short) 4, null, (short) 0, null);
         reserveReport();
         basicData = acquirBasicData();
         os = acquirOS(null);
