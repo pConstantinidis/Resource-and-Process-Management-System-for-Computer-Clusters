@@ -1,11 +1,8 @@
 package src.model;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.TreeMap;
-
 import lib.dependencies.InputOutOfAdminsStandartsException;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
@@ -38,7 +35,7 @@ public abstract class VirtualMachine {
      */
     Integer peekRunningPrgs() {
         Program prg = programsAssigned.peek();
-        if (prg.getExpectedDuration() + prg.getStartedExecution() <= System.currentTimeMillis()) {
+        if (prg.getExpectedDuration()*1000 + prg.getStartedExecution() <= System.currentTimeMillis()) {
             return programsAssigned.poll().getID();
         }
         return null;

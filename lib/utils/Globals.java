@@ -1,7 +1,11 @@
 package lib.utils;
 
+import java.io.IOException;
+
 import lib.dependencies.InputOutOfAdminsStandartsException;
+import src.backend.ProgramDismissal;
 import src.model.ClusterAdmin;
+import src.model.Program;
 
 /**
  * A class that is to be used widely around the project
@@ -118,11 +122,15 @@ public final class Globals {
          /**
           * TODO
           * ! To be removed
+         * @throws IOException
           */
-        public static void main(String[] args) throws InputOutOfAdminsStandartsException {
-            String str = "geia:sas";
-
-            System.out.println(str.split(":")[0]);
+        public static void main(String[] args) throws InputOutOfAdminsStandartsException, IOException {
+            ClusterAdmin admin = ClusterAdmin.getAdmin();
+            admin.createVmNetworkedGpu(5, 7, OS.FEDORA, 5, 4, 7);
+            Program prg = new Program(1, 3, 2, 0, 3, 2);
+            Program prg1 = new Program(2, 2, 1, 4, 0, 6);
+            ProgramDismissal.dismiss(prg);
+            ProgramDismissal.dismiss(prg1);
             
         }
 
