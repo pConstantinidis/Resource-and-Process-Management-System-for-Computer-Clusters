@@ -2,6 +2,7 @@ package src.backend;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,14 +30,16 @@ public final class Configure {
      *
      * <p>Keep in mind that an OS must be defined.
      * 
+     * @apiNote <b>Warning: to maintain the softwares interaction consistant, if a single exception occurres it will discard all the files data and will ask the user to submit them manually.
+     * 
      * @return An {@code ArrayList} with the {@code VirtualMachine} objects casted accordingly.
      * @throws IOException
      * @throws InputOutOfAdminsStandartsException
      * @see #configPrograms()
      */
-    public ArrayList<VirtualMachine> configVMs() throws IOException, IllegalArgumentException, InputOutOfAdminsStandartsException{
-        FileInputStream vms = new FileInputStream("./conf/vms.config");
-        BufferedReader fReader = new BufferedReader(new FileReader("./conf/vms.config"));
+    public ArrayList<VirtualMachine> configVMs() throws IOException, InputOutOfAdminsStandartsException {
+        FileInputStream vms = new FileInputStream("./cfg/vms.config");
+        BufferedReader fReader = new BufferedReader(new FileReader("./cfg/vms.config"));
 
         ArrayList<VirtualMachine> data = new ArrayList<>();
         
@@ -201,8 +204,8 @@ public final class Configure {
      * @see #configVMs()
      */
     public ArrayList<Program> configPrograms() throws IOException, IllegalBlockSizeException {
-        FileInputStream programs = new FileInputStream("./conf/programs.config");
-        BufferedReader fReader = new BufferedReader(new FileReader("./conf/programs.config"));
+        FileInputStream programs = new FileInputStream("./cfg/programs.config");
+        BufferedReader fReader = new BufferedReader(new FileReader("./cfg/programs.config"));
 
         ArrayList<Program> data = new ArrayList<>();
         int cpu=0, ram=0, drive=0, gpu=0, bandwidth=0, time=0;
