@@ -1,7 +1,6 @@
 package src.model;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -12,7 +11,7 @@ import src.backend.ProgramDismissal;
  * 
  * @author pConstantinidis
  */
-public final class Program implements Comparable<Program>, Serializable  {
+public final class Program implements Comparable<Program> {
 
     private final ClusterAdmin admin = ClusterAdmin.getAdmin();
 
@@ -93,6 +92,24 @@ public final class Program implements Comparable<Program>, Serializable  {
      */
     public int getID() {
         return pID;
+    }
+
+    /**
+     * TODO
+     */
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder(20);
+        char delimeter = ProgramDismissal.DELIMETER;
+        str.append("ID:"+this.pID+delimeter);
+        str.append("cores:"+this.coresRequired+delimeter);
+        str.append("ram:"+this.ramRequired+delimeter);
+        str.append("ssd:"+this.driveRequired+delimeter);
+
+        if (this.bandwidthRequired !=0) str.append("bandwidth:"+this.bandwidthRequired+delimeter);
+        if (this.gpuRequired !=0) str.append("gpu:"+this.gpuRequired+delimeter);
+        str.append("exeTimeReq:"+this.expectedDuration);
+        return str.toString();
     }
     
     public void triggerDismiss() throws IOException {

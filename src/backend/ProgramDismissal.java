@@ -1,50 +1,43 @@
 package src.backend;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 
-import src.model.ClusterAdmin;
 import src.model.Program;
 
 /**
- * A class that handles the programs that are to be dismissed.
- * 
+ * A class that handles the programs that are to be dismissed. * 
  * @author pConstantinidis
  */
 public final class ProgramDismissal {
 
-    private static Program p;
+    public static final char DELIMETER = ';';
+    private final static File directory = new File("./log");
     private final static File dismissed = new File("./log/rejected.out");
-    private static FileWriter writer;
-    private static ObjectOutput oos;                                                                    //!
+    private static FileWriter fWriter;
 
+    /**
+     * A method that stores a String representation of a {@code Program} object into an .out file
+     * @apiNote In the case that the file/directory does not exist, is created automaticly.
+     * @param p The program to be dismissed.
+     * @throws IOException
+     */
     public static void dismiss(Program p) throws IOException {
-        ProgramDismissal.p = p;
-        if (dismissed.canWrite() && dismissed.exists()) {                                                     //! NEED TO LEARN ABOUT THESE
-            writer = new FileWriter(dismissed, true);
+        if (!dismissed.canWrite() || !dismissed.exists()) {
+            if (!directory.isDirectory()) directory.mkdirs();
 
-            oos = new ObjectOutputStream(new FileOutputStream(dismissed));                              //!
-            oos.writeChars("Not a UTF text");
-            
-            ObjectInput ois = new ObjectInputStream(new FileInputStream(dismissed));                    //!
-            System.out.println(ois.readChar());
-
-
-            //writer.append(p.getID()+':'+p.getCoresRequired()+'|'+p.getRamRequired()+'|'+p.getDriveRequired()+'|'+p.getGpuRequired()+'|'+p.getBandwidthRequired()+"\n");
-
-            ois.close();
-            writer.close();
-            return;
+            dismissed.createNewFile();
+        } if (!dismissed.canWrite() || !dismissed.exists()) {
+            throw new FileNotFoundException("The directory "+dismissed.getPath()+" doesn't exist.");
         }
-        throw new IOException();
+
+        fWriter = new FileWriter(dismissed, true);
+        fWriter.write(p.toString()+"\n");
+        
+        fWriter.close();
+        return;
     }
 
 
