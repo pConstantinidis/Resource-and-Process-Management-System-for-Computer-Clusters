@@ -53,7 +53,7 @@ public abstract class CLI_IOHandler {
      * @return The number (short) corresponding to the choice.
      */
     protected short showMenu() {
-        System.out.print("\n"+doubleLine+"\n\t(0) Done with VMs technical specifications\n\t(1) Create a VM\n\t(2) Update an existing VM\n\t(3) Delete a VM\n\t(4) Report\n"+underLine+
+        System.out.print(doubleLine+"\n\t(0) Done with VMs technical specifications\n\t(1) Create a VM\n\t(2) Update an existing VM\n\t(3) Delete a VM\n\t(4) Report\n"+underLine+
         "\n Choose one of the above: ");
 
         return shortReader((short) 0, (short) 5, null,  (short)0, null);

@@ -22,6 +22,8 @@ public final class CommandLineInterface extends CLI_IOHandler {
         short choice;
         
         outer: while (true) {
+            if (!admin.vmsAutoConf())           //TODO//! to user test it
+                System.out.println(underLine+"\n\tThere is invalid data among the .conf file\n\nPlease submit them manually...");
             choice = showMenu();
             switch (choice) {
                 case 0: 

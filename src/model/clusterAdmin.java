@@ -1,6 +1,10 @@
 package src.model;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -9,6 +13,7 @@ import lib.dependencies.InputOutOfAdminsStandartsException;
 import lib.dependencies.NetworkAccessible;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
+import src.backend.Configure;
 
 /**
  * The class is declared as abstarct to prevent from intstatiating //! Is that ok??
@@ -32,7 +37,7 @@ public final class ClusterAdmin {
     /**
      * A {@code Map} that contains all the (vmID, VM) pairs
      */
-    private final Map<Integer, VirtualMachine> clusterVms = new TreeMap<>();
+    private final Map<Integer, VirtualMachine> clusterVms = new HashMap<>();
     private int numOfVms = 0;
 
     /**
@@ -63,6 +68,19 @@ public final class ClusterAdmin {
     public int getQueueCapacity() {return queueCapacity;}
     public VirtualMachine getVmByID(int id) {return clusterVms.get(id);}            //TODO     Is this error prone?
 
+    Configure conf = new Configure();
+
+    public boolean vmsAutoConf() {
+        try {
+            for (VirtualMachine vm : conf.configVMs()) {
+                //! need to update the clusters reserve and other things too...
+                clusterVms.put(numOfVms+1, vm);
+            }
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
 
     public void addProgram(Program p) {
         clustersPrograms.add(p);
