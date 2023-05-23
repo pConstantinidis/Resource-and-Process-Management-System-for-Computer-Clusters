@@ -3,6 +3,7 @@ package src.model;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +25,7 @@ import src.backend.Configure;
  * 
  * @author pConstantinidis
  */
-public final class ClusterAdmin {
+public final class ClusterAdmin implements Serializable {
 
     public final static int RAM = 256;                // Gb
     public final static int DRIVE = 2048;             // Gb

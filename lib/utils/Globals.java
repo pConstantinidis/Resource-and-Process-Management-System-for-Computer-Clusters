@@ -129,8 +129,8 @@ public final class Globals {
             admin.createVmNetworkedGpu(5, 7, OS.FEDORA, 5, 4, 7);
             Program prg = new Program(1, 3, 2, 0, 3, 2);
             Program prg1 = new Program(2, 2, 1, 4, 0, 6);
-            ProgramDismissal.dismiss(prg);
-            ProgramDismissal.dismiss(prg1);
+            new ProgramDismissal().dismiss(prg);
+            new ProgramDismissal().dismiss(prg1);
             
         }
 

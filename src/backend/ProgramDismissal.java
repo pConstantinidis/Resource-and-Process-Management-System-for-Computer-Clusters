@@ -1,10 +1,11 @@
 package src.backend;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 
+import src.controler.CLI_IOHandler;
 import src.model.Program;
 
 /**
@@ -14,30 +15,29 @@ import src.model.Program;
 public final class ProgramDismissal {
 
     public static final char DELIMETER = ';';
-    private final static File directory = new File("./log");
-    private final static File dismissed = new File("./log/rejected.out");
-    private static FileWriter fWriter;
+    private final File dismissed = new File("./log/rejected.out");
+    private FileOutputStream fos;
+    private ObjectOutputStream oos;
 
     /**
-     * A method that stores a String representation of a {@code Program} object into an .out file
+     * A method that stores a byte representation of a {@code Program} object into an .out file
      * @apiNote In the case that the file/directory does not exist, is created automaticly.
      * @param p The program to be dismissed.
      * @throws IOException
      */
-    public static void dismiss(Program p) throws IOException {
-        if (!dismissed.canWrite() || !dismissed.exists()) {
-            if (!directory.isDirectory()) directory.mkdirs();
+    public void dismiss(Program p) throws IOException  {
+        try {
+            fos = new FileOutputStream(dismissed);
+            oos =  new ObjectOutputStream(fos);
 
-            dismissed.createNewFile();
-        } if (!dismissed.canWrite() || !dismissed.exists()) {
-            throw new FileNotFoundException("The directory "+dismissed.getPath()+" doesn't exist.");
+            oos.writeObject(p);
+            System.out.println(CLI_IOHandler.underLine+"\n\tThe program with ID: "+p.getID()+" has been dismissed.\n"+CLI_IOHandler.underLine);
+        } catch (Exception e) {
+            System.out.println("Nailed it exception occurred\t !Rejected programs may not have been stored to the file!");
+        } finally {
+            oos.close();
+            fos.close();
         }
-
-        fWriter = new FileWriter(dismissed, true);
-        fWriter.write(p.toString()+"\n");
-        
-        fWriter.close();
-        return;
     }
 
 

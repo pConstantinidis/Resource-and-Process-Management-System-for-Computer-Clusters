@@ -1,6 +1,7 @@
 package src.model;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -11,7 +12,7 @@ import src.backend.ProgramDismissal;
  * 
  * @author pConstantinidis
  */
-public final class Program implements Comparable<Program> {
+public final class Program implements Comparable<Program>, Serializable {
 
     private final ClusterAdmin admin = ClusterAdmin.getAdmin();
 
@@ -113,6 +114,6 @@ public final class Program implements Comparable<Program> {
     }
     
     public void triggerDismiss() throws IOException {
-        ProgramDismissal.dismiss(this);
+        new ProgramDismissal().dismiss(this);
     }
 }

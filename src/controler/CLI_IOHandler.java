@@ -16,7 +16,7 @@ public abstract class CLI_IOHandler {
     private final String ignoreInputSequence = "-";
     private final Scanner reader = new Scanner(System.in);           //TODO To be closed at the end of the program by the last possible method to be called (or somethung like that)
     private final String doubleLine = "====================================================================================";
-    protected final String underLine = "____________________________________________________________________________________";
+    public static final String underLine = "____________________________________________________________________________________";
     protected final String intro = doubleLine+"\n\tThis is a Resource and Process Managment System for a Computer Cluster"+ "\n"+underLine+
                 "\n\n\tA software developed for the OOP course fully developed in Java.\n\n\tAuthor: pConstantinidis\n\tDate: 5/2023\n";
     private final String vmPresentation = "\n"+doubleLine+"\nThere are 4 VM types you can choose from...\n\t[1] Plain VM (CPU, RAM, SSD, selected OS)"+

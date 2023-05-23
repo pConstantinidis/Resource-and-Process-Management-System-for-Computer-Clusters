@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.crypto.IllegalBlockSizeException;
@@ -22,7 +23,7 @@ import src.model.VmNetworkedGPU;
 /**
  * TODO
  */
-public final class Configure {
+public final class Configure implements Serializable {
     
     /**
      * A method that reads data from a {@code config} text file and returns a list of the equivilant VMs.
