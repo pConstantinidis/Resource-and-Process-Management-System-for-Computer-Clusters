@@ -51,6 +51,7 @@ public final class Program implements Comparable<Program>, Serializable {
         this.gpuRequired = gpuRequired;
         this.bandwidthRequired = bandwidthRequired;
         pID = generateID();
+        IDs.add(pID);
     }
     
     /**
@@ -88,11 +89,12 @@ public final class Program implements Comparable<Program>, Serializable {
         return Double.compare(thisPriority, otherPriority);
     }
 
-    /**
-     * @return The programs ID.
-     */
     public int getID() {
         return pID;
+    }
+
+    public static boolean isTheirSuchID(int id) {
+        return IDs.contains(id);
     }
 
     /**
@@ -114,6 +116,7 @@ public final class Program implements Comparable<Program>, Serializable {
     }
     
     public void triggerDismiss() throws IOException {
+        System.out.println("\n\tThe program with ID "+pID+" is being dissmised.");
         new ProgramDismissal().dismiss(this);
     }
 }

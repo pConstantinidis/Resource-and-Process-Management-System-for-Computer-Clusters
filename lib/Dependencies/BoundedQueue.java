@@ -39,7 +39,7 @@ public class BoundedQueue<E> {
      */
     public E pop() {
         if (isEmpty())
-            throw new IllegalStateException("can not pop fron an empty queue");
+            throw new IllegalStateException("can not pop from an empty queue");
 
         E e = peek();
         head = (head+1) % data.length;

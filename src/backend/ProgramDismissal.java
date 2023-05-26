@@ -21,6 +21,9 @@ public final class ProgramDismissal {
 
     /**
      * A method that stores a byte representation of a {@code Program} object into an .out file
+     * 
+     * @apiNote Programs with requirments that exceed the total resources allocated at the cluster will be rejected on input!
+     * 
      * @apiNote In the case that the file/directory does not exist, is created automaticly.
      * @param p The program to be dismissed.
      * @throws IOException
