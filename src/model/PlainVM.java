@@ -7,8 +7,8 @@ import lib.utils.Globals;
 import lib.utils.Globals.OS;
 
 public class PlainVM extends VirtualMachine {
-    private int drive;
-    private int allocDrive;
+    protected int drive;
+    protected int allocDrive;
 
     public int getDrive() {return this.drive;}
     public int getAllocDrive() {return allocDrive;}
@@ -44,7 +44,7 @@ public class PlainVM extends VirtualMachine {
     }
     
     protected double computeLoad(int cpuToAlloc, int ramToAlloc, int driveToAlloc) {
-        return (double) (allocDrive+driveToAlloc)/drive + computeLoad(cpuToAlloc, ramToAlloc);
+        return (double) ((allocDrive+driveToAlloc)/drive + (allocCPU+cpuToAlloc)/cpu + (ramToAlloc+allocRAM)/ram) / 3;
     }
     
     /**

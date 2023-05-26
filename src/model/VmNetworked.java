@@ -42,7 +42,7 @@ public class VmNetworked extends PlainVM implements NetworkAccessible {
     }
 
     protected double computeLoad(int cpuToAlloc, int ramToAlloc, int driveToAlloc, int bandwidthToAlloc) {
-        return (double) (allocBandwidth+bandwidthToAlloc)/bandwidth + computeLoad(cpuToAlloc, ramToAlloc, driveToAlloc);
+        return (double) ((allocBandwidth+bandwidthToAlloc)/bandwidth + (allocCPU+cpuToAlloc)/cpu + (ramToAlloc+allocRAM)/ram + (driveToAlloc+allocDrive)/drive) / 4;
     }
 
     /**

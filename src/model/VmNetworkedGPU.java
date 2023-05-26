@@ -47,7 +47,7 @@ public class VmNetworkedGPU extends VmGPU implements NetworkAccessible {
     }
 
     protected double computeLoad(int cpuToAlloc, int ramToAlloc, int driveToAlloc, int gpuToAlloc, int bandwidthToAlloc) {
-        return (double) (bandwidthToAlloc+allocBandwidth)/bandwidth + computeLoad(cpuToAlloc, ramToAlloc, driveToAlloc, gpuToAlloc);
+        return (double) ((bandwidthToAlloc+allocBandwidth)/bandwidth + (allocCPU+cpuToAlloc)/cpu + (ramToAlloc+allocRAM)/ram + (driveToAlloc+allocDrive)/drive + (gpuToAlloc+allocGPU)/gpu) / 5;
     }
 
     /**

@@ -14,8 +14,8 @@ import lib.utils.Globals.OS;
  */
 public abstract class VirtualMachine {
     
-    private int cpu;
-    private int ram;
+    protected int cpu;
+    protected int ram;
     private OS os;
     private ClusterAdmin admin = ClusterAdmin.getAdmin();
 
@@ -45,7 +45,7 @@ public abstract class VirtualMachine {
     /**
      * The CPU/RAM that is allready allocated on the VM.
      */
-    private int allocCPU, allocRAM;
+    protected int allocCPU, allocRAM;
 
     public int getCpu() {return cpu;}
     public int getRam() {return ram;}
@@ -119,10 +119,6 @@ public abstract class VirtualMachine {
             if (oldOs != null)
                 return oldOs.toString();
             return null;
-    }
-
-    public double computeLoad(int cpuToAlloc, int ramToAlloc) {
-        return (double) (cpuToAlloc+allocCPU)/cpu + (double) (ramToAlloc+ramToAlloc)/ram;
     }
 
     /**

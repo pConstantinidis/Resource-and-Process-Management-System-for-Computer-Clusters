@@ -7,8 +7,8 @@ import lib.utils.Globals;
 import lib.utils.Globals.OS;
 
 public class VmGPU extends PlainVM {
-    private int gpu;
-    private int allocGPU;
+    protected int gpu;
+    protected int allocGPU;
 
     public int getGpu() {return gpu;}
     public int getAllocGPU() {return allocGPU;}
@@ -42,7 +42,7 @@ public class VmGPU extends PlainVM {
     }
 
     protected double computeLoad(int cpuToAlloc, int ramToAlloc, int driveToAlloc, int gpuToAlloc) {
-        return (double) (gpuToAlloc+allocGPU)/ + computeLoad(cpuToAlloc, ramToAlloc, driveToAlloc);
+       return (double) ((allocCPU+cpuToAlloc)/cpu + (ramToAlloc+allocRAM)/ram + (driveToAlloc+allocDrive)/drive + (gpuToAlloc+allocGPU)/gpu) / 4;
     }
 
     /**
