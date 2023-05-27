@@ -1,13 +1,12 @@
 package src.model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import lib.dependencies.BoundedQueue;
 import lib.dependencies.InputOutOfAdminsStandartsException;
@@ -15,6 +14,7 @@ import lib.dependencies.NetworkAccessible;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
 import src.backend.Configure;
+import src.controler.CLI_IOHandler;
 
 /**
  * The class is declared as abstarct to prevent from intstatiating //! Is that ok??
@@ -34,6 +34,10 @@ public final class ClusterAdmin implements Serializable {
     public final static int NETWORK_BANDWIDTH = 320;  // Gb/sec
     public final static int MAX_PROGRAM_RUNTIME = 5400; //Seconds
     public final static short PROGRAM_REJECTIONS_toDISMISS = 3;
+    private final static long SLEEP_DURATION = 2;
+    private final static TimeUnit time = TimeUnit.MINUTES;
+    private final int dummyLoad = 1000;
+
 
     /**
      * A {@code Map} that contains all the (vmID, VM) pairs
@@ -48,20 +52,22 @@ public final class ClusterAdmin implements Serializable {
     private BoundedQueue<Program> programsInQueue;
     public boolean isQueueEmpty() {return programsInQueue.isEmpty();}
     public int queueCapacity = 0;
+
     public void pushProgram(Program p) {
         programsInQueue.push(p);
     }
-
+    public int getNumOfPrgs() {
+        return clustersPrograms.size();
+    }
+    
     /**
      * A method that returns the clusters admin based on the singleton design pattern.
      * <p>This way only one single instantiation of this class is possible.
      */
     public static ClusterAdmin getAdmin() {
-        if (CLUSTERS_ADMIN == null)
-            return new ClusterAdmin();
         return CLUSTERS_ADMIN;
     }
-    private static ClusterAdmin CLUSTERS_ADMIN;
+    private static final ClusterAdmin CLUSTERS_ADMIN = new ClusterAdmin();
     private ClusterAdmin() {}
 
     // Accessors
@@ -69,22 +75,43 @@ public final class ClusterAdmin implements Serializable {
     public int getQueueCapacity() {return queueCapacity;}
     public VirtualMachine getVmByID(int id) {return clusterVms.get(id);}            //TODO     Is this error prone?
 
-    Configure conf = new Configure();
-
-    public boolean vmsAutoConf() {
+    
+    /**
+     * 
+     * @return -1 if neither VMs neither programs where configured, 0 if only VMs where and 1 if both. 
+     */
+    public int autoConf() {
+        Configure conf = new Configure();
+        int prgData=0;
         try {
-            for (VirtualMachine vm : conf.configVMs()) {
-                //! need to update the clusters reserve and other things too...
-                clusterVms.put(numOfVms+1, vm);
-            }
-        } catch (Exception e) {
-            return false;
-        }
+            conf.configVMs();
+            prgData = conf.configPrograms();
 
+            if (numOfVms==0) {
+                System.err.println(CLI_IOHandler.underLine +"\n\tFile/s rejected.");
+                return -1;
+            }
+            
+        } catch (Exception e) {
+            if (numOfVms != 0) return 0;
+            return -1;
+        } finally {
+            if (numOfVms != 0) {
+                System.out.println(CLI_IOHandler.underLine+"\n\tAuto configuration completed.\n"+CLI_IOHandler.underLine);
+                System.out.println("\tWith status:\n\t\t\tValid VMs: "+numOfVms+"\n\t\t\tVMs rejected: "+conf.numOfInvalidVMs());
+            }
+            if (prgData != 0 || conf.numOfInvalidPrgs() != 0)
+                System.out.println("\t\t\tValid programs: "+prgData+"\n\t\t\tPrograms rejected: "+conf.numOfInvalidPrgs()+"\n"+CLI_IOHandler.underLine);
+            else return 0;
+        }
+        return 1;
     }
 
     public void addProgram(Program p) {
-        clustersPrograms.add(p);
+        if (Globals.isProgramValid(p)) {
+            clustersPrograms.add(p);
+            queueCapacity++;
+        }
     }
 
     public void createPlainVm(int cpu, int ram, OS os, int drive) throws InputOutOfAdminsStandartsException {
@@ -154,10 +181,12 @@ public final class ClusterAdmin implements Serializable {
 
     /**
      * An accesor for the VMs class name.
-     * @return The "Simple name" of the VMs class.
+     * @return The "Simple name" of the VMs class or {@code null} if is not of type {@code VirtualMachine}.
      */
     public String getVmsClass(VirtualMachine vm) {
-        return clusterVms.getClass().getSimpleName();
+        if (vm instanceof VirtualMachine)
+            return vm.getClass().getSimpleName();
+        return null;
     }
 
     /**
@@ -183,31 +212,68 @@ public final class ClusterAdmin implements Serializable {
     /**
      * A method that reports the available sources of a single VM if an ID is given or of all the clusters VMs if the ID is zero.
      * 
-     * @param vmId For input 0 the method will return a report for all the VMs
+     * @param id For input 0 the method will return a report for all the VMs
      * @return The report is returned in the following formmat: // TODO
      */
-   // private StringBuilder report(int vmId) {
+    public StringBuilder report(int id) {
+        StringBuilder repo = new StringBuilder();
+        VirtualMachine vm;
+        
+        if (id == 0) {
+            for (java.util.Map.Entry<Integer, VirtualMachine> entry :clusterVms.entrySet()) {
+                repo.append("ID: " +entry.getKey());
+                repo.append(appendVmInfo(entry.getValue())+"\n");               
+            }
+        }
+        else {
+            vm = clusterVms.get(id);
+            repo.append("ID: "+id+ appendVmInfo(vm));
+        }
+        return repo;
+    }
 
-   //     StringBuilder finalReport;
-   //     if (vmId == 0) {
+    /**
+     * @see #report
+     * @param vm
+     * @return
+     */
+    private StringBuilder appendVmInfo(VirtualMachine vm) {
+        StringBuilder sb = new StringBuilder();
+        String sp = CLI_IOHandler.spacing;
 
-    //    }
-    //    else if (clusterVms.containsKey(vmId)) {
-
-     //   }
-    //}
-
+        sb.append(sp+"CPU: "+ (vm.getCpu()-vm.getAllocCPU()));
+        sb.append(sp+"RAM: "+ (vm.getRam()-vm.getAllocRAM()));
+        sb.append(sp+"SSD: "+ (((PlainVM) vm).getDrive() -((PlainVM) vm).getAllocDrive()));
+        sb.append(sp+"OS: "+ vm.getOs());
+                        
+        switch (getVmsClass(vm).toLowerCase()) {
+            case "vmgpu":
+                sb.append(sp+"GPU: "+ (((VmGPU) vm).getGpu() - ((VmGPU) vm).getAllocGPU()));
+                break;
+            case "vmnetworked":
+                sb.append(sp+"Bandwidth: "+ (((VmNetworked) vm).getBandwidth() - ((VmNetworked) vm).getAllocBandwidth()));
+                break;
+            case "vmnetworkedgpu":
+                sb.append(sp+"GPU: "+ (((VmGPU) vm).getGpu() - ((VmGPU) vm).getAllocGPU()));
+                sb.append(sp+"Bandwidth: "+ (((VmNetworkedGPU) vm).getBandwidth() - ((VmNetworkedGPU) vm).getAllocBandwidth()));
+                break;
+                default:
+                break;
+            }
+            return sb;
+        }
+        
     /**
      * A method that updates the clusters stock of materials.
      */
     private void updateClustersReserve(int cpu, int ram, int drive, int gpu, int bandwidth) {
-            Globals.setAvailableCpu(Globals.getAvailableCpu() + cpu);
-            Globals.setAvailableRam(Globals.getAvailableRam() + ram);
-            Globals.setAvailableDrive(Globals.getAvailableDrive() + drive);
-            Globals.setAvailableGpu(Globals.getAvailableGpu() + gpu);
-            Globals.setAvailableBandwidth(Globals.getAvailableBandwidth() + bandwidth);
+        Globals.setAvailableCpu(Globals.getAvailableCpu() + cpu);
+        Globals.setAvailableRam(Globals.getAvailableRam() + ram);
+        Globals.setAvailableDrive(Globals.getAvailableDrive() + drive);
+        Globals.setAvailableGpu(Globals.getAvailableGpu() + gpu);
+        Globals.setAvailableBandwidth(Globals.getAvailableBandwidth() + bandwidth);
     }
-
+    
     /**
      * A method that adds all the {@code Program} elements
      * from the {@code clustersPrograms} to the queue.
@@ -215,26 +281,26 @@ public final class ClusterAdmin implements Serializable {
     public void queuePrograms() {
         Program [] array = new Program[queueCapacity];
         clustersPrograms.toArray(array);
-
+        
         // Could be done in a better way if we used the build-in method
         Globals.sort(array);
         
         programsInQueue = new BoundedQueue<>(queueCapacity);
-        for (Program p:clustersPrograms)
+        for (Program p :array)
             programsInQueue.push(p);
     }
-
-
-
+    
+    
+    
     /*
-     * A set of four methods that find the best suited VM according to the programs requirments
-     */
-        private PlainVM getBetterPlain(int cpu, int ram, int drive) {
+    * A set of four methods that find the best suited VM according to the programs requirments
+    */
+    private PlainVM getBetterPlain(int cpu, int ram, int drive) {
 
-            PlainVM betterVm = (PlainVM) clusterVms.values().iterator().next();
-            double bestLoad = betterVm.computeLoad(cpu, ram, drive);
-            for (VirtualMachine vm:clusterVms.values()) {
-
+        PlainVM betterVm = null;
+        double bestLoad = dummyLoad;
+        for (VirtualMachine vm:clusterVms.values()) {
+            
                 if (vm instanceof PlainVM) {
                     double load = ((PlainVM) vm).computeLoad(cpu, ram, drive);
                     if (bestLoad > load) {
@@ -243,13 +309,15 @@ public final class ClusterAdmin implements Serializable {
                     }
                 }
             }
+            if (betterVm == null) 
+                throw new IllegalArgumentException("suited vm not found");
             return betterVm;
         }
         
         private VmGPU getBetterGPU(int cpu, int ram, int drive, int gpu) {
-
-            VmGPU betterVm = (VmGPU) clusterVms.values().iterator().next();
-            double bestLoad = betterVm.computeLoad(cpu, ram, drive, gpu);
+            
+            VmGPU betterVm = null;
+            double bestLoad = dummyLoad;
 
             for (VirtualMachine vm:clusterVms.values()) {
                 if (vm instanceof VmGPU) {
@@ -260,16 +328,29 @@ public final class ClusterAdmin implements Serializable {
                     }
                 }
             }
+            if (betterVm == null) 
+                throw new IllegalArgumentException("suited vm not found");
             return betterVm;
         }
 
-        private VmNetworked getBetterNetworked(int cpu, int ram, int drive, int network) {
+        /**
+         * A method that finds and returns the best suited {@code NetworkAccessible} VM based on the potential load.
+         * @apiNote The returned VM may be either of type {@code VmNetworked} or {@code VmnetworkedGPU}
+         */
+        private VirtualMachine getBetterNetworked(int cpu, int ram, int drive, int network) {
 
-            VmNetworked betterVm = (VmNetworked) clusterVms.values().iterator().next();
-            double bestLoad = betterVm.computeLoad(cpu, ram, drive, network);
+            VirtualMachine betterVm = null;
+            double bestLoad = dummyLoad;
 
             for (VirtualMachine vm:clusterVms.values()) {
-                if (vm instanceof NetworkAccessible) {
+                if (vm instanceof VmNetworkedGPU) {
+                    double load = ((VmNetworkedGPU) vm).computeLoad(cpu, ram, drive, network);
+                    if (bestLoad > load) {
+                        bestLoad = load;
+                        betterVm = (VmNetworkedGPU) vm;
+                    }
+                }
+                else if (vm instanceof VmNetworked) {
                     double load = ((VmNetworked) vm).computeLoad(cpu, ram, drive, network);
                     if (bestLoad > load) {
                         bestLoad = load;
@@ -277,13 +358,15 @@ public final class ClusterAdmin implements Serializable {
                     }
                 }
             }
+            if (betterVm == null) 
+                throw new IllegalArgumentException("suited vm not found");
             return betterVm;
         }
-
+        
         private VmNetworkedGPU getBetterGPUNetworked(int cpu, int ram, int drive, int gpu, int network) {
-
-            VmNetworkedGPU betterVm = (VmNetworkedGPU) clusterVms.values().iterator().next();
-            double bestLoad = betterVm.computeLoad(cpu, ram, drive, gpu);
+            
+            VmNetworkedGPU betterVm = null;
+            double bestLoad = dummyLoad; //i don't got a better idea
 
             for (VirtualMachine vm:clusterVms.values()) {
                 if (vm instanceof VmNetworkedGPU) {
@@ -294,28 +377,29 @@ public final class ClusterAdmin implements Serializable {
                     }
                 }
             }
+            if (betterVm == null) 
+                throw new IllegalArgumentException("suited vm not found");
             return betterVm;
         }
-
-
-    /**
-     * Identifys the programs requirments and calls the prorer method to find the better VM.
-     * 
-     * @param p The program to be assigned.
-     * @return The better VM to assign the program {@code p}
-     * @throws IllegalArgumentException
-     */
-    private VirtualMachine identifyProgram(Program p) throws IllegalArgumentException {
-        String vmType;
+        
+        
+        /**
+         * Identifys the programs requirments and calls the prorer method to find the better VM.
+         * 
+         * @param p The program to be assigned.
+         * @return The better VM to assign the program {@code p}
+         */
+        private VirtualMachine identifyProgram(Program p) {
+            String vmType;
         boolean isNetworked = p.getBandwidthRequired() != 0;
         boolean isGPUed = p.getGpuRequired() != 0;
 
         if (isGPUed && isNetworked) vmType = "vmnetworkedgpu";
         else if (isGPUed && !isNetworked) vmType = "vmgpu";
         else if (!isGPUed && !isNetworked) vmType = "plainvm";
-        vmType = "vmnetworked";
+        else vmType = "vmnetworked";
 
-        VirtualMachine betterVM;
+        VirtualMachine betterVM = null;
         switch (vmType) {
 
             case "plainvm":
@@ -330,38 +414,61 @@ public final class ClusterAdmin implements Serializable {
             case "vmnetworkedgpu":
                 betterVM = getBetterGPUNetworked(p.getCoresRequired(), p.getRamRequired(), p.getDriveRequired(), p.getGpuRequired(), p.getBandwidthRequired());
                 break;
-
-            default: throw new IllegalArgumentException();
         }
         return betterVM;
     }
     
     /**
      * Pops a program from the queue and assignes it to the optimum VM.
+     * @throws IOException
      */
     public void loadProgram() {
         VirtualMachine vm;
         Program prg;
+
+        try {
         prg = programsInQueue.pop();
+        } catch(IllegalStateException e) {
+            System.out.println("\n\tThe queue has been empied");
+            return;
+        }
+
         vm = identifyProgram(prg);
         vm.assignProgram(prg);
+        System.out.println("\n\tThe program with ID "+prg.getID()+" is running on VM "+Globals.getKeyFromValue((HashMap<Integer,VirtualMachine>) clusterVms, vm));
     }
 
     /**
-     * TODO
-     * @return The programs IDs that terminated succesfuly.
+     * A method that checks if programs have executed by calling the {@code peekRunningPrgs()} method for each VM.
+     * @return The number of programs that executed succesfuly.
      */
-    public ArrayList<Integer> updateRunningPrograms() {             //!!!!! TODO
-        ArrayList<Integer> finished = new ArrayList<>();
-        for (VirtualMachine vm:clusterVms.values()) {
-            Integer vmId = vm.peekRunningPrgs();
-            if (vmId != null) {
-                finished.add(vmId);
-            }
+    public int updateRunningPrograms() {
+        int finished, count=0;
+        Iterator<VirtualMachine> iter = clusterVms.values().iterator();
+        PlainVM vm;
 
+        // Iterates through each vm
+        while (iter.hasNext()) {
+            vm = (PlainVM) iter.next();
+            if (!vm.programsAssigned.isEmpty()) {
+                finished = vm.peekRunningPrgs();
+                if (finished != 0)
+                    vm.terminateProgram(finished);
+                count += finished;
+            }
         }
-        return finished;
+        return count;
     }
     
+    void spleep() {
+        try {
+            
+            System.out.println("\n\tzzzzzzzzzzzzzzz");
+
+            time.sleep(SLEEP_DURATION);
+        } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
 }
