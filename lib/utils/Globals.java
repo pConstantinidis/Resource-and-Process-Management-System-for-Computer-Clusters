@@ -1,9 +1,14 @@
 package lib.utils;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 import lib.dependencies.InputOutOfAdminsStandartsException;
-import src.backend.ProgramDismissal;
+import src.controler.CLI_IOHandler;
 import src.model.ClusterAdmin;
 import src.model.Program;
 
@@ -29,6 +34,8 @@ public final class Globals {
     private static int availableDrive = ClusterAdmin.DRIVE;
     private static int availableGpu = ClusterAdmin.GPU;
     private static int availableBandwidth = ClusterAdmin.NETWORK_BANDWIDTH;
+
+    public static final ClusterAdmin admin = ClusterAdmin.getAdmin();
 
     // Accesors
         public static int getAvailableCpu() {return availableCpu;}
@@ -78,6 +85,25 @@ public final class Globals {
                 throw new InputOutOfAdminsStandartsException("invalid bandwidth request");
         }
 
+        public final static boolean areThereAnyVms() {
+            if (admin.getNumOfVms() == 0) {
+                System.out.println(CLI_IOHandler.underLine+"\n It seems that there aren't currently any VMs running on the cluster\n In this case you can not proceed.");
+                return false;
+            }
+            return true;
+        }
+
+        public final static boolean isProgramValid(Program p) {
+            if (!Program.isTheirSuchID(p.getID()) ||
+                p.getCoresRequired() > getInUseCpu() ||
+                p.getRamRequired() > getInUseRam() ||
+                p.getDriveRequired() > getInUseDrive() ||
+                p.getGpuRequired() > getInUseGpu() ||
+                p.getBandwidthRequired() > getInUseBandwidth())     {return false;}
+
+                return true;
+        }
+
         /**
          * @param input The OS to be checked.
          * @return The enum value corresponding to the {@code input} or null if the input is invalid.
@@ -115,7 +141,17 @@ public final class Globals {
             a[nextPos] = nextValue;
         }
 
-        
+        /**
+         * A method that returns the corresponding key of a given value inside a HashMap
+         */
+        public static <K, V> K getKeyFromValue(HashMap<K, V> hashMap, V value) {
+            for (Map.Entry<K, V> entry : hashMap.entrySet()) {
+                if (entry.getValue().equals(value)) {
+                    return entry.getKey();
+                }
+            }
+            return null;
+        }
 
 
 
@@ -125,13 +161,12 @@ public final class Globals {
          * @throws IOException
           */
         public static void main(String[] args) throws InputOutOfAdminsStandartsException, IOException {
-            ClusterAdmin admin = ClusterAdmin.getAdmin();
-            admin.createVmNetworkedGpu(5, 7, OS.FEDORA, 5, 4, 7);
-            Program prg = new Program(1, 3, 2, 0, 3, 2);
-            Program prg1 = new Program(2, 2, 1, 4, 0, 6);
-            new ProgramDismissal().dismiss(prg);
-            new ProgramDismissal().dismiss(prg1);
-            
+            Integer i1=3, i2=4, i3=5;
+            Queue<Integer> queue = new PriorityQueue<>(Collections.reverseOrder());
+            queue.add(i2);
+            queue.add(i3);
+            queue.add(i1);
+            System.out.println(queue.peek());
         }
 
 
