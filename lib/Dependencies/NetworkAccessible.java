@@ -28,6 +28,6 @@ public interface NetworkAccessible {
    * @param bandwidth
    * @throws IllegalArgumentException
    */
-  void addAllocBandwidth(int bandwidth) throws IllegalArgumentException ; 
+  void addAllocBandwidth(int bandwidth) throws IllegalArgumentException; 
 
 }
