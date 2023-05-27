@@ -55,4 +55,20 @@ public class VmNetworked extends PlainVM implements NetworkAccessible {
         return super.assignProgram(p);
     }
 
+    public void terminateProgram(int numOfPrograms) {
+        Program prg;
+        for (int i=0; i<numOfPrograms; i++) {
+            prg = programsAssigned.poll();
+
+            super.terminateProgram(prg);
+            this.allocBandwidth += prg.getBandwidthRequired();           
+            System.out.println("\n\tThe program with ID: "+prg.getID()+" has executed succesfuly.");
+        }
+    }
+
+    protected void terminateProgram(Program prg) {
+        super.terminateProgram(prg);
+        this.allocBandwidth += prg.getBandwidthRequired();
+    }
+
 }

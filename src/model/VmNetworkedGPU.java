@@ -59,4 +59,16 @@ public class VmNetworkedGPU extends VmGPU implements NetworkAccessible {
         this.addAllocBandwidth(p.getBandwidthRequired());
         return super.assignProgram(p);
     }
+
+    public void terminateProgram(int numOfInvalidPrgs) {
+        Program prg;
+        for (int i=0; i<numOfInvalidPrgs; i++) {
+            prg = programsAssigned.poll();
+
+            super.terminateProgram(prg);
+            this.allocBandwidth += prg.getBandwidthRequired();
+            this.allocGPU += prg.getGpuRequired();
+            System.out.println("\n\tThe program with ID: "+prg.getID()+" has executed succesfuly.");
+        }
+    }
 }
