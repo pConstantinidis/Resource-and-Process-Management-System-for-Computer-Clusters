@@ -27,14 +27,12 @@ public final class Program implements Comparable<Program>, Serializable {
     private static final HashSet<Integer> IDs = new HashSet<>(5);
     private short countRejections = 0;
 
-    void addRejection() {this.countRejections++;}
-    
     public int getCoresRequired() {return coresRequired;}
     public int getRamRequired() {return ramRequired;}
     public int getDriveRequired() {return driveRequired;}
     public int getGpuRequired() {return gpuRequired;}
     public int getBandwidthRequired() {return bandwidthRequired;}
-
+    
     int getExpectedDuration() {return this.expectedDuration;}
     short getNumOfRejections() {return this.countRejections;}
     long getStartedExecution() {return this.startedExecution;}
@@ -64,12 +62,12 @@ public final class Program implements Comparable<Program>, Serializable {
         ((double) this.gpuRequired / Globals.getInUseGpu())+
         ((double) this.bandwidthRequired / Globals.getInUseBandwidth()); 
     }
-
+    
     /**
      * @return A positive integer, whose possible max value depends on the clusters queue size.
      */
     private int generateID() {
-        Random ran = new Random();
+        Random ran = new Random(System.currentTimeMillis());
         int num;
         do {
             num = ran.nextInt(100, admin.getQueueCapacity()+101);
@@ -83,20 +81,20 @@ public final class Program implements Comparable<Program>, Serializable {
      */
     @Override
     public int compareTo(Program o) {
-
+        
         double thisPriority = this.computePriority();
         double otherPriority = o.computePriority();
         return Double.compare(thisPriority, otherPriority);
     }
-
+    
     public int getID() {
         return pID;
     }
-
+    
     public static boolean isTheirSuchID(int id) {
         return IDs.contains(id);
     }
-
+    
     /**
      * TODO
      */
@@ -108,16 +106,21 @@ public final class Program implements Comparable<Program>, Serializable {
         str.append("cores:"+this.coresRequired+delimeter);
         str.append("ram:"+this.ramRequired+delimeter);
         str.append("ssd:"+this.driveRequired+delimeter);
-
+        
         if (this.bandwidthRequired !=0) str.append("bandwidth:"+this.bandwidthRequired+delimeter);
         if (this.gpuRequired !=0) str.append("gpu:"+this.gpuRequired+delimeter);
         str.append("exeTimeReq:"+this.expectedDuration);
         return str.toString();
     }
     
+    void addRejection() {
+        this.countRejections++;
+        admin.spleep();
+    }
+    
     public void triggerDismiss() throws IOException {
         System.out.println("\n\tThe program with ID "+pID+" is being dissmised.");
         new ProgramDismissal().dismiss(this);
     }
-
+    
 }
