@@ -2,48 +2,53 @@ package src.backend;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-
-import javax.crypto.IllegalBlockSizeException;
 
 import lib.dependencies.InputOutOfAdminsStandartsException;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
-import src.model.PlainVM;
+import src.model.ClusterAdmin;
 import src.model.Program;
-import src.model.VirtualMachine;
-import src.model.VmGPU;
-import src.model.VmNetworked;
-import src.model.VmNetworkedGPU;
 
 /**
  * TODO
  */
 public final class Configure implements Serializable {
+
+    private ClusterAdmin admin = ClusterAdmin.getAdmin();
+
+    private int invalidVMs, invalidPrgs;
+    /**
+     * @return The number of the VMs that where invalid found in the file, based on the current state of the cluster.
+     */
+    public int numOfInvalidVMs() {
+        return invalidVMs;
+    }
+
+    /**
+     * @return The number of the programs that where invalid found in the file, based on the current state of the cluster.
+     */
+    public int numOfInvalidPrgs() {
+        return invalidPrgs;
+    }
     
     /**
-     * A method that reads data from a {@code config} text file and returns a list of the equivilant VMs.
+     * TODO
      * <p>The format of the file should be:<b>resource:(it's data type),e.t.c.
      *
      * <p>Keep in mind that an OS must be defined.
      * 
-     * @apiNote <b>Warning: to maintain the softwares interaction consistant, if a single exception occurres it will discard all the files data and will ask the user to submit them manually.
-     * 
-     * @return An {@code ArrayList} with the {@code VirtualMachine} objects casted accordingly.
+     * @return The number of valid VMs.
      * @throws IOException
      * @throws InputOutOfAdminsStandartsException
      * @see #configPrograms()
      */
-    public ArrayList<VirtualMachine> configVMs() throws IOException, InputOutOfAdminsStandartsException {
+    public void configVMs() throws IOException, InputOutOfAdminsStandartsException  {
         FileInputStream vms = new FileInputStream("./cfg/vms.config");
         BufferedReader fReader = new BufferedReader(new FileReader("./cfg/vms.config"));
 
-        ArrayList<VirtualMachine> data = new ArrayList<>();
-        
         OS os=null;
         int cpu=0, ram=0, drive=0, gpu=0, bandwidth=0;
         String [] line = fReader.readLine().trim().split(",");        
@@ -57,31 +62,37 @@ public final class Configure implements Serializable {
                 gpu = getGPU(line, true);
                 bandwidth = getBandwidth(line, true);
             } catch (Exception e) {
-                throw new IllegalArgumentException("invalid resource value");
-            } finally {
-                vms.close();
-                fReader.close();
+                invalidVMs++;
+                String nullTester = fReader.readLine();
+                if (nullTester != null)
+                line = nullTester.trim().split(",");
+                else line = null;
+                continue;
             }
 
             switch (concludeType(gpu, bandwidth)) {
                 case 4:
-                    data.add( new VmNetworkedGPU(cpu, ram, os, drive, gpu, bandwidth));
-    
+                    admin.createVmNetworkedGpu(cpu, ram, os, drive, gpu, bandwidth);
+                    break;
                 case 2:
-                    data.add( new VmGPU(cpu, ram, os, drive, gpu));
-    
+                    admin.createVmGPU(cpu, ram, os, drive, gpu);
+                    break;
                 case 3:
-                    data.add( new VmNetworked(cpu, ram, os, drive, bandwidth));
-    
+                    admin.createVmNetworked(cpu, ram, os, drive, bandwidth);
+                    break;
                 case 1:
-                    data.add( new PlainVM(cpu, ram, os, drive));
+                    admin.createPlainVm(cpu, ram, os, drive);
+                    break;
             }
             
-            line = fReader.readLine().trim().split(",");
+            String nullTester;
+            nullTester = fReader.readLine();
+            if (nullTester != null)
+                line = nullTester.trim().split(",");
+            else line = null;
         }
         vms.close();
         fReader.close();
-        return data;
     }
 
     private int getBandwidth(String[] line, boolean isVm) throws NumberFormatException, InputOutOfAdminsStandartsException {
@@ -90,7 +101,7 @@ public final class Configure implements Serializable {
             resource = str.split(":");
             if (resource[0].toLowerCase().equals("bandwidth")) {
 
-                if(isVm) Globals.isGpuValid(Integer.parseInt(resource[1]));
+                if(isVm) Globals.isBandwidthValid(Integer.parseInt(resource[1]));
                 else {
                     if (Integer.parseInt(resource[1]) < 4 || Integer.parseInt(resource[1]) > Globals.getInUseBandwidth())
                         throw new InputOutOfAdminsStandartsException();
@@ -195,20 +206,20 @@ public final class Configure implements Serializable {
     }
 
     /**
-     * A method that reads data from a {@code config} text file and returns a list of the equivilant programs.
+     * A method that reads data from a {@code config} text file.
      * <p>The format of the file should be:<b>resource:(it's data type),e.t.c.
      * 
-     * @return An {@code ArrayList} with the {@code VirtualMachine} objects casted accordingly.
+     * @return The number of valid programs found in the file.
      * @throws IOException
      * @throws IllegalBlockSizeException
      * @throws InputOutOfAdminsStandartsException
      * @see #configVMs()
      */
-    public ArrayList<Program> configPrograms() throws IOException, IllegalBlockSizeException {
+    public int configPrograms() throws IOException {
         FileInputStream programs = new FileInputStream("./cfg/programs.config");
         BufferedReader fReader = new BufferedReader(new FileReader("./cfg/programs.config"));
+        int validPrograms=0;
 
-        ArrayList<Program> data = new ArrayList<>();
         int cpu=0, ram=0, drive=0, gpu=0, bandwidth=0, time=0;
         String [] line = fReader.readLine().trim().split(",");        
         while (line != null) {
@@ -221,16 +232,26 @@ public final class Configure implements Serializable {
                 bandwidth = getBandwidth(line, false);
                 time = getExeTime(line);
             } catch (Exception e) {
-                throw new IllegalBlockSizeException("invalid resource value");
-            } finally {
-                programs.close();
-                fReader.close();
+                invalidPrgs++;
+                String nullTester = fReader.readLine();
+                if (nullTester != null)
+                line = nullTester.trim().split(",");
+                else line = null;
+                continue;
             }
-            data.add(new Program(cpu, ram, drive, gpu, bandwidth, time));
+            validPrograms++;
+            admin.addProgram(new Program(cpu, ram, drive, gpu, bandwidth, time));
             
-            line = fReader.readLine().trim().split(",");
+            String nullTester;
+            nullTester = fReader.readLine();
+            if (nullTester != null)
+                line = nullTester.trim().split(",");
+            else line = null;
         }
-        return data;
+
+        programs.close();
+        fReader.close();
+        return validPrograms;
     }
 
     private int getExeTime(String[] line) throws IOException, NumberFormatException, InputOutOfAdminsStandartsException {
