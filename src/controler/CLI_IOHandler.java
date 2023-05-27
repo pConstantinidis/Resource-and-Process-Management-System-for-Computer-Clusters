@@ -11,21 +11,22 @@ import src.model.VirtualMachine;
 
 public abstract class CLI_IOHandler {
 
-    protected final ClusterAdmin admin = ClusterAdmin.getAdmin();
+    protected static final ClusterAdmin admin = ClusterAdmin.getAdmin();
     
     private final String ignoreInputSequence = "-";
     private final Scanner reader = new Scanner(System.in);           //TODO To be closed at the end of the program by the last possible method to be called (or somethung like that)
-    private final String doubleLine = "====================================================================================";
-    public static final String underLine = "____________________________________________________________________________________";
-    protected final String intro = doubleLine+"\n\tThis is a Resource and Process Managment System for a Computer Cluster"+ "\n"+underLine+
-                "\n\n\tA software developed for the OOP course fully developed in Java.\n\n\tAuthor: pConstantinidis\n\tDate: 5/2023\n";
+    public static final String doubleLine = "=============================================================================================";
+    public static final String underLine = "_____________________________________________________________________________________________";
+    protected final String intro = doubleLine+"\n\tA Resource and Process Managment System for a Computer Cluster"+ "\n"+underLine+
+                "\n\n\tA software developed for the OOP course fully writen in Java.\n\n\tAuthor: pConstantinidis\n\tDate: 5/2023\n";
     private final String vmPresentation = "\n"+doubleLine+"\nThere are 4 VM types you can choose from...\n\t[1] Plain VM (CPU, RAM, SSD, selected OS)"+
                 "\n\t[2] GPU accessible VM (plain + GPU)\n\t[3] Network accessible VM (plain + given bandwidth)\n\t[4] VM with GPU and network access";
     private final String osPresentation = "\n\n\tThere are 3 Operating Systems available.\n\n\t\t"+
-                OS.WINDOWS.toString()+"\n\t\t"+OS.UBUNTU.toString()+"\n\t\t"+OS.FEDORA +"\n\n ~Choose one : ";
+                OS.WINDOWS.toString()+"\n\t\t"+OS.UBUNTU.toString()+"\n\t\t"+OS.FEDORA+"\n\n ~Choose one : ";
     protected final String introducePrograms = "\n"+doubleLine+"\n\tNow you can submit any programs that you wish to be executed on the cluster."+
                 "\n\n\tThe only limitation concerns the overall hardware capability's of the VMs.\n"+doubleLine;
     private final String programErrMsg = "Your input either exceeds the sources that are used currently by the VMs or is just invalid";
+    public static String spacing = "  /  ";
 
     /**
      * A method that displays to the user the curent state of the clusters reserve
@@ -135,7 +136,7 @@ public abstract class CLI_IOHandler {
                 }
                 else isValid = true;
                 if (!isValid && countInvalid >= msgFrequency && errMsg != null) {
-                    System.out.print("\n"+underLine+"\n\t"+errMsg+"\n"+underLine +"\n Try again: ");
+                    System.out.print("\n"+underLine+"\n"+errMsg+"\n"+underLine +"\n Try again: ");
                     reader.nextLine();
                     countInvalid=0;
                 }
@@ -152,6 +153,7 @@ public abstract class CLI_IOHandler {
         } while(!isValid);
         return Short.parseShort(input);
     }
+
     /**
      * A method that creates a VM according to user input.
      * 
@@ -171,25 +173,25 @@ public abstract class CLI_IOHandler {
             switch (vmChoice) {
                 case 1:
                     admin.createPlainVm(basicData[0], basicData[1], os, basicData[2]);
-                    showSuccessMsg("Plain VM creation");
+                    showSuccessMsg("Plain VM creation -> ID: "+admin.getNumOfVms());
                     break;
 
                 case 2:
                     short gpu = acquirGPU();    // This way the aritmetical submition won't split
                     admin.createVmGPU(basicData[0], basicData[1], os, basicData[2], gpu);
-                    showSuccessMsg("GPU accessible VM creation");
+                    showSuccessMsg("GPU accessible VM creation -> ID: "+admin.getNumOfVms());
                     break;
 
                 case 3:
                     short bandwidth = acquirBandwidth();
                     admin.createVmNetworked(basicData[0], basicData[1], os, basicData[2], bandwidth);
-                    showSuccessMsg("Network accessible VM creation");
+                    showSuccessMsg("Network accessible VM creation -> ID: "+admin.getNumOfVms());
                     break;
 
                 case 4:
                     short gpu1 = acquirGPU(), bandwidth1 = acquirBandwidth();
                     admin.createVmNetworkedGpu(basicData[0], basicData[1], os, basicData[2], gpu1, bandwidth1);
-                    showSuccessMsg("VM with GPU and network access creation");
+                    showSuccessMsg("VM with GPU and network access creation -> ID: "+admin.getNumOfVms());
             }
         } catch(InputOutOfAdminsStandartsException e) {
             System.err.println("\n\n\t*FATAL ERROR*");
@@ -223,10 +225,8 @@ public abstract class CLI_IOHandler {
      * A method that updates the elements of a VM.
      */
     protected void updateVm() {
-        if (admin.getNumOfVms() == 0) {
-            System.out.println("\n\t\tCurrently there are no VMs in the cluster!");
+        if (!Globals.areThereAnyVms())
             return;
-        }
         int vmId = readID("updated");
         VirtualMachine vm = admin.getVmByID(vmId);
         short newCpu, newRam, newDrive, newGpu, newBandwidth;
@@ -317,10 +317,8 @@ public abstract class CLI_IOHandler {
      * TODO
      */
     protected void deleteVm() {
-        if (admin.getNumOfVms() == 0) {
-            System.out.println("\n\t\tCurrently there are no VMs in the cluster!");
-            return;
-        }
+        if (!Globals.areThereAnyVms()) return;
+
         int vmId = readID("deleted");
         
         if (verify("Are you sure that you want to delete the VM with ID : "+ vmId)) {
@@ -336,10 +334,27 @@ public abstract class CLI_IOHandler {
      * 
      */
     protected void report() {  //! TODO
+        if (!Globals.areThereAnyVms()) return;
+        short id;
 
+        do {
+            System.out.print("\nType the ID of the VM you wish to see the report of (0 to display all): ");
+            id = shortReader((short) 0, (short) (admin.getQueueCapacity()+101), "Invalid ID", (short)1, null);
+            
+            if (id > admin.getNumOfVms() && id!=0)
+                System.out.println("There is no such ID.");
+        } while(id > admin.getNumOfVms() && id!=0);
+
+        if (id==0) System.out.println(underLine+"\nThe availability of the clusters VMs is:");
+        else System.out.println(underLine+"\nThe availability of the VM with ID "+id+" is:");
+        System.out.println(admin.report(id));
     }
 
-    protected void acquirProgramData() {
+    /**
+     * 
+     * @return The ID of the programe that just got created.
+     */
+    protected int acquirProgramData() {
         short cpu, ram, ssd, gpu, bandwidth, expDuration;
         
         System.out.println("\n\t Submit needed specs...");
@@ -351,15 +366,16 @@ public abstract class CLI_IOHandler {
         ssd = shortReader((short) 1, (short) Globals.getInUseDrive(), programErrMsg, (short) 2, null);
 
         System.out.print("\n\t ~GPU required - ");
-        gpu = shortReader((short) 0, (short) Globals.getInUseGpu(), programErrMsg, (short) 2,"-");
+        gpu = shortReader((short) 0, (short) Globals.getInUseGpu(), programErrMsg, (short) 2, null);
         System.out.print("\n\t ~Bandwidth required - ");
-        bandwidth = shortReader((short) 0, (short) Globals.getInUseBandwidth(), programErrMsg, (short) 2, "-");
+        bandwidth = shortReader((short) 0, (short) Globals.getInUseBandwidth(), programErrMsg, (short) 2, null);
 
         System.out.print("\n"+underLine+"\nThe expected execution time of the program is: ");
         expDuration = shortReader((short) 0, (short) ClusterAdmin.MAX_PROGRAM_RUNTIME, "The expected execution time is too long", (short) 1, null);
 
-        admin.addProgram(new Program(cpu, ram, ssd, gpu, bandwidth, expDuration));
-        admin.queueCapacity++;
+        Program prg = new Program(cpu, ram, ssd, gpu, bandwidth, expDuration);
+        admin.addProgram(prg);
+        return prg.getID();
     }
 
 
