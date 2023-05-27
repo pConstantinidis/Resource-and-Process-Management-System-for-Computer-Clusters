@@ -1,6 +1,7 @@
 package src.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import lib.dependencies.InputOutOfAdminsStandartsException;
@@ -23,30 +24,19 @@ public abstract class VirtualMachine {
     /**
      * TODO
      */
-    private Queue<Program> programsAssigned = new PriorityQueue<>((p1, p2) -> {
-        long expToEnd1 = p1.getExpectedDuration() + p1.getStartedExecution();
-        long expToEnd2 = p2.getExpectedDuration() + p2.getStartedExecution();
+    protected Queue<Program> programsAssigned = new PriorityQueue<>((p1, p2) -> {
+        long expToEnd1 = p1.getExpectedDuration()*1000 + p1.getStartedExecution();
+        long expToEnd2 = p2.getExpectedDuration()*1000 + p2.getStartedExecution();
         return Long.compare(expToEnd1, expToEnd2);
     });
 
-    /**
-     * TODO
-     * @return
-     */
-    Integer peekRunningPrgs() {
-        Program prg = programsAssigned.peek();
-        if (prg.getExpectedDuration()*1000 + prg.getStartedExecution() <= System.currentTimeMillis()) {
-            return programsAssigned.poll().getID();
-        }
-        return null;
-    }
     
-
+    
     /**
      * The CPU/RAM that is allready allocated on the VM.
      */
     protected int allocCPU, allocRAM;
-
+    
     public int getCpu() {return cpu;}
     public int getRam() {return ram;}
     public OS getOs() {return os;}
@@ -59,10 +49,29 @@ public abstract class VirtualMachine {
      */
     public void addAllocCPU(int cpu) throws IllegalArgumentException {
         if (cpu <= this.cpu-allocCPU)
-            allocCPU += cpu;
+        allocCPU += cpu;
         else throw new IllegalArgumentException();
     }
     
+    /**
+     * @return The number of programs that hve finished are to be "removed" from this VM.
+     */
+    int peekRunningPrgs() {
+        int count = 0;
+        ArrayList<Program> temp = new ArrayList<>();
+        Program nullTester;
+        Program prg = programsAssigned.poll();
+
+        while (prg != null && (prg.getExpectedDuration()*1000 + prg.getStartedExecution() <= System.currentTimeMillis())) {
+            temp.add(prg);
+            count++;
+            nullTester = programsAssigned.poll();
+            prg = nullTester;
+        }
+        programsAssigned.addAll(temp);
+        return count;
+    }
+
     /**
      * @param ram
      * @throws IllegalArgumentException In the case that the {@code ram} exceeds the one allocated on the VMs.
@@ -125,22 +134,31 @@ public abstract class VirtualMachine {
      * @param p The program to be assigned.
      * @return 0 If the program was assigned succesfuly, 1 if the program was re-pushed to the queue and -1 if it gote dismissed.
      */
-    protected int assignProgram(Program p) throws IOException {
+    protected int assignProgram(Program p) {
         try {
             this.addAllocCPU(p.getCoresRequired());
             this.addAllocRAM(p.getRamRequired());            
         } catch (IllegalArgumentException e) {
-            p.addRejection();
             if (p.getNumOfRejections() == ClusterAdmin.PROGRAM_REJECTIONS_toDISMISS) {
-                p.triggerDismiss();
+                try {
+                    p.triggerDismiss();
+                } catch (IOException e1) {
+                    System.err.println(e1.toString()+" -> propable resource leak.");
+                }
                 return -1;
             }
             admin.pushProgram(p);
+            p.addRejection();
             return 1;
         }
         programsAssigned.add(p);
         p.setStartedExecution(System.currentTimeMillis());
         return 0;
+    }
+
+    protected void terminateProgram(Program prg) {
+        this.allocCPU += prg.getCoresRequired();
+        this.allocRAM += prg.getRamRequired();
     }
 
 }
