@@ -207,12 +207,12 @@ public abstract class CLI_IOHandler {
      */
     protected boolean verify(String msg) {
         char input;
-        System.out.print("\n\n\t"+ msg +" [Y/N]?  ~");
+        System.out.print("\n\n\t"+ msg +" [Y/N]?  ~ ");
         do {
         input = Character.toLowerCase(reader.next().charAt(0));
         if (input != 'y' && input != 'n') {
             reader.nextLine();
-            System.out.print("\n\tTry again [Y/N]  ~");
+            System.out.print("\n\tTry again [Y/N]  ~ ");
         }
         } while (input != 'y' && input != 'n');
 

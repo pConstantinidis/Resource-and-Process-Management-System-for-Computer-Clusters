@@ -1,6 +1,7 @@
 package lib.utils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -161,12 +162,7 @@ public final class Globals {
          * @throws IOException
           */
         public static void main(String[] args) throws InputOutOfAdminsStandartsException, IOException {
-            Integer i1=3, i2=4, i3=5;
-            Queue<Integer> queue = new PriorityQueue<>(Collections.reverseOrder());
-            queue.add(i2);
-            queue.add(i3);
-            queue.add(i1);
-            System.out.println(queue.peek());
+
         }
 
 
