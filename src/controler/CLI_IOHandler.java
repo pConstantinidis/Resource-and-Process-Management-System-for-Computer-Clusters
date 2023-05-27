@@ -14,7 +14,7 @@ public abstract class CLI_IOHandler {
     protected static final ClusterAdmin admin = ClusterAdmin.getAdmin();
     
     private final String ignoreInputSequence = "-";
-    private final Scanner reader = new Scanner(System.in);           //TODO To be closed at the end of the program by the last possible method to be called (or somethung like that)
+    private final Scanner reader = new Scanner(System.in);
     public static final String doubleLine = "=============================================================================================";
     public static final String underLine = "_____________________________________________________________________________________________";
     protected final String intro = doubleLine+"\n\tA Resource and Process Managment System for a Computer Cluster"+ "\n"+underLine+
@@ -58,6 +58,10 @@ public abstract class CLI_IOHandler {
         "\n Choose one of the above: ");
 
         return shortReader((short) 0, (short) 5, null,  (short)0, null);
+    }
+
+    protected void closeReader() {
+        reader.close();
     }
 
     /**
@@ -330,10 +334,7 @@ public abstract class CLI_IOHandler {
         showSuccessMsg("VM deletion");
     }
 
-    /**
-     * 
-     */
-    protected void report() {  //! TODO
+    protected void report() {  //! TODO user test
         if (!Globals.areThereAnyVms()) return;
         short id;
 

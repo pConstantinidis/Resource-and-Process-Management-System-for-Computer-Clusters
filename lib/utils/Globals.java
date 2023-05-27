@@ -1,12 +1,9 @@
 package lib.utils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 import lib.dependencies.InputOutOfAdminsStandartsException;
 import src.controler.CLI_IOHandler;
@@ -22,7 +19,7 @@ import src.model.Program;
 public final class Globals {
     
     /**
-     * We declare the types of Operating Systems that are aplicable to the VMs.
+     * The types of Operating Systems that are aplicable to the VMs are predetermined.
      */
     public static enum OS {
         WINDOWS,
@@ -160,9 +157,11 @@ public final class Globals {
           * TODO
           * ! To be removed
          * @throws IOException
+         * @throws InterruptedException
           */
-        public static void main(String[] args) throws InputOutOfAdminsStandartsException, IOException {
-
+        public static void main(String[] args) throws InputOutOfAdminsStandartsException, IOException, InterruptedException {
+            TimeUnit time = TimeUnit.SECONDS;
+            time.sleep(10);
         }
 
 

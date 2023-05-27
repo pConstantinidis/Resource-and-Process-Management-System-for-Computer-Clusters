@@ -37,6 +37,8 @@ public final class ProgramDismissal {
             System.out.println(CLI_IOHandler.underLine+"\n\tThe program with ID: "+p.getID()+" has been dismissed.\n"+CLI_IOHandler.underLine);
         } catch (Exception e) {
             System.out.println("Nailed it exception occurred\t !Rejected programs may not have been stored to properly!");
+            
+            e.printStackTrace();
         } finally {
             oos.close();
             fos.close();

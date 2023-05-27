@@ -1,10 +1,12 @@
 package lib.dependencies;
 
+import java.io.Serializable;
+
 /**
  * 
  *
  */
-public class BoundedQueue<E> {
+public class BoundedQueue<E> implements Serializable {
     final E [] data;
     int head=0;
     int size = 0;

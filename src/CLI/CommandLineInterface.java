@@ -53,15 +53,17 @@ public final class CommandLineInterface extends CLI_IOHandler {
         }
         
         admin.queuePrograms();
-        
+
         int programsFinished = 0;
-        while (!admin.isQueueEmpty() || programsFinished < admin.getNumOfPrgs()) {
+        while (programsFinished < admin.getNumOfPrgs()) {
             
-            admin.loadProgram();
+            while(!admin.isQueueEmpty()) {
+                if (admin.loadProgram() != 0)
+                    break;
+            }
             programsFinished += admin.updateRunningPrograms();
-            
-            
         }
         System.out.println(doubleLine+"\n\tSession ended : "+programsFinished+" programs where executed.\n"+doubleLine+"\n");
+        closeReader();
     }
 }
