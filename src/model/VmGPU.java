@@ -1,12 +1,12 @@
 package src.model;
 
-import java.io.IOException;
+import java.io.Serializable;
 
 import lib.dependencies.InputOutOfAdminsStandartsException;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
 
-public class VmGPU extends PlainVM {
+public class VmGPU extends PlainVM implements Serializable {
     protected int gpu;
     protected int allocGPU;
 
@@ -45,29 +45,19 @@ public class VmGPU extends PlainVM {
        return (double) ((allocCPU+cpuToAlloc)/cpu + (ramToAlloc+allocRAM)/ram + (driveToAlloc+allocDrive)/drive + (gpuToAlloc+allocGPU)/gpu) / 4;
     }
 
-    /**
-     * @param p The program to be assigned.
-     * @return {@code true} if {@code p} wasn't already in the set, {@code false} otherwise.
-     */
-    @Override
-    protected boolean assignProgram(Program p) throws IOException {
-        this.addAllocGPU(p.getGpuRequired());
-        return super.assignProgram(p);
-    }
-
-    public void terminateProgram(int numOfPrograms) {
+    public void freeResources(int numOfPrograms) {
         Program prg;
         for (int i=0; i<numOfPrograms; i++) {
             prg = programsAssigned.poll();
 
-            super.terminateProgram(prg);
-            this.allocGPU += prg.getGpuRequired();
+            super.freeResources(prg);
+            this.allocGPU -= prg.getGpuRequired();
             System.out.println("\n\tThe program with ID: "+prg.getID()+" has executed succesfuly.");
         }
     }
 
-    protected void terminateProgram(Program prg) {
-        super.terminateProgram(prg);
-        this.allocGPU += prg.getGpuRequired();
+    protected void freeResources(Program prg) {
+        super.freeResources(prg);
+        this.allocGPU -= prg.getGpuRequired();
     }
 }

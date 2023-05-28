@@ -67,10 +67,10 @@ public final class Program implements Comparable<Program>, Serializable {
      * @return A positive integer, whose possible max value depends on the clusters queue size.
      */
     private int generateID() {
-        Random ran = new Random(System.currentTimeMillis());
+        Random ran = new Random();
         int num;
         do {
-            num = ran.nextInt(100, admin.getQueueCapacity()+101);
+            num = ran.nextInt(100, admin.getQueueCapacity()+150);
         } while (IDs.contains(num));
         return num;        
     }
@@ -96,7 +96,7 @@ public final class Program implements Comparable<Program>, Serializable {
     }
     
     /**
-     * TODO
+     * @return A string representation of the program.
      */
     @Override
     public String toString() {
@@ -119,8 +119,8 @@ public final class Program implements Comparable<Program>, Serializable {
     }
     
     public void triggerDismiss() throws IOException {
-        System.out.println("\n\tThe program with ID "+pID+" is being dissmised.");
         new ProgramDismissal().dismiss(this);
+        
     }
     
 }

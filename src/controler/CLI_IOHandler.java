@@ -138,7 +138,10 @@ public abstract class CLI_IOHandler {
                     isValid = false;
                     countInvalid++;
                 }
-                else isValid = true;
+                else {
+                    isValid =true;
+                    reader.nextLine();
+                }
                 if (!isValid && countInvalid >= msgFrequency && errMsg != null) {
                     System.out.print("\n"+underLine+"\n"+errMsg+"\n"+underLine +"\n Try again: ");
                     reader.nextLine();
@@ -198,7 +201,7 @@ public abstract class CLI_IOHandler {
                     showSuccessMsg("VM with GPU and network access creation -> ID: "+admin.getNumOfVms());
             }
         } catch(InputOutOfAdminsStandartsException e) {
-            System.err.println("\n\n\t*FATAL ERROR*");
+            System.err.println("\n\t *ERROR* in method : CLI_IOHandler.createVm\n\t!MAY CAUSE UNEXPECTED BEHAVIOR");
             return;
         }
     }
@@ -214,6 +217,7 @@ public abstract class CLI_IOHandler {
         System.out.print("\n\n\t"+ msg +" [Y/N]?  ~ ");
         do {
         input = Character.toLowerCase(reader.next().charAt(0));
+        reader.nextLine();
         if (input != 'y' && input != 'n') {
             reader.nextLine();
             System.out.print("\n\tTry again [Y/N]  ~ ");
@@ -254,7 +258,7 @@ public abstract class CLI_IOHandler {
                         admin.updateGPU(vmId, newGpu);
                         hasBeenUpdated = true;
                     } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
-                        System.err.println("\n\n\t*FATAL ERROR*");
+                        System.err.println("\n\t *ERROR* in method : CLI_IOHandler.createVm\n\t!MAY CAUSE UNEXPECTED BEHAVIOR");
                         return;
                     }
                     break;
@@ -268,7 +272,7 @@ public abstract class CLI_IOHandler {
                         admin.updateBandwidth(vmId, newBandwidth);
                         hasBeenUpdated = true;
                     } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
-                        System.err.println("\n\n\t*FATAL ERROR*");
+                        System.err.println("\n\t *ERROR* in method : CLI_IOHandler.createVm\n\t!MAY CAUSE UNEXPECTED BEHAVIOR*");
                         return;
                     }
                     break;
@@ -286,7 +290,7 @@ public abstract class CLI_IOHandler {
                         if(newBandwidth!=0) admin.updateGPU(vmId, newGpu);
                         hasBeenUpdated= true;
                     } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
-                        System.err.println("\n\n\t*FATAL ERROR*");
+                        System.err.println("\n\t *ERROR* in method : CLI_IOHandler.createVm\n\t!MAY CAUSE UNEXPECTED BEHAVIOR");
                         e.printStackTrace();
                         return;
                     }
@@ -294,14 +298,14 @@ public abstract class CLI_IOHandler {
         }
         newOs = acquirOS(ignoreInputSequence);
 
-        if (hasBeenUpdated || ((newCpu!=0 || newRam!=0 || newDrive!=0) && verify("Are you sure that you want to update the VM with ID : "+ vmId))) {              //! TODO  TO BE RATED
-            try {                                                                                                                   //! TODO NEED TO CHANGE THE PROGRAMS RESPONSE WHEN A "FATAL" OCCURRUS
+        if (hasBeenUpdated || ((newCpu!=0 || newRam!=0 || newDrive!=0) && verify("Are you sure that you want to update the VM with ID : "+ vmId))) {
+            try {
                 if (newCpu != 0) admin.updateCPU(vmId, newCpu);
                 if (newRam != 0) admin.updateRAM(vmId, newRam);
                 if (newDrive != 0) admin.updateDrive(vmId, newDrive);
                 if (newOs!=null && verify("Are you sure that you want to update the VMs operating system")) admin.updateOS(vmId, newOs);
             } catch (ClassCastException | NullPointerException | InputOutOfAdminsStandartsException e) {
-                System.err.println("\n\n\t*FATAL ERROR*");
+                System.err.println("\n\t *ERROR* in method : CLI_IOHandler.createVm\n\t!MAY CAUSE UNEXPECTED BEHAVIOR");
                 return;
             }
             showSuccessMsg("VM update");
@@ -309,8 +313,8 @@ public abstract class CLI_IOHandler {
     }
 
     /**
-     * TODO
-     * @param operation
+     * Reads user input regarding the VMs ID.
+     * @param operation The context of the operation
      */
     private int readID(String operation) {
         System.out.print("\n"+doubleLine+"\n ~The ID of the VM to be "+operation+" is : ");
@@ -327,7 +331,7 @@ public abstract class CLI_IOHandler {
         
         if (verify("Are you sure that you want to delete the VM with ID : "+ vmId)) {
             try {admin.deleteVm(vmId); } catch(IllegalArgumentException e) {
-                System.err.println("\n\n\t*FATAL ERROR*");
+                System.err.println("\n\t*Error* the VM wasn't deleted deu to : "+e.getMessage());
                 return;
             }
         }
@@ -372,7 +376,7 @@ public abstract class CLI_IOHandler {
         bandwidth = shortReader((short) 0, (short) Globals.getInUseBandwidth(), programErrMsg, (short) 2, null);
 
         System.out.print("\n"+underLine+"\nThe expected execution time of the program is: ");
-        expDuration = shortReader((short) 0, (short) ClusterAdmin.MAX_PROGRAM_RUNTIME, "The expected execution time is too long", (short) 1, null);
+        expDuration = shortReader((short) 1, (short) ClusterAdmin.MAX_PROGRAM_RUNTIME, "Invalid duration argument", (short) 1, null);
 
         Program prg = new Program(cpu, ram, ssd, gpu, bandwidth, expDuration);
         admin.addProgram(prg);

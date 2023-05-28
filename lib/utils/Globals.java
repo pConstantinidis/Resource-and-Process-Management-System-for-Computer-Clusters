@@ -3,7 +3,6 @@ package lib.utils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import lib.dependencies.InputOutOfAdminsStandartsException;
 import src.controler.CLI_IOHandler;
@@ -150,19 +149,4 @@ public final class Globals {
             }
             return null;
         }
-
-
-
-         /**
-          * TODO
-          * ! To be removed
-         * @throws IOException
-         * @throws InterruptedException
-          */
-        public static void main(String[] args) throws InputOutOfAdminsStandartsException, IOException, InterruptedException {
-            TimeUnit time = TimeUnit.SECONDS;
-            time.sleep(10);
-        }
-
-
 }

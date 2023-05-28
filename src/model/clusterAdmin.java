@@ -17,11 +17,8 @@ import src.backend.Configure;
 import src.controler.CLI_IOHandler;
 
 /**
- * The class is declared as abstarct to prevent from intstatiating //! Is that ok??
- * TODO
- * 
  * @apiNote Keep in mind that this class takes measures against invalid inputs and
- * logical errors althought in the view of a fatal error the program will return (void) and not terminate.
+ * logical errors, althought in the view of a fatal error the program will inform the user by a print statment and NOT terminate.
  * 
  * @author pConstantinidis
  */
@@ -33,9 +30,9 @@ public final class ClusterAdmin implements Serializable {
     public final static int GPU = 8;                  // GPUs
     public final static int NETWORK_BANDWIDTH = 320;  // Gb/sec
     public final static int MAX_PROGRAM_RUNTIME = 5400; //Seconds
-    public final static short PROGRAM_REJECTIONS_toDISMISS = 3;
+    public final static short PROGRAM_REJECTIONS_toDISMISS = 2;
     private final static long SLEEP_DURATION = 2;
-    private final static TimeUnit time = TimeUnit.MINUTES;
+    private final static TimeUnit time = TimeUnit.SECONDS;
     private final int dummyLoad = 1000;
 
 
@@ -59,7 +56,9 @@ public final class ClusterAdmin implements Serializable {
     public int getNumOfPrgs() {
         return clustersPrograms.size();
     }
-    
+    public void removeProgram(Program p) {
+        clustersPrograms.remove(p);
+    }
     /**
      * A method that returns the clusters admin based on the singleton design pattern.
      * <p>This way only one single instantiation of this class is possible.
@@ -73,7 +72,7 @@ public final class ClusterAdmin implements Serializable {
     // Accessors
     public int getNumOfVms() {return numOfVms;}
     public int getQueueCapacity() {return queueCapacity;}
-    public VirtualMachine getVmByID(int id) {return clusterVms.get(id);}            //TODO     Is this error prone?
+    public VirtualMachine getVmByID(int id) {return clusterVms.get(id);}
 
     
     /**
@@ -86,23 +85,15 @@ public final class ClusterAdmin implements Serializable {
         try {
             conf.configVMs();
             prgData = conf.configPrograms();
-
-            if (numOfVms==0) {
-                System.err.println(CLI_IOHandler.underLine +"\n\tFile/s rejected.");
-                return -1;
-            }
-            
         } catch (Exception e) {
-            if (numOfVms != 0) return 0;
-            return -1;
         } finally {
+            if (numOfVms == 0) return -1;
             if (numOfVms != 0) {
                 System.out.println(CLI_IOHandler.underLine+"\n\tAuto configuration completed.\n"+CLI_IOHandler.underLine);
                 System.out.println("\tWith status:\n\t\t\tValid VMs: "+numOfVms+"\n\t\t\tVMs rejected: "+conf.numOfInvalidVMs());
-            }
-            if (prgData != 0 || conf.numOfInvalidPrgs() != 0)
                 System.out.println("\t\t\tValid programs: "+prgData+"\n\t\t\tPrograms rejected: "+conf.numOfInvalidPrgs()+"\n"+CLI_IOHandler.underLine);
-            else return 0;
+                if (prgData == 0) return 0;
+            }
         }
         return 1;
     }
@@ -194,9 +185,9 @@ public final class ClusterAdmin implements Serializable {
      * 
      * @param vmId The ID of the VM to be removed.
      */
-    public void deleteVm(int vmId) throws IllegalArgumentException {                   //TODO      NEED TO IMPLEMENT TRY-CATCH AT HIGHER LEVEL
+    public void deleteVm(int vmId) throws IllegalArgumentException {
         if (!clusterVms.containsKey(vmId)) {
-            throw new IllegalArgumentException("This ID does not exist");
+            throw new IllegalArgumentException("this ID does not exist");
         }
         PlainVM vm = (PlainVM) clusterVms.remove(vmId);
 
@@ -213,7 +204,7 @@ public final class ClusterAdmin implements Serializable {
      * A method that reports the available sources of a single VM if an ID is given or of all the clusters VMs if the ID is zero.
      * 
      * @param id For input 0 the method will return a report for all the VMs
-     * @return The report is returned in the following formmat: // TODO
+     * @return The report is returned in the following formmat: ID/resource/...
      */
     public StringBuilder report(int id) {
         StringBuilder repo = new StringBuilder();
@@ -367,8 +358,10 @@ public final class ClusterAdmin implements Serializable {
             
             VmNetworkedGPU betterVm = null;
             double bestLoad = dummyLoad; //i don't got a better idea
+            Iterator<VirtualMachine> iter = clusterVms.values().iterator();
 
-            for (VirtualMachine vm:clusterVms.values()) {
+            while (iter.hasNext()) {
+                VirtualMachine vm = iter.next();
                 if (vm instanceof VmNetworkedGPU) {
                     double load = ((VmNetworkedGPU) vm).computeLoad(cpu, ram, drive, gpu, network);
                     if (bestLoad > load) {
@@ -421,21 +414,91 @@ public final class ClusterAdmin implements Serializable {
     /**
      * Pops a program from the queue and assignes it to the optimum VM.
      * @throws IOException
+     * @return 0 If the program was assigned succesfuly, 1 if the program was re-pushed to the queue and -1 if it gote dismissed or if the queue is empty.
      */
-    public void loadProgram() {
+    public int loadProgram() {
         VirtualMachine vm;
         Program prg;
 
         try {
-        prg = programsInQueue.pop();
+            prg = programsInQueue.pop();
         } catch(IllegalStateException e) {
             System.out.println("\n\tThe queue has been empied");
-            return;
+            return -1;
         }
 
         vm = identifyProgram(prg);
-        vm.assignProgram(prg);
-        System.out.println("\n\tThe program with ID "+prg.getID()+" is running on VM "+Globals.getKeyFromValue((HashMap<Integer,VirtualMachine>) clusterVms, vm));
+        int result = assignProgramToVm(prg, vm);
+        if (result ==0) System.out.println("\n\tThe program with ID "+prg.getID()+" is running on VM "+Globals.getKeyFromValue((HashMap<Integer,VirtualMachine>) clusterVms, vm));
+        return result;
+    }
+    
+    /**
+     * A method that tries to allocate resources on the {@code vm} and if they are invalid it retrieves them.
+     * 
+     * @param p The program to be assigned.
+     * @param vm the VM where the program is to be assigned.
+     * @return 0 If the program was assigned succesfuly, 1 if the program was re-pushed to the queue and -1 if it gote dismissed.
+     */
+    private int assignProgramToVm(Program p, VirtualMachine vm) {
+        boolean rejected=false;
+        
+        try { ((PlainVM) vm).addAllocCPU(p.getCoresRequired()); }
+        catch (IllegalArgumentException e) {
+            rejected=true;
+        } 
+        try { ((PlainVM) vm).addAllocRAM(p.getRamRequired()); }
+        catch (IllegalArgumentException e) {
+            rejected=true;
+        }
+        try { ((PlainVM) vm).addAllocDrive(p.getDriveRequired()); }
+        catch (IllegalArgumentException e) {
+            rejected=true;
+        }
+        
+        
+        if (!rejected) {
+            
+            if (vm instanceof VmNetworked) {
+                
+                try { ((VmNetworked) vm).addAllocBandwidth(p.getBandwidthRequired());
+                } catch(IllegalArgumentException e) {
+                    rejected=true;
+                    ((VmNetworked) vm).addAllocCPU(-p.getCoresRequired());
+                    ((VmNetworked) vm).addAllocRAM(-p.getRamRequired());
+                    ((VmNetworked) vm).addAllocDrive(-p.getDriveRequired());
+                }
+            } else if (vm instanceof VmNetworkedGPU) {
+    
+                try { ((VmNetworkedGPU)vm).addAllocGPU(p.getGpuRequired());
+                } catch (IllegalArgumentException e) {
+                    rejected=true;
+                    ((VmNetworkedGPU) vm).addAllocCPU(-p.getCoresRequired());
+                    ((VmNetworkedGPU) vm).addAllocRAM(-p.getRamRequired());
+                    ((VmNetworkedGPU) vm).addAllocDrive(-p.getDriveRequired());
+                }
+                if (!rejected)
+                    try { ((VmNetworkedGPU) vm).addAllocBandwidth(p.getBandwidthRequired());
+                    } catch (IllegalArgumentException e) {
+                        rejected=true;
+                        ((VmNetworkedGPU) vm).addAllocGPU(-p.getGpuRequired());
+                        ((VmNetworkedGPU) vm).addAllocCPU(-p.getCoresRequired());
+                        ((VmNetworkedGPU) vm).addAllocRAM(-p.getRamRequired());
+                        ((VmNetworkedGPU) vm).addAllocDrive(-p.getDriveRequired());
+                    }
+    
+            } else if (vm instanceof VmGPU) {
+    
+                try { ((VmGPU) vm).addAllocGPU(p.getGpuRequired());
+                } catch(IllegalArgumentException e) {
+                    rejected=true;
+                    ((VmGPU) vm).addAllocCPU(-p.getCoresRequired());
+                    ((VmGPU) vm).addAllocRAM(-p.getRamRequired());
+                    ((VmGPU) vm).addAllocDrive(-p.getDriveRequired());
+                }
+            }
+        }
+        return vm.assignProgram(p, rejected);
     }
 
     /**
@@ -453,18 +516,15 @@ public final class ClusterAdmin implements Serializable {
             if (!vm.programsAssigned.isEmpty()) {
                 finished = vm.peekRunningPrgs();
                 if (finished != 0)
-                    vm.terminateProgram(finished);
+                    vm.freeResources(finished);
                 count += finished;
             }
         }
         return count;
     }
     
-    void spleep() {
+    public void spleep() {
         try {
-            
-            System.out.println("\n\tzzzzzzzzzzzzzzz");
-
             time.sleep(SLEEP_DURATION);
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());

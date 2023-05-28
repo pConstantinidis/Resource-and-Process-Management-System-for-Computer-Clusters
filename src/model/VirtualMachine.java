@@ -1,7 +1,6 @@
 package src.model;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import lib.dependencies.InputOutOfAdminsStandartsException;
@@ -22,7 +21,8 @@ public abstract class VirtualMachine {
 
 
     /**
-     * TODO
+     * A {@code PriorityQueue} collection where programs are being sorted
+     * (in ascending order) and stored based on their real-world time that there are going to terminate.
      */
     protected Queue<Program> programsAssigned = new PriorityQueue<>((p1, p2) -> {
         long expToEnd1 = p1.getExpectedDuration()*1000 + p1.getStartedExecution();
@@ -54,21 +54,19 @@ public abstract class VirtualMachine {
     }
     
     /**
-     * @return The number of programs that hve finished are to be "removed" from this VM.
+     * @return The number of programs that have finished are to be "removed" from this VM.
      */
     int peekRunningPrgs() {
         int count = 0;
-        ArrayList<Program> temp = new ArrayList<>();
-        Program nullTester;
-        Program prg = programsAssigned.poll();
+        //ArrayList<Program> temp = new ArrayList<>();
+        Program prg = programsAssigned.peek();                      //! TODO  Modified so that the programs terminate one by one
 
-        while (prg != null && (prg.getExpectedDuration()*1000 + prg.getStartedExecution() <= System.currentTimeMillis())) {
-            temp.add(prg);
+        if (prg != null && (prg.getExpectedDuration()*1000 + prg.getStartedExecution() <= System.currentTimeMillis())) {
             count++;
-            nullTester = programsAssigned.poll();
-            prg = nullTester;
+            //temp.add(prg);
+            //prg = programsAssigned.poll();
         }
-        programsAssigned.addAll(temp);
+        //programsAssigned.add(prg);
         return count;
     }
 
@@ -131,34 +129,34 @@ public abstract class VirtualMachine {
     }
 
     /**
+     * @param rejected Whether the program was just rejected
      * @param p The program to be assigned.
      * @return 0 If the program was assigned succesfuly, 1 if the program was re-pushed to the queue and -1 if it gote dismissed.
      */
-    protected int assignProgram(Program p) {
-        try {
-            this.addAllocCPU(p.getCoresRequired());
-            this.addAllocRAM(p.getRamRequired());            
-        } catch (IllegalArgumentException e) {
-            if (p.getNumOfRejections() == ClusterAdmin.PROGRAM_REJECTIONS_toDISMISS) {
-                try {
-                    p.triggerDismiss();
-                } catch (IOException e1) {
-                    System.err.println(e1.toString()+" -> propable resource leak.");
-                }
-                return -1;
+    protected int assignProgram(Program p, boolean rejected) {
+
+        if (p.getNumOfRejections() == ClusterAdmin.PROGRAM_REJECTIONS_toDISMISS) {
+            try {
+                p.triggerDismiss();
+            } catch (IOException e1) {
+                System.err.println(e1.toString()+" -> propable resource leak.");
             }
-            admin.pushProgram(p);
+            return -1;
+        } else if (rejected) {
             p.addRejection();
+            admin.pushProgram(p);
+            System.out.println("\n\tProgram with ID "+p.getID()+" pushed back to the queue.");
             return 1;
         }
+
         programsAssigned.add(p);
         p.setStartedExecution(System.currentTimeMillis());
         return 0;
     }
 
-    protected void terminateProgram(Program prg) {
-        this.allocCPU += prg.getCoresRequired();
-        this.allocRAM += prg.getRamRequired();
+    protected void freeResources(Program prg) {
+        this.allocCPU -= prg.getCoresRequired();
+        this.allocRAM -= prg.getRamRequired();
     }
 
 }

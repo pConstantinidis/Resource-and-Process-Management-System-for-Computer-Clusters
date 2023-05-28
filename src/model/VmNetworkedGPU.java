@@ -1,7 +1,5 @@
 package src.model;
 
-import java.io.IOException;
-
 import lib.dependencies.InputOutOfAdminsStandartsException;
 import lib.dependencies.NetworkAccessible;
 import lib.utils.Globals;
@@ -50,25 +48,14 @@ public class VmNetworkedGPU extends VmGPU implements NetworkAccessible {
         return (double) ((bandwidthToAlloc+allocBandwidth)/bandwidth + (allocCPU+cpuToAlloc)/cpu + (ramToAlloc+allocRAM)/ram + (driveToAlloc+allocDrive)/drive + (gpuToAlloc+allocGPU)/gpu) / 5;
     }
 
-    /**
-     * @param p The program to be assigned.
-     * @return {@code true} if {@code p} wasn't already in the set, {@code false} otherwise.
-     */
-    @Override
-    protected boolean assignProgram(Program p) throws IOException {
-        this.addAllocBandwidth(p.getBandwidthRequired());
-        return super.assignProgram(p);
-    }
-
-    public void terminateProgram(int numOfInvalidPrgs) {
+    public void freeResources(int numOfInvalidPrgs) {
         Program prg;
         for (int i=0; i<numOfInvalidPrgs; i++) {
             prg = programsAssigned.poll();
 
-            super.terminateProgram(prg);
-            this.allocBandwidth += prg.getBandwidthRequired();
-            this.allocGPU += prg.getGpuRequired();
-            System.out.println("\n\tThe program with ID: "+prg.getID()+" has executed succesfuly.");
+            super.freeResources(prg);
+            this.allocBandwidth -= prg.getBandwidthRequired();
+            System.out.println("\n\tThe program with ID: "+prg.getID()+" has executed succesfuly."           +prg.getExpectedDuration());
         }
     }
 }

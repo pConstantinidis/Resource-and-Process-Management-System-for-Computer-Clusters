@@ -1,7 +1,5 @@
 package src.model;
 
-import java.io.IOException;
-
 import lib.dependencies.InputOutOfAdminsStandartsException;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
@@ -13,7 +11,7 @@ public class PlainVM extends VirtualMachine {
     public int getDrive() {return this.drive;}
     public int getAllocDrive() {return allocDrive;}
 
-    public void addAllocDrive(int drive) {
+    public void addAllocDrive(int drive) throws IllegalArgumentException  {
         if (drive <= this.drive-allocDrive)
             allocDrive += drive;
         else throw new IllegalArgumentException();
@@ -46,31 +44,24 @@ public class PlainVM extends VirtualMachine {
     protected double computeLoad(int cpuToAlloc, int ramToAlloc, int driveToAlloc) {
         return (double) ((allocDrive+driveToAlloc)/drive + (allocCPU+cpuToAlloc)/cpu + (ramToAlloc+allocRAM)/ram) / 3;
     }
-    
-    /**
-     * @param p The program to be assigned.
-     * @return {@code true} if {@code p} wasn't already in the set, {@code false} otherwise.
-     */
-    @Override
-    protected boolean assignProgram(Program p) throws IOException {
-        this.addAllocDrive(p.getDriveRequired());
-        return super.assignProgram(p);
-    }
 
-    public void terminateProgram(int numOfPrograms) {
+    /**
+     * @param numOfPrograms The number of programs that have terminated and their resources are to be retrieved.
+     */
+    public void freeResources(int numOfPrograms) {
         Program prg;
         for (int i=0; i<numOfPrograms; i++) {
             prg = programsAssigned.poll();
 
-            super.terminateProgram(prg);
-            this.allocDrive += prg.getDriveRequired();            
+            super.freeResources(prg);
+            this.allocDrive -= prg.getDriveRequired();            
             System.out.println("\n\tThe program with ID: "+prg.getID()+" has executed succesfuly.");
         }
     }
 
-    protected void terminateProgram(Program prg) {
-        super.terminateProgram(prg);
-        this.allocDrive += prg.getDriveRequired();
+    protected void freeResources(Program prg) {
+        super.freeResources(prg);
+        this.allocDrive -= prg.getDriveRequired();
     }
     
 }

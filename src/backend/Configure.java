@@ -103,7 +103,7 @@ public final class Configure implements Serializable {
 
                 if(isVm) Globals.isBandwidthValid(Integer.parseInt(resource[1]));
                 else {
-                    if (Integer.parseInt(resource[1]) < 4 || Integer.parseInt(resource[1]) > Globals.getInUseBandwidth())
+                    if (Integer.parseInt(resource[1]) < 0 || Integer.parseInt(resource[1]) > Globals.getInUseBandwidth())
                         throw new InputOutOfAdminsStandartsException();
                 }
                 return Integer.parseInt(resource[1]);
