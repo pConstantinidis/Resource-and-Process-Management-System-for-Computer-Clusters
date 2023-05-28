@@ -3,6 +3,7 @@ package src.model;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Random;
 
 import lib.utils.Globals;
@@ -13,9 +14,9 @@ import src.backend.ProgramDismissal;
  * @author pConstantinidis
  */
 public final class Program implements Comparable<Program>, Serializable {
-
+    
     private final ClusterAdmin admin = ClusterAdmin.getAdmin();
-
+    
     private final int pID;
     private final int coresRequired;
     private final int ramRequired;
@@ -24,9 +25,9 @@ public final class Program implements Comparable<Program>, Serializable {
     private final int bandwidthRequired;
     private final int expectedDuration;  // Secs
     private long startedExecution;
-    private static final HashSet<Integer> IDs = new HashSet<>(5);
+    private static final HashSet<Integer> IDs = new LinkedHashSet<>(5);
     private short countRejections = 0;
-
+    
     public int getCoresRequired() {return coresRequired;}
     public int getRamRequired() {return ramRequired;}
     public int getDriveRequired() {return driveRequired;}
@@ -37,11 +38,12 @@ public final class Program implements Comparable<Program>, Serializable {
     short getNumOfRejections() {return this.countRejections;}
     long getStartedExecution() {return this.startedExecution;}
     void setStartedExecution(long timeInMillis) {this.startedExecution = timeInMillis;}
-
+    
     /**
      * Parameters that aren't required should be set to 0.
      */    
     public Program(int coresRequired, int ramRequired, int driveRequired, int gpuRequired, int bandwidthRequired, int expectedDuration) {
+        
         this.coresRequired = coresRequired;
         this.ramRequired = ramRequired;
         this.driveRequired = driveRequired;
@@ -50,6 +52,10 @@ public final class Program implements Comparable<Program>, Serializable {
         this.bandwidthRequired = bandwidthRequired;
         pID = generateID();
         IDs.add(pID);
+    }
+    
+    public static String idsToString() {
+        return IDs.toString();
     }
     
     /**
@@ -70,7 +76,7 @@ public final class Program implements Comparable<Program>, Serializable {
         Random ran = new Random();
         int num;
         do {
-            num = ran.nextInt(100, admin.getQueueCapacity()+150);
+            num = ran.nextInt(100, 101 + 10*IDs.size());
         } while (IDs.contains(num));
         return num;        
     }
@@ -120,7 +126,7 @@ public final class Program implements Comparable<Program>, Serializable {
     
     public void triggerDismiss() throws IOException {
         new ProgramDismissal().dismiss(this);
-        
     }
-    
+
+
 }

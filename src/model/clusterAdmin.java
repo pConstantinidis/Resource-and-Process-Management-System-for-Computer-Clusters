@@ -91,7 +91,7 @@ public final class ClusterAdmin implements Serializable {
             if (numOfVms != 0) {
                 System.out.println(CLI_IOHandler.underLine+"\n\tAuto configuration completed.\n"+CLI_IOHandler.underLine);
                 System.out.println("\tWith status:\n\t\t\tValid VMs: "+numOfVms+"\n\t\t\tVMs rejected: "+conf.numOfInvalidVMs());
-                System.out.println("\t\t\tValid programs: "+prgData+"\n\t\t\tPrograms rejected: "+conf.numOfInvalidPrgs()+"\n"+CLI_IOHandler.underLine);
+                System.out.println("\t\t\tValid programs: "+prgData+"\tids in file order "+Program.idsToString()+"\n\t\t\tPrograms rejected: "+conf.numOfInvalidPrgs()+"\n"+CLI_IOHandler.underLine);
                 if (prgData == 0) return 0;
             }
         }

@@ -32,16 +32,16 @@ public final class CommandLineInterface extends CLI_IOHandler {
                         if (Globals.areThereAnyVms()) break outer;
                         break;
                     case 1: createVm();
-                    break;
+                        break;
                     
                     case 2: updateVm();
-                    break;
+                        break;
                     
                     case 3: deleteVm();
-                    break;
+                        break;
                     
                     case 4: report();
-                    break;
+                        break;
                 }
             }
         }

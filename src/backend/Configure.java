@@ -40,6 +40,8 @@ public final class Configure implements Serializable {
      *
      * <p>Keep in mind that an OS must be defined.
      * 
+     * @apiNote The VMs will be assigned with IDs in ascending order, based on the order that they where inputed.
+     * 
      * @return The number of valid VMs.
      * @throws IOException
      * @throws InputOutOfAdminsStandartsException
@@ -239,7 +241,7 @@ public final class Configure implements Serializable {
                 else line = null;
                 continue;
             }
-            validPrograms++;
+            validPrograms++;//23
             admin.addProgram(new Program(cpu, ram, drive, gpu, bandwidth, time));
             
             String nullTester;

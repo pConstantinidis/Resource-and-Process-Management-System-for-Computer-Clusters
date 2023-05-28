@@ -14,7 +14,7 @@ import src.model.Program;
  */
 public final class ProgramDismissal {
 
-    public static final char DELIMETER = ';';
+    public static final char DELIMETER = '/';
     private final File dismissed = new File("./log/rejected.out");
     private FileOutputStream fos;
     private ObjectOutputStream oos;

@@ -1,8 +1,9 @@
 package lib.utils;
 
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import lib.dependencies.InputOutOfAdminsStandartsException;
 import src.controler.CLI_IOHandler;
@@ -148,5 +149,19 @@ public final class Globals {
                 }
             }
             return null;
+        }
+
+
+
+
+
+
+        public static void main(String[] args) {
+            Set<Integer> st = new LinkedHashSet<>();
+            st.add(5);
+            st.add(3);
+            st.add(4);
+            st.add(2);
+            System.out.println(st);
         }
 }
