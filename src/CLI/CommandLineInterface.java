@@ -10,28 +10,32 @@ import lib.utils.Globals;
 public final class CommandLineInterface extends CLI_IOHandler {
     
     public static void main(String[] args) {
-        new CommandLineInterface();
+        new CommandLineInterface(false).run();
         System.exit(0);
     }
     
     
-    int fileStat = -1;
+    private int fileStat = -1;
+    private boolean ignoreFileStat;
 
-    /**
-     * @param isConfigured -1 if is not, 0 if only the VMs are and 1 is it is completly configured.
-     */
-    public CommandLineInterface() {
-        System.out.println(intro);
-
+    public CommandLineInterface(boolean isGui) {
+        ignoreFileStat = isGui;
+    }
+    
+    private void run() {
+        printIntro();
         autoConfigure();
         displayMenu();
         createPrgsManualy();
-        processPrgs();                
+        processPrgs();
+    }
+    
+    public void printIntro() {
+        System.out.println(intro);
     }
 
-    
-    private void processPrgs() {
-        if (fileStat == 1) {
+    public void processPrgs() {
+        if (ignoreFileStat || fileStat == 1) {
             admin.queuePrograms();
                 
             int programsFinished = 0, loadStatus = 0, programsDismissed = 0;
@@ -49,13 +53,13 @@ public final class CommandLineInterface extends CLI_IOHandler {
                 programsFinished += admin.updateRunningPrograms();
             }
             System.out.println(doubleLine+"\n\tSession ended : "+programsFinished+" programs where executed.\n"+doubleLine+"\n");
-            closeReader();
         }
+        closeReader();
     }
 
 
-    private void createPrgsManualy() {
-        if (fileStat==0 || fileStat==-1) {              //!TODO Is that statment enough?
+    public void createPrgsManualy() {
+        if (fileStat==0 || fileStat==-1) {
             System.out.println(introducePrograms);
             do {
                 System.out.println(underLine+"\nProgram added succesfuly with ID: "+acquirProgramData()+"\n"+underLine);
@@ -68,7 +72,7 @@ public final class CommandLineInterface extends CLI_IOHandler {
         fileStat = admin.autoConf();
     }
     
-    private void displayMenu() {
+    public void displayMenu() {
         short choice;
         if (fileStat == -1) {
             outer: while (true) {
