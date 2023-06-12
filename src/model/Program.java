@@ -62,11 +62,11 @@ public final class Program implements Comparable<Program>, Serializable {
      * @return The priority factor of a program.
      */
     private double computePriority() {
-        return ((double) this.coresRequired / Globals.getInUseCpu())+
-        ((double) this.ramRequired / Globals.getInUseRam())+
-        ((double) this.driveRequired / Globals.getInUseDrive())+
-        ((double) this.gpuRequired / Globals.getInUseGpu())+
-        ((double) this.bandwidthRequired / Globals.getInUseBandwidth()); 
+        return ((double) this.coresRequired / Globals.getAvailableCpu())+
+        ((double) this.ramRequired / Globals.getAvailableRam())+
+        ((double) this.driveRequired / Globals.getAvailableDrive())+
+        ((double) this.gpuRequired / Globals.getAvailableGpu())+
+        ((double) this.bandwidthRequired / Globals.getAvailableBandwidth()); 
     }
     
     /**
@@ -90,7 +90,7 @@ public final class Program implements Comparable<Program>, Serializable {
         
         double thisPriority = this.computePriority();
         double otherPriority = o.computePriority();
-        return Double.compare(thisPriority, otherPriority);
+        return Double.compare(otherPriority, thisPriority);
     }
     
     public int getID() {

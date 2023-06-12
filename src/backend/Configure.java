@@ -13,7 +13,9 @@ import src.model.ClusterAdmin;
 import src.model.Program;
 
 /**
- * TODO
+ * A class used to auto configure the clusters VMs and programs
+ * 
+ * @author pConstantinidis
  */
 public final class Configure implements Serializable {
 
@@ -35,14 +37,13 @@ public final class Configure implements Serializable {
     }
     
     /**
-     * TODO
+     * Configures the VMs if the according file exists.
      * <p>The format of the file should be:<b>resource:(it's data type),e.t.c.
      *
      * <p>Keep in mind that an OS must be defined.
      * 
      * @apiNote The VMs will be assigned with IDs in ascending order, based on the order that they where inputed.
      * 
-     * @return The number of valid VMs.
      * @throws IOException
      * @throws InputOutOfAdminsStandartsException
      * @see #configPrograms()
@@ -105,7 +106,7 @@ public final class Configure implements Serializable {
 
                 if(isVm) Globals.isBandwidthValid(Integer.parseInt(resource[1]));
                 else {
-                    if (Integer.parseInt(resource[1]) < 0 || Integer.parseInt(resource[1]) > Globals.getInUseBandwidth())
+                    if (Integer.parseInt(resource[1]) < 0 || Integer.parseInt(resource[1]) > Globals.getAvailableBandwidth())
                         throw new InputOutOfAdminsStandartsException();
                 }
                 return Integer.parseInt(resource[1]);
@@ -122,7 +123,7 @@ public final class Configure implements Serializable {
 
                 if (isVm) Globals.isGpuValid(Integer.parseInt(resource[1]));
                 else {
-                    if (Integer.parseInt(resource[1]) < 1 || Integer.parseInt(resource[1]) > Globals.getInUseGpu())
+                    if (Integer.parseInt(resource[1]) < 1 || Integer.parseInt(resource[1]) > Globals.getAvailableGpu())
                         throw new InputOutOfAdminsStandartsException();
                 }
                 return Integer.parseInt(resource[1]);
@@ -139,7 +140,7 @@ public final class Configure implements Serializable {
 
                 if(isVm) Globals.isDriveValid(Integer.parseInt(resource[1]));
                 else {
-                    if (Integer.parseInt(resource[1]) < 1 || Integer.parseInt(resource[1]) > Globals.getInUseDrive())
+                    if (Integer.parseInt(resource[1]) < 1 || Integer.parseInt(resource[1]) > Globals.getAvailableDrive())
                         throw new InputOutOfAdminsStandartsException();
                 }
                 return Integer.parseInt(resource[1]);
@@ -156,7 +157,7 @@ public final class Configure implements Serializable {
 
                 if (isVm) Globals.isRamValid(Integer.parseInt(resource[1]));
                 else {
-                    if (Integer.parseInt(resource[1]) < 1 || Integer.parseInt(resource[1]) > Globals.getInUseRam())
+                    if (Integer.parseInt(resource[1]) < 1 || Integer.parseInt(resource[1]) > Globals.getAvailableRam())
                         throw new InputOutOfAdminsStandartsException();
                 }
                 return Integer.parseInt(resource[1]);
@@ -173,7 +174,7 @@ public final class Configure implements Serializable {
             if (resource[0].toLowerCase().equals("cores")) {
                 if (isVm) Globals.isCpuValid(Integer.parseInt(resource[1]));
                 else {
-                    if (Integer.parseInt(resource[1]) < 1 || Integer.parseInt(resource[1]) > Globals.getInUseCpu())
+                    if (Integer.parseInt(resource[1]) < 1 || Integer.parseInt(resource[1]) > Globals.getAvailableCpu())
                         throw new InputOutOfAdminsStandartsException();
                 }
                 return Integer.parseInt(resource[1]);

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import lib.dependencies.InputOutOfAdminsStandartsException;
-import src.controler.CLI_IOHandler;
+import src.CLI.CLI_IOHandler;
 import src.model.ClusterAdmin;
 import src.model.Program;
 
@@ -41,12 +41,6 @@ public final class Globals {
         public static int getAvailableDrive() {return availableDrive;}
         public static int getAvailableGpu() {return availableGpu;}
         public static int getAvailableBandwidth() {return availableBandwidth;}
-
-        public static int getInUseCpu() {return ClusterAdmin.CPU_CORES-availableCpu;}
-        public static int getInUseRam() {return ClusterAdmin.RAM-availableRam;}
-        public static int getInUseDrive() {return ClusterAdmin.DRIVE-availableDrive;}
-        public static int getInUseGpu() {return ClusterAdmin.GPU-availableGpu;}
-        public static int getInUseBandwidth() {return ClusterAdmin.NETWORK_BANDWIDTH-availableBandwidth;}
 
     // Mutators
         public static void setAvailableCpu(int availableCpu) {Globals.availableCpu = availableCpu;}
@@ -93,11 +87,11 @@ public final class Globals {
 
         public final static boolean isProgramValid(Program p) {
             if (!Program.isTheirSuchID(p.getID()) ||
-                p.getCoresRequired() > getInUseCpu() ||
-                p.getRamRequired() > getInUseRam() ||
-                p.getDriveRequired() > getInUseDrive() ||
-                p.getGpuRequired() > getInUseGpu() ||
-                p.getBandwidthRequired() > getInUseBandwidth())     {return false;}
+                p.getCoresRequired() > getAvailableCpu() ||
+                p.getRamRequired() > getAvailableRam() ||
+                p.getDriveRequired() > getAvailableDrive() ||
+                p.getGpuRequired() > getAvailableGpu() ||
+                p.getBandwidthRequired() > getAvailableBandwidth())     {return false;}
 
                 return true;
         }
