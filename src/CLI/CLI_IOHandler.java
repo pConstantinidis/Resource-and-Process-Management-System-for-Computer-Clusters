@@ -1,4 +1,4 @@
-package src.controler;
+package src.CLI;
 
 import java.util.Scanner;
 
@@ -322,7 +322,7 @@ public abstract class CLI_IOHandler {
     }
     
     /**
-     * TODO
+     * Deletes a VM by calling the related admin method
      */
     protected void deleteVm() {
         if (!Globals.areThereAnyVms()) return;
@@ -338,7 +338,7 @@ public abstract class CLI_IOHandler {
         showSuccessMsg("VM deletion");
     }
 
-    protected void report() {  //! TODO user test
+    protected void report() {
         if (!Globals.areThereAnyVms()) return;
         short id;
 
@@ -364,16 +364,16 @@ public abstract class CLI_IOHandler {
         
         System.out.println("\n\t Submit needed specs...");
         System.out.print(" ~CPU cores required (>0) - ");
-        cpu = shortReader((short) 1, (short) Globals.getInUseCpu(), programErrMsg, (short) 2, null);
+        cpu = shortReader((short) 1, (short) Globals.getAvailableCpu(), programErrMsg, (short) 2, null);
         System.out.print("\n\t ~RAM required (>0) - ");
-        ram = shortReader((short) 1, (short) Globals.getInUseRam(), programErrMsg, (short) 2, null);
+        ram = shortReader((short) 1, (short) Globals.getAvailableRam(), programErrMsg, (short) 2, null);
         System.out.print("\n\t ~Drive required (>0) - ");
-        ssd = shortReader((short) 1, (short) Globals.getInUseDrive(), programErrMsg, (short) 2, null);
+        ssd = shortReader((short) 1, (short) Globals.getAvailableDrive(), programErrMsg, (short) 2, null);
 
         System.out.print("\n\t ~GPU required - ");
-        gpu = shortReader((short) 0, (short) Globals.getInUseGpu(), programErrMsg, (short) 2, null);
+        gpu = shortReader((short) 0, (short) Globals.getAvailableGpu(), programErrMsg, (short) 2, null);
         System.out.print("\n\t ~Bandwidth required - ");
-        bandwidth = shortReader((short) 0, (short) Globals.getInUseBandwidth(), programErrMsg, (short) 2, null);
+        bandwidth = shortReader((short) 0, (short) Globals.getAvailableBandwidth(), programErrMsg, (short) 2, null);
 
         System.out.print("\n"+underLine+"\nThe expected execution time of the program is: ");
         expDuration = shortReader((short) 1, (short) ClusterAdmin.MAX_PROGRAM_RUNTIME, "Invalid duration argument", (short) 1, null);
