@@ -52,7 +52,7 @@ public class VmNetworked extends PlainVM implements NetworkAccessible, Serializa
 
             super.freeResources(prg);
             this.allocBandwidth -= prg.getBandwidthRequired();           
-            System.out.println("\n\tThe program with ID: "+prg.getID()+" has executed succesfuly.");
+            System.out.println("\n\tThe program with ID "+prg.getID()+" has executed succesfuly.");
         }
     }
 

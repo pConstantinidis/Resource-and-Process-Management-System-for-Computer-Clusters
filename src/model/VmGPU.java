@@ -52,7 +52,7 @@ public class VmGPU extends PlainVM implements Serializable {
 
             super.freeResources(prg);
             this.allocGPU -= prg.getGpuRequired();
-            System.out.println("\n\tThe program with ID: "+prg.getID()+" has executed succesfuly.");
+            System.out.println("\n\tThe program with ID "+prg.getID()+" has executed succesfuly.");
         }
     }
 

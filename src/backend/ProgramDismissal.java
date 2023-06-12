@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-import src.controler.CLI_IOHandler;
+import src.CLI.CLI_IOHandler;
 import src.model.Program;
 
 /**
@@ -34,7 +34,7 @@ public final class ProgramDismissal {
             oos =  new ObjectOutputStream(fos);
 
             oos.writeObject(p);
-            System.out.println(CLI_IOHandler.underLine+"\n\tThe program with ID: "+p.getID()+" has been dismissed.\n"+CLI_IOHandler.underLine);
+            System.out.println(CLI_IOHandler.underLine+"\n\tThe program with ID "+p.getID()+" has been dismissed.\n"+CLI_IOHandler.underLine);
         } catch (Exception e) {
             System.out.println("Nailed it exception occurred\t !Rejected programs may not have been stored to properly!");
             

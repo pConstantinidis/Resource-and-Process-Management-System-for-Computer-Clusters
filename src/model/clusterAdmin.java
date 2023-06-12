@@ -13,8 +13,8 @@ import lib.dependencies.InputOutOfAdminsStandartsException;
 import lib.dependencies.NetworkAccessible;
 import lib.utils.Globals;
 import lib.utils.Globals.OS;
+import src.CLI.CLI_IOHandler;
 import src.backend.Configure;
-import src.controler.CLI_IOHandler;
 
 /**
  * @apiNote Keep in mind that this class takes measures against invalid inputs and
@@ -275,10 +275,12 @@ public final class ClusterAdmin implements Serializable {
         
         // Could be done in a better way if we used the build-in method
         Globals.sort(array);
+
         
         programsInQueue = new BoundedQueue<>(queueCapacity);
-        for (Program p :array)
+        for (Program p :array) {
             programsInQueue.push(p);
+        }
     }
     
     

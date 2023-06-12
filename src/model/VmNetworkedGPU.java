@@ -55,7 +55,7 @@ public class VmNetworkedGPU extends VmGPU implements NetworkAccessible {
 
             super.freeResources(prg);
             this.allocBandwidth -= prg.getBandwidthRequired();
-            System.out.println("\n\tThe program with ID: "+prg.getID()+" has executed succesfuly.");
+            System.out.println("\n\tThe program with ID "+prg.getID()+" has executed succesfuly.");
         }
     }
 }

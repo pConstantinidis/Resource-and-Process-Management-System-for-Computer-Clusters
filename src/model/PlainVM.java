@@ -55,7 +55,7 @@ public class PlainVM extends VirtualMachine {
 
             super.freeResources(prg);
             this.allocDrive -= prg.getDriveRequired();            
-            System.out.println("\n\tThe program with ID: "+prg.getID()+" has executed succesfuly.");
+            System.out.println("\n\tThe program with ID "+prg.getID()+" has executed succesfuly.");
         }
     }
 

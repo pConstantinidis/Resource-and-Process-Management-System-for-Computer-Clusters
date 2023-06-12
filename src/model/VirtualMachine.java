@@ -59,7 +59,7 @@ public abstract class VirtualMachine {
     int peekRunningPrgs() {
         int count = 0;
         //ArrayList<Program> temp = new ArrayList<>();
-        Program prg = programsAssigned.peek();                      //! TODO  Modified so that the programs terminate one by one
+        Program prg = programsAssigned.peek();                      //  Modified so that the programs terminate one by one
 
         if (prg != null && (prg.getExpectedDuration()*1000 + prg.getStartedExecution() <= System.currentTimeMillis())) {
             count++;
